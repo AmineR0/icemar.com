@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * IceMar — Local Server with Live Company Search Proxy
+ * IceMorocco — Local Server with Live Company Search Proxy
  * Serves your app + proxies search requests to charika.ma
  * 
  * Usage: node server.js
@@ -528,7 +528,7 @@ if (require.main === module) {
     server.listen(port, '0.0.0.0', () => {
       console.log(`
 ╔═══════════════════════════════════════════════════════╗
-║  IceMar — Server Running                              ║
+║  IceMorocco — Server Running                          ║
 ║                                                       ║
 ║  Local:  http://localhost:${String(port).padEnd(24)}║
 ║                                                       ║

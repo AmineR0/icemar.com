@@ -1,4 +1,4 @@
-// IceMar – App Logic (with Live Company Search)
+// IceMorocco – App Logic (with Live Company Search)
 let searchMode='nom';
 let isLiveAvailable=false; // true when server.js is running
 let lastLiveResults=new Map();
