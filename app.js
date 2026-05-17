@@ -452,7 +452,12 @@ function renderResults(res,q){
       </div>
 
       <div style="display:grid; grid-template-columns: 1fr; gap:8px; font-size:14px; color:var(--text-light);">
-        ${c.act ? `<div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;" title="${esc(c.act)}"><strong style="color:var(--text-main)">Activité :</strong> ${c.act}</div>` : ''}
+        ${c.act ? `<div><strong style="color:var(--text-main)">Activité :</strong> 
+          ${c.act.length > 80 ? `
+            <span id="act-short-${c.id}">${c.act.substring(0, 80)}<span style="color:var(--primary); cursor:pointer; font-weight:700;" onclick="document.getElementById('act-short-${c.id}').style.display='none'; document.getElementById('act-full-${c.id}').style.display='inline';">...</span></span>
+            <span id="act-full-${c.id}" style="display:none;">${c.act} <span style="color:var(--primary); cursor:pointer; font-weight:700; margin-left:4px;" onclick="document.getElementById('act-full-${c.id}').style.display='none'; document.getElementById('act-short-${c.id}').style.display='inline';">Voir moins</span></span>
+          ` : `<span>${c.act}</span>`}
+        </div>` : ''}
         ${addrText ? `<div><strong style="color:var(--text-main)">Adresse :</strong> ${addrText}</div>` : ''}
         
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
