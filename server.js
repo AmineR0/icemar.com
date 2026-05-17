@@ -40,6 +40,7 @@ function fetchUrl(url, options = {}) {
         'Accept-Encoding': 'identity',
         'Referer': 'https://www.charika.ma/',
         'Origin': 'https://www.charika.ma',
+        ...(process.env.CHARIKA_COOKIE ? { 'Cookie': process.env.CHARIKA_COOKIE } : {}),
         ...(options.headers || {}),
       },
       timeout: 15000,
