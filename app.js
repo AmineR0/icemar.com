@@ -443,24 +443,24 @@ function renderResults(res,q){
 
     return `
     <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-        <div>
-          <div style="font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:12px;">
+        <div style="flex: 1 1 min-content;">
+          <div style="font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word;">${c.name}</div>
           ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
         </div>
-        <button class="ca-btn" style="background:var(--primary); color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:600;" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr)}','${esc(c.ville)}','${esc(c.email)}','${esc(c.ice)}','${esc(c.tel)}')">Utiliser pour la Facture</button>
+        <button class="ca-btn" style="background:var(--primary); color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:600; white-space:nowrap; flex: 0 1 auto;" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr)}','${esc(c.ville)}','${esc(c.email)}','${esc(c.ice)}','${esc(c.tel)}')">Utiliser pour la Facture</button>
       </div>
 
       <div style="display:grid; grid-template-columns: 1fr; gap:8px; font-size:14px; color:var(--text-light);">
         ${c.act ? `<div><strong style="color:var(--text-main)">Activité :</strong> ${c.act}</div>` : ''}
         ${addrText ? `<div><strong style="color:var(--text-main)">Adresse :</strong> ${addrText}</div>` : ''}
         
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
-          ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px">${c.rc}</span></div>` : ''}
-          ${c.ice ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> <span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600;">${c.ice}</span></div>` : ''}
-          ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px">${c.type}</span></div>` : ''}
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+          ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px; word-break:break-word;">${c.rc}</span></div>` : ''}
+          ${c.ice ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> <span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all;">${c.ice}</span></div>` : ''}
+          ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px; word-break:break-word;">${c.type}</span></div>` : ''}
           ${c.cap ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Capital</strong> <span style="font-size:15px">${c.cap}</span></div>` : ''}
-          ${c.date ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${c.date}</span></div>` : ''}
+          ${c.date ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${c.date.replace(/[\sT].*/, '')}</span></div>` : ''}
         </div>
       </div>
     </div>`;
