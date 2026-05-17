@@ -17,8 +17,26 @@
   <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-top">
-      <div class="brand" style="justify-content: center; width: 100%; margin-bottom: 32px;">
-        <img src="logo.png" alt="IceMar Logo" style="width: 100%; max-width: 180px; height: auto; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: block;" />
+      <div class="brand" style="justify-content: center; width: 100%; margin: 20px 0 40px 0;">
+        <svg width="140" height="48" viewBox="0 0 140 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Logo Icon -->
+          <path d="M12 4L32 16L32 32L12 44L-8 32L-8 16L12 4Z" fill="url(#polyGrad)" opacity="0.1"/>
+          <path d="M12 8L28 17.5V30.5L12 40L-4 30.5V17.5L12 8Z" stroke="url(#polyGrad)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M-4 17.5L12 27L28 17.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 40V27" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14L12 21" stroke="#F2C46D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="14" r="1.5" fill="#F2C46D"/>
+          
+          <!-- Text: IceMar -->
+          <text x="44" y="33" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="28" fill="white" letter-spacing="-0.02em">Ice<tspan fill="#F2C46D">Mar</tspan></text>
+          
+          <defs>
+            <linearGradient id="polyGrad" x1="-4" y1="8" x2="28" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#14B8A6"/>
+              <stop offset="1" stop-color="#0EA5E9"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu">
         <span></span><span></span><span></span>
