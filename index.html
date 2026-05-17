@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>IceMar – Recherche ICE, Facture Conforme & Outils Société</title>
+<meta name="description" content="Recherchez une entreprise marocaine par nom ou ICE, créez une facture conforme et utilisez des outils simples pour votre société."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ═══ SHELL ═══ -->
+<div class="shell">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <path d="M4 6.5L8.35 19L13 8.2L17.65 19L22 6.5" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17.5 14.4L20.05 16.85L24 12.2" stroke="#F2C46D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">IceMar</div>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+        <strong>Menu</strong>
+      </button>
+
+      <div class="sb-nav">
+        <button class="sbn active" id="sbn-search" onclick="showPage('search')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="sbn-label">Recherche</span>
+        </button>
+        <button class="sbn" id="sbn-ice-check" onclick="showPage('ice-check')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h7"/><path d="m16 16 2 2 4-5"/></svg>
+          <span class="sbn-label">Vérificateur ICE</span>
+        </button>
+        <button class="sbn" id="sbn-salary" onclick="showPage('salary')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="sbn-label">Simulation Salaire</span>
+        </button>
+        <button class="sbn" id="sbn-invoice" onclick="showPage('invoice')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+          <span class="sbn-label">Générateur Facture</span>
+        </button>
+        <button class="sbn" id="sbn-words" onclick="showPage('words')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h10"/></svg>
+          <span class="sbn-label">Chiffres en Lettres</span>
+        </button>
+        <button class="sbn" id="sbn-tools" onclick="showPage('tools')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-3-3 2.4-2.4z"/></svg>
+          <span class="sbn-label">Outils Société</span>
+        </button>
+      </div>
+
+      <div class="mobile-menu" id="mobile-menu" style="display:none">
+        <button onclick="showPage('search')">Recherche</button>
+        <button onclick="showPage('ice-check')">Vérificateur ICE</button>
+        <button onclick="showPage('salary')">Simulation Salaire</button>
+        <button onclick="showPage('invoice')">Générateur Facture</button>
+        <button onclick="showPage('words')">Chiffres en Lettres</button>
+        <button onclick="showPage('tools')">Outils Société</button>
+      </div>
+
+      <!-- Search UI -->
+      <div class="search-ui" id="search-ui">
+        <div class="sb-kicker">Recherche nationale</div>
+        <h1 class="sb-title">IceMar</h1>
+        <p class="sb-sub">Recherche ICE, facture conforme et outils société en un seul espace.</p>
+
+        <div class="sb-stats">
+          <div class="stat-pill">
+            <span class="sp-num" id="db-count">—</span>
+            <span class="sp-lbl">entreprises</span>
+          </div>
+          <div class="stat-pill">
+            <span class="sp-num">100%</span>
+            <span class="sp-lbl">gratuit</span>
+          </div>
+        </div>
+
+        <div class="ad-slot ad-slot-sidebar" aria-label="Emplacement publicitaire">
+          <span>Emplacement annonce</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sb-foot">
+      <div>Service gratuit · données à titre indicatif</div>
+      <div class="legal-links">
+        <button onclick="showPage('terms')">Conditions d'Utilisation</button>
+        <span>•</span>
+        <button onclick="showPage('privacy')">Politique de Confidentialité</button>
+        <span>•</span>
+        <button onclick="showPage('contact')">Contact</button>
+        <button onclick="showPage('about')">À Propos</button>
+        <button onclick="showPage('faq')">Questions Fréquentes</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- SEARCH RESULTS PAGE -->
+    <div id="page-search" class="page active">
+      <div class="empty-state" id="empty-state">
+        <section class="ice-landing">
+          <div class="hero-kicker">Recherche entreprise Maroc</div>
+          <h2>Rechercher une entreprise par nom ou ICE.</h2>
+          <p>Un seul champ pour trouver une société marocaine. Choisissez le type de recherche, saisissez votre terme, puis consultez les résultats.</p>
+          <div class="home-ice-card">
+            <div class="mode-toggle home-mode-toggle">
+              <button class="mt-btn active" id="mt-nom" onclick="setMode('nom')">Nom</button>
+              <button class="mt-btn" id="mt-ice" onclick="setMode('ice')">ICE</button>
+            </div>
+            <label for="q">Recherche</label>
+            <div class="home-ice-row">
+              <input id="q" autocomplete="off" placeholder="Nom de société ou marque" onkeydown="if(event.key==='Enter')go()"/>
+              <button onclick="go()">Rechercher</button>
+            </div>
+            <div class="home-ice-meta">
+              <span>Nom ou ICE</span>
+              <span>Résultats détaillés</span>
+              <span>Données indicatives</span>
+            </div>
+          </div>
+        </section>
+        <div class="ad-slot ad-slot-main" aria-label="Emplacement publicitaire">
+          <span>Zone annonce responsive</span>
+        </div>
+      </div>
+
+      <div id="results-panel" style="display:none">
+        <div class="ad-slot ad-slot-results" aria-label="Emplacement publicitaire">
+          <span>Zone annonce</span>
+        </div>
+        <div class="res-header">
+          <div class="rh-left">
+            <h2 id="res-title">Résultats de la recherche :</h2>
+            <span class="res-count-badge" id="res-count-badge"></span>
+          </div>
+          <button class="rh-close" onclick="clearSearch()">Fermer</button>
+        </div>
+        <div id="res-list"></div>
+        <div id="res-empty" class="res-no-result" style="display:none">
+          <div>Aucun résultat</div>
+          <strong>Aucune entreprise trouvée</strong>
+          <p>Vérifiez l'orthographe ou essayez un autre terme.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ICE VERIFIER PAGE -->
+    <div id="page-ice-check" class="page">
+      <section class="tool-page">
+        <div class="tool-head">
+          <div>
+            <span class="tool-eyebrow">Validation entreprise</span>
+            <h2>Vérificateur ICE</h2>
+            <p>Contrôlez le format d'un ICE marocain et lancez une recherche directe dans les données disponibles.</p>
+          </div>
+          <div class="tool-head-actions">
+            <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+            <div class="tool-note">Format attendu : 15 chiffres</div>
+          </div>
+        </div>
+        <div class="tool-grid two">
+          <div class="tool-card">
+            <label class="tool-label" for="ice-check-input">Numéro ICE</label>
+            <input id="ice-check-input" class="tool-input" maxlength="25" placeholder="Ex: 000015156000031" oninput="verifyIceInput()"/>
+            <button class="tool-primary" onclick="verifyIceAndSearch()">Vérifier et rechercher</button>
+            <div class="tool-hint">Le contrôle local vérifie le format. La disponibilité des informations dépend des sources chargées.</div>
+          </div>
+          <div class="tool-card result-card" id="ice-check-result">
+            <div class="result-label">Résultat</div>
+            <strong>En attente d'un ICE</strong>
+            <p>Saisissez un numéro pour commencer.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SALARY SIMULATOR PAGE -->
+    <div id="page-salary" class="page">
+      <section class="tool-page">
+        <div class="tool-head">
+          <div>
+            <span class="tool-eyebrow">Ressources humaines</span>
+            <h2>Simulation Salaire</h2>
+            <p>Estimez rapidement un salaire net, les retenues salariales et le coût employeur avec des paramètres modifiables.</p>
+          </div>
+          <div class="tool-head-actions">
+            <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+            <div class="tool-note">Simulation indicative</div>
+          </div>
+        </div>
+        <div class="tool-grid two">
+          <div class="tool-card form-stack">
+            <label class="tool-label" for="salary-gross">Salaire brut mensuel</label>
+            <input id="salary-gross" class="tool-input" type="number" min="0" value="8000" oninput="calcSalarySim()"/>
+            <div class="compact-grid">
+              <label><span>Personnes à charge</span><input id="salary-dependents" class="tool-input" type="number" min="0" max="6" value="0" oninput="calcSalarySim()"/></label>
+              <label><span>Frais pro</span><input id="salary-expense-rate" class="tool-input" type="number" min="0" max="35" value="25" oninput="calcSalarySim()"/></label>
+              <label><span>CNSS salarié plafonnée</span><input id="salary-cnss-rate" class="tool-input" type="number" min="0" step="0.01" value="4.48" oninput="calcSalarySim()"/></label>
+              <label><span>AMO salarié</span><input id="salary-amo-rate" class="tool-input" type="number" min="0" step="0.01" value="2.26" oninput="calcSalarySim()"/></label>
+              <label><span>Charges employeur</span><input id="salary-employer-rate" class="tool-input" type="number" min="0" step="0.01" value="21.09" oninput="calcSalarySim()"/></label>
+              <label><span>Plafond CNSS</span><input id="salary-cnss-cap" class="tool-input" type="number" min="0" value="6000" oninput="calcSalarySim()"/></label>
+            </div>
+          </div>
+          <div class="tool-card result-card salary-result" id="salary-result"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- INVOICE PAGE -->
+    <div id="page-invoice" class="page">
+      <div class="inv-container">
+        <div class="inv-toolbar no-print">
+          <div>
+            <span class="tool-eyebrow">Facturation</span>
+            <h2 class="inv-h2">Facture Conforme</h2>
+            <p class="inv-p">Remplissez, vérifiez et imprimez une facture propre en quelques minutes.</p>
+          </div>
+          <div class="inv-tb-btns">
+            <button class="tb-btn ghost" onclick="returnToSearch()">Retour recherche</button>
+            <button class="tb-btn ghost" onclick="clearInv()">Effacer</button>
+            <button class="tb-btn outline" onclick="saveVendor()">Sauvegarder</button>
+            <button class="tb-btn solid" onclick="window.print()">Imprimer / PDF</button>
+          </div>
+        </div>
+        <div class="inv-notice no-print">Conseil : vérifiez toujours ICE, IF, RC, numérotation et conditions de paiement avant l'envoi.</div>
+
+        <div class="invoice-workbench">
+
+        <!-- PAPER -->
+        <div class="paper" id="paper">
+          <div class="paper-header">
+            <div class="ph-left">
+              <div class="ph-logo-box" id="ph-logo-box">E</div>
+              <div>
+                <div class="ph-company" id="ph-company">Votre Entreprise</div>
+                <div class="ph-meta-line" id="ph-meta-line"></div>
+              </div>
+            </div>
+            <div class="ph-right">
+              <div class="ph-invoice-box">
+                <select class="doc-type-select no-print" id="doc-type" onchange="syncDocType()">
+                  <option value="FACTURE CONFORME">Facture conforme</option>
+                  <option value="DEVIS">Devis</option>
+                  <option value="REÇU">Reçu</option>
+                  <option value="AVOIR">Avoir</option>
+                </select>
+                <div class="ph-inv-label" id="ph-doc-type">FACTURE CONFORME</div>
+                <div class="ph-inv-num" id="ph-inv-num">#2024-001</div>
+              </div>
+              <div class="ph-dates">
+                <div class="ph-date-row no-print">
+                  <label>N°</label><input class="pf" id="inv-num" placeholder="2024-001" oninput="syncNum()"/>
+                </div>
+                <div class="ph-date-row no-print">
+                  <label>Date</label><input class="pf" type="date" id="inv-date"/>
+                </div>
+                <div class="ph-date-row no-print">
+                  <label>Échéance</label><input class="pf" type="date" id="inv-due"/>
+                </div>
+                <div class="ph-date-row no-print">
+                  <label>Réf.</label><input class="pf" id="inv-ref" placeholder="BC, contrat, projet..."/>
+                </div>
+                <div class="ph-date-row no-print">
+                  <label>TVA</label>
+                  <select class="pf" id="tva" onchange="calc()">
+                    <option value="0">0%</option><option value="7">7%</option>
+                    <option value="10">10%</option><option value="14">14%</option>
+                    <option value="20" selected>20%</option>
+                  </select>
+                </div>
+                <div class="ph-date-row no-print">
+                  <label>Devise</label>
+                  <select class="pf" id="cur" onchange="calc()">
+                    <option>MAD</option><option>EUR</option><option>USD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-subject">
+            <label>Objet du document</label>
+            <input class="pf bold" id="inv-subject" placeholder="Ex: Prestations de service, marchandise, acompte..."/>
+          </div>
+
+          <div class="paper-parties">
+            <div class="party">
+              <div class="party-label">Émetteur</div>
+              <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany()"/>
+              <input class="pf" id="s-addr" placeholder="Adresse"/>
+              <div class="pf-2"><input class="pf" id="s-city" placeholder="Ville"/><input class="pf" id="s-tel" placeholder="Téléphone"/></div>
+              <input class="pf" id="s-email" placeholder="Email"/>
+              <div class="pf-2"><input class="pf" id="s-if" placeholder="IF"/><input class="pf" id="s-rc" placeholder="RC"/></div>
+              <input class="pf ice-f" id="s-ice" placeholder="ICE (15 chiffres)" maxlength="15"/>
+            </div>
+            <div class="party">
+              <div class="party-label client-lbl">Facturé à</div>
+              <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client"/>
+              <input class="pf" id="c-addr" placeholder="Adresse du client"/>
+              <div class="pf-2"><input class="pf" id="c-city" placeholder="Ville"/><input class="pf" id="c-tel" placeholder="Téléphone"/></div>
+              <div class="pf-2"><input class="pf" id="c-if" placeholder="IF client"/><input class="pf ice-f" id="c-ice" placeholder="ICE client (15 chiffres)" maxlength="15"/></div>
+            </div>
+          </div>
+
+          <table class="items-tbl" id="itbl">
+            <thead><tr>
+              <th class="col-d">Désignation</th><th class="col-u">Unité</th>
+              <th class="col-q">Qté</th><th class="col-p">Prix HT</th>
+              <th class="col-t">Total HT</th><th class="col-x no-print"></th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <button class="add-row no-print" onclick="addRow()">+ Ajouter une ligne</button>
+
+          <div class="payment-block">
+            <div class="payment-title">Paiement</div>
+            <div class="payment-grid">
+              <select class="pf" id="pay-method">
+                <option>Virement bancaire</option>
+                <option>Chèque</option>
+                <option>Espèces</option>
+                <option>Carte bancaire</option>
+                <option>Autre</option>
+              </select>
+              <input class="pf" id="pay-bank" placeholder="Banque"/>
+              <input class="pf" id="pay-rib" placeholder="RIB / IBAN"/>
+            </div>
+          </div>
+
+          <div class="paper-foot-row">
+            <div class="pf-notes">
+              <label>Notes / Conditions</label>
+              <textarea class="pf" id="notes" rows="4" placeholder="Ex: Paiement à 30 jours. RIB: …"></textarea>
+            </div>
+            <div class="totals-box">
+              <div class="trow"><span>Sous-total HT</span><strong id="t-ht">0,00 MAD</strong></div>
+              <div class="trow"><span id="tva-lbl">TVA (20%)</span><strong id="t-tva">0,00 MAD</strong></div>
+              <div class="trow ttc"><span>Total TTC</span><strong id="t-ttc">0,00 MAD</strong></div>
+              <div class="t-words" id="t-words">Zéro dirham</div>
+            </div>
+          </div>
+
+          <div class="paper-sign-row">
+            <div class="sign-box">Signature &amp; Cachet</div>
+            <div class="paper-brand"><span id="paper-doc-type">Facture conforme</span> générée sur <strong>IceMar</strong></div>
+          </div>
+        </div><!-- /paper -->
+        </div><!-- /invoice-workbench -->
+      </div>
+    </div>
+
+    <!-- NUMBER TO WORDS PAGE -->
+    <div id="page-words" class="page">
+      <section class="tool-page">
+        <div class="tool-head">
+          <div>
+            <span class="tool-eyebrow">Documents commerciaux</span>
+            <h2>Chiffres en Lettres</h2>
+            <p>Convertissez un montant en texte pour vos factures, reçus, chèques et documents administratifs.</p>
+          </div>
+          <div class="tool-head-actions">
+            <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+            <div class="tool-note">MAD · EUR · USD</div>
+          </div>
+        </div>
+        <div class="tool-grid two">
+          <div class="tool-card form-stack">
+            <label class="tool-label" for="words-amount">Montant</label>
+            <input id="words-amount" class="tool-input" type="number" min="0" step="0.01" value="1250" oninput="convertWordsTool()"/>
+            <label class="tool-label" for="words-currency">Devise</label>
+            <select id="words-currency" class="tool-input" onchange="convertWordsTool()">
+              <option value="MAD">MAD</option>
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div class="tool-card result-card words-output">
+            <div class="result-label">Montant en lettres</div>
+            <strong id="words-result">Mille deux cent cinquante dirhams</strong>
+            <button class="tool-secondary" onclick="copyWordsResult()">Copier le texte</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- COMPANY TOOLS PAGE -->
+    <div id="page-tools" class="page">
+      <section class="tool-page">
+        <div class="tool-head">
+          <div>
+            <span class="tool-eyebrow">Centre opérationnel</span>
+            <h2>Outils Société</h2>
+            <p>Un espace pour les calculs rapides et les contrôles que les petites entreprises utilisent tous les jours.</p>
+          </div>
+          <div class="tool-head-actions">
+            <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+            <div class="tool-note">Plus de modules à ajouter</div>
+          </div>
+        </div>
+        <div class="tool-grid three">
+          <div class="tool-card mini-tool">
+            <div class="mini-code">TVA</div>
+            <h3>Calcul TVA</h3>
+            <input id="tva-base" class="tool-input" type="number" value="1000" oninput="calcTvaTool()"/>
+            <select id="tva-rate-tool" class="tool-input" onchange="calcTvaTool()">
+              <option value="20">20%</option><option value="14">14%</option><option value="10">10%</option><option value="7">7%</option><option value="0">0%</option>
+            </select>
+            <div class="mini-result" id="tva-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">MRG</div>
+            <h3>Marge commerciale</h3>
+            <input id="margin-cost" class="tool-input" type="number" value="700" oninput="calcMarginTool()" placeholder="Coût"/>
+            <input id="margin-sale" class="tool-input" type="number" value="1000" oninput="calcMarginTool()" placeholder="Prix de vente"/>
+            <div class="mini-result" id="margin-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">ECH</div>
+            <h3>Date d'échéance</h3>
+            <input id="due-start" class="tool-input" type="date" onchange="calcDueDateTool()"/>
+            <input id="due-days" class="tool-input" type="number" value="30" oninput="calcDueDateTool()"/>
+            <div class="mini-result" id="due-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">DOC</div>
+            <h3>Checklist client</h3>
+            <p>ICE, RC, IF, adresse officielle, téléphone, email, bon de commande, conditions de paiement.</p>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">REL</div>
+            <h3>Relance paiement</h3>
+            <p>Préparez une relance claire avec numéro de facture, date d'échéance, montant TTC et mode de paiement.</p>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">DEV</div>
+            <h3>Devis et facture</h3>
+            <p>Utilisez le générateur de facture comme base pour structurer vos documents de vente.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="page-about" class="page">
+      <section class="info-page">
+        <div class="info-head">
+          <span class="tool-eyebrow">Présentation</span>
+          <h2>À Propos</h2>
+          <p>IceMar est une plateforme pratique pour rechercher des entreprises marocaines, vérifier des identifiants et préparer des documents commerciaux simples.</p>
+          <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+        </div>
+        <div class="info-card">
+          <h3>Notre objectif</h3>
+          <p>Centraliser les outils dont une entreprise a besoin au quotidien : recherche par nom ou ICE, génération de facture, conversion des montants en lettres, simulation salariale et calculs rapides.</p>
+          <h3>Données affichées</h3>
+          <p>Les informations sont fournies à titre indicatif et peuvent provenir de données locales ou de sources publiques accessibles en ligne. Elles doivent être vérifiées auprès des organismes officiels avant toute décision importante.</p>
+          <h3>Vision produit</h3>
+          <p>Construire un espace clair, rapide et mobile-friendly pour les entrepreneurs, comptables, freelances et petites sociétés au Maroc.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- FAQ PAGE -->
+    <div id="page-faq" class="page">
+      <section class="info-page">
+        <div class="info-head">
+          <span class="tool-eyebrow">Aide</span>
+          <h2>Questions Fréquentes</h2>
+          <p>Les réponses aux questions les plus courantes sur la recherche, les outils et l'utilisation des données.</p>
+          <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+        </div>
+        <div class="faq-list">
+          <details open><summary>Est-ce que les données sont officielles ?</summary><p>Les données sont affichées à titre indicatif. Pour un usage juridique, fiscal ou administratif, vérifiez toujours auprès des sources officielles compétentes.</p></details>
+          <details><summary>Pourquoi une entreprise ne s'affiche pas par ICE ?</summary><p>Certaines sources ne permettent pas toujours la recherche directe par ICE. Dans ce cas, essayez une recherche par nom de société.</p></details>
+          <details><summary>Puis-je utiliser les informations dans une facture ?</summary><p>Oui, la plateforme aide à remplir vos documents, mais vous restez responsable de vérifier l'exactitude des informations avant émission.</p></details>
+          <details><summary>La simulation salaire est-elle exacte ?</summary><p>Elle est indicative. Les taux et règles peuvent changer, et le calcul final doit être validé par un comptable ou un professionnel RH.</p></details>
+          <details><summary>Le service est-il gratuit ?</summary><p>La plateforme est conçue pour être gratuite. Des emplacements publicitaires peuvent être ajoutés plus tard pour financer le service.</p></details>
+        </div>
+      </section>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="page-contact" class="page">
+      <section class="info-page">
+        <div class="info-head">
+          <span class="tool-eyebrow">Support</span>
+          <h2>Contact</h2>
+          <p>Pour signaler une erreur, proposer une amélioration ou demander une collaboration, utilisez les informations ci-dessous.</p>
+          <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+        </div>
+        <div class="info-card contact-card">
+          <div><span>Email</span><strong>contact@icemar.ma</strong></div>
+          <div><span>Objet conseillé</span><strong>Erreur donnée · Suggestion · Partenariat</strong></div>
+          <div><span>Délai de réponse</span><strong>Selon disponibilité</strong></div>
+          <p>Remplacez cet email par votre adresse officielle avant la mise en ligne publique.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- TERMS PAGE -->
+    <div id="page-terms" class="page">
+      <section class="info-page">
+        <div class="info-head">
+          <span class="tool-eyebrow">Cadre d'utilisation</span>
+          <h2>Conditions d'Utilisation</h2>
+          <p>Ces conditions décrivent les règles générales d'utilisation de la plateforme.</p>
+          <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+        </div>
+        <div class="info-card legal-copy">
+          <h3>1. Acceptation</h3>
+          <p>En utilisant ce site, vous acceptez d'utiliser les informations et outils sous votre propre responsabilité.</p>
+          <h3>2. Usage autorisé</h3>
+          <p>Le site est destiné à la recherche d'informations d'entreprise, à la préparation de documents commerciaux et à des calculs indicatifs.</p>
+          <h3>3. Exactitude des informations</h3>
+          <p>Nous faisons des efforts pour afficher des informations utiles, mais aucune garantie n'est donnée sur l'exhaustivité, l'actualité ou l'exactitude des données.</p>
+          <h3>4. Responsabilité</h3>
+          <p>Le site ne remplace pas un conseil juridique, fiscal, comptable ou administratif. Toute décision importante doit être validée auprès d'un professionnel ou d'une source officielle.</p>
+          <h3>5. Disponibilité</h3>
+          <p>Le service peut évoluer, être interrompu ou modifié à tout moment pour maintenance, amélioration ou contrainte technique.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- PRIVACY PAGE -->
+    <div id="page-privacy" class="page">
+      <section class="info-page">
+        <div class="info-head">
+          <span class="tool-eyebrow">Données personnelles</span>
+          <h2>Politique de Confidentialité</h2>
+          <p>Cette page explique les principes de confidentialité prévus pour la plateforme.</p>
+          <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
+        </div>
+        <div class="info-card legal-copy">
+          <h3>Données saisies</h3>
+          <p>Les recherches, montants et informations saisies dans les outils servent à fournir la fonctionnalité demandée. Certaines préférences ou informations de facture peuvent être conservées localement dans votre navigateur.</p>
+          <h3>Stockage local</h3>
+          <p>Le site peut utiliser le stockage local du navigateur pour améliorer l'expérience, par exemple conserver des informations de facture ou des résultats déjà consultés.</p>
+          <h3>Publicité</h3>
+          <p>Des emplacements publicitaires peuvent être ajoutés ultérieurement. Si des régies publicitaires sont intégrées, elles peuvent utiliser leurs propres technologies de mesure ou de personnalisation.</p>
+          <h3>Partage</h3>
+          <p>Nous ne vendons pas volontairement les données saisies dans les outils. Les requêtes de recherche peuvent toutefois être nécessaires pour interroger des sources externes lorsque la recherche live est utilisée.</p>
+          <h3>Contact confidentialité</h3>
+          <p>Pour toute demande liée à la confidentialité, contactez l'adresse indiquée sur la page Contact après remplacement par votre email officiel.</p>
+        </div>
+      </section>
+    </div>
+
+  </main>
+</div><!-- /shell -->
+
+<!-- COMPANY DETAIL MODAL -->
+<div id="modal" class="modal-bg" onclick="if(event.target===this)closeModal()" style="display:none">
+  <div class="modal-card">
+    <button class="modal-x" onclick="closeModal()">Fermer</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" style="opacity:0;pointer-events:none"></div>
+
+<script src="data.js"></script>
+<script src="scraped_data.js"></script>
+<script>
+// Merge scraped data into main DB
+if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
+  const maxId=DB.reduce((m,c)=>Math.max(m,c.id),0);
+  SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>

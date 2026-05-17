@@ -1,0 +1,15 @@
+{
+  "name": "icemar",
+  "version": "1.0.0",
+  "description": "Recherche ICE, facture conforme et outils société pour le Maroc.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "scrape": "node scraper.js",
+    "test": "echo \"No automated tests configured\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
