@@ -357,6 +357,34 @@ const requestHandler = async (req, res) => {
   }
 
   // ── API: Search companies on charika.ma ──
+// --- IceMaroc Search ---
+async function searchIcemaroc(query) {
+  try {
+    const url = `https://www.icemaroc.com/api/search.php?query=${encodeURIComponent(query)}`;
+    const text = await fetchUrl(url, { headers: { 'Referer': 'https://www.icemaroc.com/' } });
+    const data = JSON.parse(text);
+    if (!Array.isArray(data)) return [];
+    
+    return data.map(item => ({
+      name: decodeHtml(item.raison_sociale || ''),
+      type: decodeHtml(item.forme || ''),
+      ice: item.ice || '',
+      rc: item.num_rc ? `${item.num_rc} (${decodeHtml(item.ville_rc || '')})` : '',
+      date: item.dateCreation || '',
+      cap: formatCapital(item.capital),
+      act: decodeHtml(item.activite || ''),
+      statut: (item.statut || '').toUpperCase() === 'EN ACTIVITE' ? 'Actif' : 'Dissous',
+      ville: decodeHtml(item.ville_rc || ''),
+      url: '',
+      slug: ''
+    }));
+  } catch (err) {
+    console.error('IceMaroc error:', err);
+    return [];
+  }
+}
+
+  // Handle incoming HTTP requests
   if (url.pathname === '/api/search') {
     const q = url.searchParams.get('q');
     const mode = url.searchParams.get('mode') || 'nom';
@@ -366,8 +394,34 @@ const requestHandler = async (req, res) => {
     }
 
     try {
-      console.log(`🔍 Searching charika.ma (${mode}): "${q}"`);
-      let results = await searchCharikaAutocomplete(q);
+      console.log(`🔍 Searching APIs (${mode}): "${q}"`);
+      const [charikaResults, iceMarocResults] = await Promise.all([
+        searchCharikaAutocomplete(q).catch(() => []),
+        searchIcemaroc(q).catch(() => [])
+      ]);
+
+      let results = [];
+      const seen = new Set();
+      const normalize = name => name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      [...charikaResults, ...iceMarocResults].forEach(c => {
+        if (!c.name) return;
+        const key = normalize(c.name);
+        if (!seen.has(key)) {
+          seen.add(key);
+          results.push(c);
+        } else {
+          // Merge rich data (like ICE) from IceMaroc into Charika result
+          const existing = results.find(r => normalize(r.name) === key);
+          if (existing) {
+            existing.ice = existing.ice || c.ice || '';
+            existing.rc = existing.rc || c.rc || '';
+            existing.date = existing.date || c.date || '';
+            existing.cap = existing.cap || c.cap || '';
+          }
+        }
+      });
+
       rememberCompanies(results);
 
       if (mode === 'ice') {
@@ -418,6 +472,10 @@ const requestHandler = async (req, res) => {
       const companyUrl = directUrl || `https://www.charika.ma/societe-${slug}`;
       console.log(`🏢 Fetching: ${directUrl ? companyUrl : slug}`);
       const html = await fetchUrl(companyUrl);
+      if (url.searchParams.get('debug') === '1') {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(html);
+      }
       const company = parseCompanyDetail(html);
       rememberCompanies([company]);
       console.log(`   → ${company.name} | ${company.tel || 'no phone'} | ${company.email || 'no email'}`);
