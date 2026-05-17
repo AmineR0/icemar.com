@@ -430,11 +430,11 @@ const server = http.createServer(async (req, res) => {
 });
 
 // Try multiple ports
-const PORTS = [3000, 8080, 8888, 9000, 5500];
+const PORTS = process.env.PORT ? [process.env.PORT] : [3000, 8080, 8888, 9000, 5500];
 function tryListen(i) {
   if (i >= PORTS.length) { console.error('❌ Could not bind to any port.'); process.exit(1); }
   const port = PORTS[i];
-  server.listen(port, '127.0.0.1', () => {
+  server.listen(port, '0.0.0.0', () => {
     console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║  IceMar — Server Running                              ║
