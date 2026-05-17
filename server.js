@@ -194,9 +194,7 @@ async function searchCharikaAutocomplete(query) {
     const legalType = decodeHtml(company.formeJuridique || '');
     const city = decodeHtml(company.ville || company.province || '');
     const address = decodeHtml(company.adresse || '');
-    const activity =
-      decodeHtml(company.activite || company.objetSocial || '')
-        .replace(/\s*-\s*(Autres|Commerce|Conseil|Entretien).*/i, match => match.startsWith(' - ') ? '' : match);
+    const activity = decodeHtml(company.activite || company.objetSocial || '');
 
     return {
       name: decodeHtml(company.denomination || ''),

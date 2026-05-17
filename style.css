@@ -34,7 +34,7 @@ button{appearance:none}
 .sidebar::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 12%,rgba(20,184,166,.22),transparent 28%),linear-gradient(135deg,rgba(200,135,43,.08),transparent 44%);pointer-events:none}
 .sb-top,.sb-foot{position:relative;z-index:1}
 .sb-top{padding:26px}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.brand{display:flex;align-items:center;justify-content:center;width:100%;margin:20px 0 40px 0;gap:12px}
 .brand-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand-2),var(--brand));box-shadow:0 16px 36px rgba(20,184,166,.28)}
 .brand-text{font-family:var(--display);font-size:1.25rem;font-weight:700;letter-spacing:-.04em;color:#fff}
 .mobile-menu-btn,.mobile-menu{display:none}
@@ -349,7 +349,7 @@ button{appearance:none}
   .shell{display:block;height:auto;min-height:100vh;overflow:visible}
   .sidebar{min-height:auto;overflow:visible;border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}
   .sb-top{padding:12px 18px}
-  .brand{display:flex;margin-bottom:0}
+  .brand{display:flex;justify-content:flex-start;width:auto;margin:0;gap:12px}
   .mobile-menu-btn{position:absolute;top:15px;right:18px;z-index:3;display:grid;grid-template-columns:18px auto;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;padding:9px 12px;font-weight:950}
   .mobile-menu-btn span{display:block;width:18px;height:2px;border-radius:999px;background:#fff;grid-column:1}
   .mobile-menu-btn strong{grid-column:2;grid-row:1 / span 3;font-size:.78rem}
