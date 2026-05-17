@@ -317,8 +317,8 @@ function parseCompanyDetail(html) {
 }
 
 // ─── HTTP Server ──────────────────────────────────────────────
-const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, `http://localhost:${PORT}`);
+const requestHandler = async (req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORTS[0]}`);
 
   // ── API: Server health check ──
   if (url.pathname === '/api/health') {
@@ -382,7 +382,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/company') {
     const slug = url.searchParams.get('slug');
     const directUrl = url.searchParams.get('url');
-    if (!slug && !directUrl) {
+    if (!slug && directUrl === null) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: 'Missing slug or url parameter' }));
     }
@@ -427,15 +427,18 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404);
     res.end('Not found');
   }
-});
+};
 
-// Try multiple ports
 const PORTS = process.env.PORT ? [process.env.PORT] : [3000, 8080, 8888, 9000, 5500];
-function tryListen(i) {
-  if (i >= PORTS.length) { console.error('❌ Could not bind to any port.'); process.exit(1); }
-  const port = PORTS[i];
-  server.listen(port, '0.0.0.0', () => {
-    console.log(`
+
+// Only start the server if run directly (local)
+if (require.main === module) {
+  const server = http.createServer(requestHandler);
+  function tryListen(i) {
+    if (i >= PORTS.length) { console.error('❌ Could not bind to any port.'); process.exit(1); }
+    const port = PORTS[i];
+    server.listen(port, '0.0.0.0', () => {
+      console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║  IceMar — Server Running                              ║
 ║                                                       ║
@@ -447,13 +450,17 @@ function tryListen(i) {
 ║                                                       ║
 ║  Press Ctrl+C to stop                                 ║
 ╚═══════════════════════════════════════════════════════╝
-    `);
-  }).on('error', (err) => {
-    if (err.code === 'EADDRINUSE' || err.code === 'EPERM' || err.code === 'EACCES') {
-      console.log(`⚠️  Port ${port} unavailable, trying next...`);
-      server.removeAllListeners('error');
-      tryListen(i + 1);
-    } else { throw err; }
-  });
+      `);
+    }).on('error', (err) => {
+      if (err.code === 'EADDRINUSE' || err.code === 'EPERM' || err.code === 'EACCES') {
+        console.log(`⚠️  Port ${port} unavailable, trying next...`);
+        server.removeAllListeners('error');
+        tryListen(i + 1);
+      } else { throw err; }
+    });
+  }
+  tryListen(0);
 }
-tryListen(0);
+
+// Export for Vercel
+module.exports = requestHandler;
