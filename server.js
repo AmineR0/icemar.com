@@ -406,13 +406,15 @@ async function searchIcemaroc(query) {
 
       [...charikaResults, ...iceMarocResults].forEach(c => {
         if (!c.name) return;
-        const key = normalize(c.name);
+        // Use name + ville as the key to avoid merging different branches/companies with the same name
+        const key = normalize(c.name) + '-' + normalize(c.ville || '');
+        
         if (!seen.has(key)) {
           seen.add(key);
           results.push(c);
         } else {
           // Merge rich data (like ICE) from IceMaroc into Charika result
-          const existing = results.find(r => normalize(r.name) === key);
+          const existing = results.find(r => (normalize(r.name) + '-' + normalize(r.ville || '')) === key);
           if (existing) {
             existing.ice = existing.ice || c.ice || '';
             existing.rc = existing.rc || c.rc || '';
@@ -421,6 +423,9 @@ async function searchIcemaroc(query) {
           }
         }
       });
+
+      // Also append any leftover charika/icemaroc results that might have slightly different names but share the same ICE
+      // Actually, name+ville is enough to show all distinct branches!
 
       rememberCompanies(results);
 

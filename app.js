@@ -208,7 +208,15 @@ function isSameCompany(a,b){
   const ak=normalizeCompanyKey(a.name);
   const bk=normalizeCompanyKey(b.name);
   if(!ak||!bk)return false;
-  return ak===bk||ak.includes(bk)||bk.includes(ak);
+  
+  const nameMatch = ak===bk||ak.includes(bk)||bk.includes(ak);
+  if (nameMatch) {
+    const vA = (a.ville || '').toLowerCase().trim();
+    const vB = (b.ville || '').toLowerCase().trim();
+    if (vA && vB && vA !== vB) return false;
+    return true;
+  }
+  return false;
 }
 
 function mergeCompanyData(primary,secondary){
