@@ -1,0 +1,10 @@
+{
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/search", "destination": "/api/search" },
+    { "source": "/api/company", "destination": "/api/company" }
+  ]
+}
