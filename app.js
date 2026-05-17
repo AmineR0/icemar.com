@@ -129,11 +129,11 @@ async function go(){
           id:90000+i,
           name:c.name,
           type:c.type||'',
-          ice:c.ice||'',if_:'',rc:c.rc||'',pat:'',cap:c.cap||'',
+          ice:c.ice||'',if_:c.if_||'',rc:c.rc||'',pat:c.pat||'',cap:c.cap||'',
           addr:c.addr||'',
           ville:c.ville||'',
           act:c.act||'',
-          date:'',
+          date:c.date||'',
           statut:c.statut||'Actif',
           tel:c.tel||'',
           fax:c.fax||'',
@@ -381,6 +381,7 @@ function showLiveModal(c){
       ${c.if_?`<div class="mo-field"><div class="mo-fl">IF</div><div class="mo-fv">${c.if_}</div></div>`:''}
       ${c.rc?`<div class="mo-field"><div class="mo-fl">RC</div><div class="mo-fv">${c.rc}</div></div>`:''}
       ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
+      ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${c.date}</div></div>`:''}
       ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
       ${c.tel?`<div class="mo-field"><div class="mo-fl">Téléphone</div><div class="mo-fv">${c.tel}</div></div>`:''}
       ${c.email?`<div class="mo-field"><div class="mo-fl">Email</div><div class="mo-fv">${c.email}</div></div>`:''}

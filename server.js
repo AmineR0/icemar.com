@@ -206,6 +206,9 @@ async function searchCharikaAutocomplete(query) {
       url: buildCharikaUrl(company),
       type: legalType,
       ice: company.ice || '',
+      if_: company.identifiantFiscal || company.if || '',
+      pat: company.patente || company.taxeProfessionnelle || '',
+      date: company.dateCreation || company.anneeCreation || '',
       rc: company.rc ? `${company.rc}${company.nomTribunal ? ` (${decodeHtml(company.nomTribunal)})` : ''}` : '',
       addr: address,
       ville: city,
@@ -309,20 +312,31 @@ function parseCompanyDetail(html) {
     if (!c.ville && addressText.includes(city.toLowerCase())) { c.ville = city; break; }
   }
 
+  // --- Extract Identifiers from stripped HTML ---
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+
   // ICE
-  const iceM = html.match(/(?:ice|ICE)\s*[:=]?\s*(\d{15})/);
-  if (iceM) c.ice = iceM[1];
+  const iceM = text.match(/(?:ICE|Identifiant Commun d['’]Entreprise)\s*[:=]?\s*([\d\s]{15,20})/i);
+  if (iceM) {
+    const cleaned = iceM[1].replace(/\D/g, '');
+    if (cleaned.length === 15) c.ice = cleaned;
+  }
 
   // IF
-  const ifM = html.match(/(?:if|I\.F\.|I\.F|Identifiant Fiscal)\s*[:=]?\s*(\d{7,10})/i);
+  const ifM = text.match(/(?:IF|I\.F\.|Identifiant Fiscal)\s*[:=]?\s*(\d{7,10})/i);
   if (ifM) c.if_ = ifM[1];
 
   // RC
-  const rcM = html.match(/(?:rc|R\.C\.|R\.C|Registre de commerce)\s*[:=]?\s*([a-zA-Z0-9\s-]+)/i);
-  if (rcM) c.rc = strip(rcM[1]).substring(0, 30);
+  const rcM = text.match(/(?:RC|R\.C\.|Registre de commerce)\s*[:=]?\s*([a-zA-Z0-9\s-]+)/i);
+  if (rcM) {
+    const rcVal = strip(rcM[1]).trim();
+    if (rcVal.toLowerCase() !== 'ss' && rcVal.toLowerCase() !== 'n a') {
+      c.rc = rcVal.substring(0, 30);
+    }
+  }
 
   // Patente
-  const patM = html.match(/(?:patente|Taxe professionnelle)\s*[:=]?\s*(\d{8,15})/i);
+  const patM = text.match(/(?:Patente|Taxe professionnelle)\s*[:=]?\s*(\d{8,15})/i);
   if (patM) c.pat = patM[1];
 
   return c;
