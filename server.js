@@ -97,6 +97,43 @@ function companyCacheKey(company = {}) {
   return name ? `name:${name}` : '';
 }
 
+function normalizeCompanyName(value = '') {
+  return decodeHtml(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\b(ste|societe|sarl|sa|au|snc|maroc|ma)\b/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function sameCompany(a = {}, b = {}) {
+  const aIce = normalizeIce(a.ice);
+  const bIce = normalizeIce(b.ice);
+  if (aIce && bIce) return aIce === bIce;
+
+  const aName = normalizeCompanyName(a.name);
+  const bName = normalizeCompanyName(b.name);
+  if (!aName || !bName) return false;
+
+  const nameMatch = aName === bName || aName.includes(bName) || bName.includes(aName);
+  if (!nameMatch) return false;
+
+  const aCity = normalizeCompanyName(a.ville);
+  const bCity = normalizeCompanyName(b.ville);
+  return !aCity || !bCity || aCity === bCity;
+}
+
+function mergeCompanyRecords(primary = {}, secondary = {}) {
+  const merged = { ...secondary, ...primary };
+  ['type', 'ice', 'if_', 'rc', 'pat', 'date', 'cap', 'act', 'addr', 'ville', 'url', 'slug', 'tel', 'fax', 'email', 'website', 'statut']
+    .forEach(key => {
+      merged[key] = primary[key] || secondary[key] || '';
+    });
+  merged.date = formatCompanyDate(merged.date);
+  return merged;
+}
+
 function rememberCompanies(companies = []) {
   companies.forEach(company => {
     const key = companyCacheKey(company);
@@ -161,6 +198,28 @@ function formatCapital(value) {
   return `${amount.toLocaleString('fr-FR')} DHS`;
 }
 
+function formatCompanyDate(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const clean = raw.replace(/[T\s].*$/, '').replace(/\./g, '/').replace(/-/g, '/');
+  let m = clean.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (m) return `${m[3].padStart(2, '0')}/${m[2].padStart(2, '0')}/${m[1]}`;
+  m = clean.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return `${m[1].padStart(2, '0')}/${m[2].padStart(2, '0')}/${m[3]}`;
+  m = clean.match(/^(\d{4})\/(\d{1,2})$/);
+  if (m) return `${m[2].padStart(2, '0')}/${m[1]}`;
+  m = clean.match(/^(\d{1,2})\/(\d{4})$/);
+  if (m) return `${m[1].padStart(2, '0')}/${m[2]}`;
+  m = clean.match(/^(\d{4})$/);
+  if (m) return m[1];
+  const parsed = Date.parse(raw);
+  if (!Number.isNaN(parsed)) {
+    const date = new Date(parsed);
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  }
+  return raw;
+}
+
 function buildCharikaUrl(company = {}) {
   if (company.url) return company.url;
   if (company.enseigne && company.idBil) {
@@ -207,7 +266,7 @@ async function searchCharikaAutocomplete(query) {
       ice: company.ice || '',
       if_: company.identifiantFiscal || company.if || '',
       pat: company.patente || company.taxeProfessionnelle || '',
-      date: company.dateCreation || company.anneeCreation || '',
+      date: formatCompanyDate(company.dateCreation || company.anneeCreation || ''),
       rc: company.rc ? `${company.rc}${company.nomTribunal ? ` (${decodeHtml(company.nomTribunal)})` : ''}` : '',
       addr: address,
       ville: city,
@@ -368,7 +427,7 @@ async function searchIcemaroc(query) {
       type: decodeHtml(item.forme || ''),
       ice: item.ice || '',
       rc: item.num_rc ? `${item.num_rc} (${decodeHtml(item.ville_rc || '')})` : '',
-      date: item.dateCreation || '',
+      date: formatCompanyDate(item.dateCreation || ''),
       cap: formatCapital(item.capital),
       act: decodeHtml(item.activite || ''),
       statut: (item.statut || '').toUpperCase() === 'EN ACTIVITE' ? 'Actif' : 'Dissous',
@@ -399,31 +458,25 @@ async function searchIcemaroc(query) {
       ]);
 
       let results = [];
-      const seen = new Set();
-      const normalize = name => name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const normalize = name => normalizeCompanyName(name).replace(/\s+/g, '');
 
-      [...charikaResults, ...iceMarocResults].forEach(c => {
+      [...charikaResults, ...iceMarocResults].forEach(rawCompany => {
+        const c = { ...rawCompany, date: formatCompanyDate(rawCompany.date || '') };
         if (!c.name) return;
-        // Use name + ville as the key to avoid merging different branches/companies with the same name
-        const key = normalize(c.name) + '-' + normalize(c.ville || '');
-        
-        if (!seen.has(key)) {
-          seen.add(key);
-          results.push(c);
-        } else {
-          // Merge rich data (like ICE) from IceMaroc into Charika result
-          const existing = results.find(r => (normalize(r.name) + '-' + normalize(r.ville || '')) === key);
-          if (existing) {
-            existing.ice = existing.ice || c.ice || '';
-            existing.rc = existing.rc || c.rc || '';
-            existing.date = existing.date || c.date || '';
-            existing.cap = existing.cap || c.cap || '';
-          }
-        }
-      });
+        const existingIndex = results.findIndex(existing => sameCompany(existing, c));
 
-      // Also append any leftover charika/icemaroc results that might have slightly different names but share the same ICE
-      // Actually, name+ville is enough to show all distinct branches!
+        if (existingIndex === -1) {
+          results.push(c);
+          return;
+        }
+
+        const existing = results[existingIndex];
+        const incomingHasIce = Boolean(normalizeIce(c.ice));
+        const existingHasIce = Boolean(normalizeIce(existing.ice));
+        results[existingIndex] = incomingHasIce && !existingHasIce
+          ? mergeCompanyRecords(c, existing)
+          : mergeCompanyRecords(existing, c);
+      });
 
       rememberCompanies(results);
 

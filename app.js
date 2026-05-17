@@ -3,6 +3,7 @@ let searchMode='nom';
 let isLiveAvailable=false; // true when server.js is running
 let lastLiveResults=new Map();
 const LIVE_CACHE_KEY='icm_live_company_cache_v1';
+const SEARCH_STATE_KEY='icm_search_state_v1';
 
 // Check if live search server is available
 async function checkLiveSearch(){
@@ -20,7 +21,7 @@ async function checkLiveSearch(){
 }
 
 // Init
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('db-count').textContent=DB.length.toLocaleString('fr-FR');
   const t=new Date().toISOString().split('T')[0];
   const d=new Date(); d.setDate(d.getDate()+30);
@@ -32,16 +33,20 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('inv-num').addEventListener('input',syncNum);
   syncDocType();
   initBusinessTools();
-  checkLiveSearch();
+  await checkLiveSearch();
+  restoreRoute();
 });
 
 // Pages
-function showPage(p){
+function showPage(p,opts={}){
+  const updateUrl=opts.updateUrl!==false;
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.sbn').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  document.getElementById('sbn-'+p).classList.add('active');
+  document.getElementById('sbn-'+p)?.classList.add('active');
+  document.body.className=`is-${p}-page`;
   closeMobileMenu();
+  if(updateUrl)updateRoute(p);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -66,19 +71,79 @@ function closeMobileMenu(){
   btn?.setAttribute('aria-expanded','false');
 }
 
+function updateRoute(page){
+  const url=new URL(window.location.href);
+  if(page==='search'){
+    const q=document.getElementById('q')?.value.trim();
+    if(q){
+      url.searchParams.set('q',q);
+      url.searchParams.set('mode',searchMode);
+      url.hash='';
+    }else{
+      url.searchParams.delete('q');
+      url.searchParams.delete('mode');
+      url.hash='';
+    }
+  }else{
+    url.searchParams.delete('q');
+    url.searchParams.delete('mode');
+    url.hash=page;
+  }
+  history.replaceState(null,'',url);
+}
+
+function restoreRoute(){
+  const url=new URL(window.location.href);
+  const hash=url.hash.replace('#','');
+  const knownPages=['search','ice-check','salary','invoice','words','tools','about','faq','contact','terms','privacy'];
+  const q=url.searchParams.get('q');
+  const saved=readSearchState();
+  const mode=url.searchParams.get('mode')||saved.mode||'nom';
+  if(hash&&knownPages.includes(hash)&&hash!=='search'){
+    showPage(hash,{updateUrl:false});
+    return;
+  }
+  applySearchMode(mode,{clear:false});
+  const restoredQuery=q||'';
+  if(restoredQuery){
+    sv('q',restoredQuery);
+    go({updateUrl:false});
+  }else{
+    showPage('search',{updateUrl:false});
+  }
+}
+
+function readSearchState(){
+  try{return JSON.parse(localStorage.getItem(SEARCH_STATE_KEY)||'{}')||{};}catch{return {};}
+}
+
+function saveSearchState(q){
+  try{localStorage.setItem(SEARCH_STATE_KEY,JSON.stringify({q,mode:searchMode}));}catch{}
+}
+
 // Search mode
-function setMode(m){
+function applySearchMode(m,{clear=true}={}){
+  m=m==='ice'?'ice':'nom';
   searchMode=m;
   document.getElementById('mt-nom').classList.toggle('active',m==='nom');
   document.getElementById('mt-ice').classList.toggle('active',m==='ice');
   const inp=document.getElementById('q');
   inp.placeholder=m==='ice'?'Saisir un ICE à 15 chiffres':'Nom de société ou marque';
   inp.inputMode=m==='ice'?'numeric':'text';
-  inp.value=''; clearSearch();
+  if(clear){
+    inp.value='';
+    clearSearch();
+    updateRoute('search');
+  }
+}
+
+function setMode(m){
+  applySearchMode(m,{clear:true});
 }
 
 // Search — local DB first, then live charika.ma
-async function go(){
+async function go(opts={}){
+  const updateUrl=opts.updateUrl!==false;
   const input=document.getElementById('q');
   let raw=input.value.trim().toLowerCase();
   if(!raw) return;
@@ -87,6 +152,8 @@ async function go(){
     raw=rawDigits;
     input.value=rawDigits;
   }
+  saveSearchState(input.value.trim());
+  if(updateUrl)updateRoute('search');
   const words=raw.split(/\s+/).filter(Boolean);
   const nameTokens=searchTokens(raw);
   const liveMode=searchMode;
@@ -133,7 +200,7 @@ async function go(){
           addr:c.addr||'',
           ville:c.ville||'',
           act:c.act||'',
-          date:c.date||'',
+          date:formatCompanyDate(c.date||''),
           statut:c.statut||'Actif',
           tel:c.tel||'',
           fax:c.fax||'',
@@ -169,6 +236,28 @@ function scrollToResults(){
   const panel=document.getElementById('results-panel');
   if(!panel||panel.style.display==='none')return;
   setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function formatCompanyDate(value=''){
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  const clean=raw.replace(/[T\s].*$/,'').replace(/\./g,'/').replace(/-/g,'/');
+  let m=clean.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if(m)return `${m[3].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[1]}`;
+  m=clean.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m)return `${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}`;
+  m=clean.match(/^(\d{4})\/(\d{1,2})$/);
+  if(m)return `${m[2].padStart(2,'0')}/${m[1]}`;
+  m=clean.match(/^(\d{1,2})\/(\d{4})$/);
+  if(m)return `${m[1].padStart(2,'0')}/${m[2]}`;
+  m=clean.match(/^(\d{4})$/);
+  if(m)return m[1];
+  const parsed=Date.parse(raw);
+  if(!Number.isNaN(parsed)){
+    const date=new Date(parsed);
+    return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+  }
+  return raw;
 }
 
 function searchTokens(q=''){
@@ -317,7 +406,7 @@ async function fetchCompanyDetails(base,id){
         rc:data.rc||base.rc||'',
         if_:data.if_||base.if_||'',
         pat:data.pat||base.pat||'',
-        date:data.date||base.date||'',
+        date:formatCompanyDate(data.date||base.date||''),
         tel:data.tel||base.tel||'',
         fax:data.fax||base.fax||'',
         email:data.email||base.email||'',
@@ -340,7 +429,7 @@ async function fetchCompanyDetails(base,id){
           ${c.if_?`<div class="mo-field"><div class="mo-fl">IF</div><div class="mo-fv">${c.if_}</div></div>`:''}
           ${c.rc?`<div class="mo-field"><div class="mo-fl">RC</div><div class="mo-fv">${c.rc}</div></div>`:''}
           ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
-          ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${c.date}</div></div>`:''}
+          ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${formatCompanyDate(c.date)}</div></div>`:''}
           ${c.cap?`<div class="mo-field"><div class="mo-fl">Capital</div><div class="mo-fv">${c.cap}</div></div>`:''}
           ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
         </div>
@@ -353,7 +442,6 @@ async function fetchCompanyDetails(base,id){
           </div>`:''}
         <div class="mo-btns">
           <button class="mo-btn" onclick="closeModal()">Fermer</button>
-          <button class="mo-btn fill" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr||'')}','${esc(c.ville||'')}','${esc(c.email||'')}','${esc(c.ice||'')}','${esc(c.tel||'')}')">Utiliser comme client</button>
         </div>`;
       document.getElementById('modal').style.display='flex';
       toast('Détails chargés');
@@ -389,7 +477,7 @@ function showLiveModal(c){
       ${c.if_?`<div class="mo-field"><div class="mo-fl">IF</div><div class="mo-fv">${c.if_}</div></div>`:''}
       ${c.rc?`<div class="mo-field"><div class="mo-fl">RC</div><div class="mo-fv">${c.rc}</div></div>`:''}
       ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
-      ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${c.date}</div></div>`:''}
+      ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${formatCompanyDate(c.date)}</div></div>`:''}
       ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
       ${c.tel?`<div class="mo-field"><div class="mo-fl">Téléphone</div><div class="mo-fv">${c.tel}</div></div>`:''}
       ${c.email?`<div class="mo-field"><div class="mo-fl">Email</div><div class="mo-fv">${c.email}</div></div>`:''}
@@ -399,7 +487,6 @@ function showLiveModal(c){
     ${c.addr?`<div class="mo-field" style="margin-bottom:16px"><div class="mo-fl">Adresse</div><div class="mo-fv">${c.addr}</div></div>`:''}
     <div class="mo-btns">
       <button class="mo-btn" onclick="closeModal()">Fermer</button>
-      <button class="mo-btn fill" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr||'')}','${esc(c.ville||'')}','${esc(c.email||'')}','${esc(c.ice||'')}','${esc(c.tel||'')}')">Utiliser comme client</button>
     </div>`;
   document.getElementById('modal').style.display='flex';
 }
@@ -440,6 +527,7 @@ function renderResults(res,q){
   list.innerHTML=res.map(c=>{
     const isLive=c._live;
     const addrText = [c.addr, c.ville].filter(Boolean).join(' - ');
+    const createdAt=formatCompanyDate(c.date);
 
     return `
     <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
@@ -448,7 +536,6 @@ function renderResults(res,q){
           <div style="font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word;">${c.name}</div>
           ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
         </div>
-        <button class="ca-btn" style="background:var(--primary); color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:600; white-space:nowrap; flex: 0 1 auto;" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr)}','${esc(c.ville)}','${esc(c.email)}','${esc(c.ice)}','${esc(c.tel)}')">Utiliser pour la Facture</button>
       </div>
 
       <div style="display:grid; grid-template-columns: 1fr; gap:8px; font-size:14px; color:var(--text-light);">
@@ -462,10 +549,10 @@ function renderResults(res,q){
         
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
           ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px; word-break:break-word;">${c.rc}</span></div>` : ''}
-          ${c.ice ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all;">${c.ice}</span><button onclick="copyICE('${c.ice}')" style="background:transparent; border:none; cursor:pointer; color:var(--muted); padding:2px; display:flex; align-items:center; justify-content:center;" title="Copier l'ICE"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"></path><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect></svg></button></div></div>` : ''}
+          <div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> ${c.ice ? `<div style="display:flex; align-items:center; gap:6px;"><span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all;">${c.ice}</span><button onclick="copyICE('${c.ice}')" style="background:transparent; border:none; cursor:pointer; color:var(--muted); padding:2px; display:flex; align-items:center; justify-content:center;" title="Copier l'ICE"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"></path><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect></svg></button></div>` : `<span style="font-size:15px; color:var(--muted); font-weight:700;">Non disponible</span>`}</div>
           ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px; word-break:break-word;">${c.type}</span></div>` : ''}
           ${c.cap ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Capital</strong> <span style="font-size:15px">${c.cap}</span></div>` : ''}
-          ${c.date ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${c.date.replace(/[\sT].*/, '')}</span></div>` : ''}
+          ${createdAt ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${createdAt}</span></div>` : ''}
         </div>
       </div>
     </div>`;
@@ -529,7 +616,7 @@ async function verifyIceAndSearch(){
     const data=await r.json();
     const c=data.results&&data.results[0];
     if(c){
-      const item={id:89000,name:c.name,type:c.type||'',ice:c.ice||'',rc:c.rc||'',addr:c.addr||'',ville:c.ville||'',act:c.act||'',cap:c.cap||'',statut:c.statut||'Actif',_live:true,_url:c.url,_slug:c.slug,_source:'charika'};
+      const item={id:89000,name:c.name,type:c.type||'',ice:c.ice||'',rc:c.rc||'',addr:c.addr||'',ville:c.ville||'',act:c.act||'',date:formatCompanyDate(c.date||''),cap:c.cap||'',statut:c.statut||'Actif',_live:true,_url:c.url,_slug:c.slug,_source:'charika'};
       lastLiveResults.set(item.id,item);
       cacheCompany(item);
       box.innerHTML=`<div class="result-label">Entreprise trouvée</div><strong class="good">${item.name}</strong><p>${[item.type,item.ville,item.rc].filter(Boolean).join(' · ')}</p><button class="tool-secondary" onclick="fetchLiveDetails(${item.id})">Voir la fiche</button>`;
@@ -649,13 +736,13 @@ function openModal(id){
   document.getElementById('modal-body').innerHTML=`
     <div class="mo-name">${c.name}</div>
     ${c.type?`<div class="mo-type">${c.type}</div>`:''}
-    ${c.cap||c.date?`<div class="mo-capital">${c.cap?`Capital social : <strong>${c.cap}</strong>`:''}${c.cap&&c.date?' · ':''}${c.date?`Créée le ${c.date}`:''}</div>`:''}
+    ${c.cap||c.date?`<div class="mo-capital">${c.cap?`Capital social : <strong>${c.cap}</strong>`:''}${c.cap&&c.date?' · ':''}${c.date?`Créée le ${formatCompanyDate(c.date)}`:''}</div>`:''}
     <div class="mo-grid">
       ${c.ice?`<div class="mo-field"><div class="mo-fl">ICE</div><div class="mo-fv amber">${c.ice}</div></div>`:''}
       ${c.if_?`<div class="mo-field"><div class="mo-fl">Identifiant Fiscal (IF)</div><div class="mo-fv">${c.if_}</div></div>`:''}
       ${c.rc?`<div class="mo-field"><div class="mo-fl">Registre de Commerce</div><div class="mo-fv">${c.rc}</div></div>`:''}
       ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
-      ${c.date?`<div class="mo-field"><div class="mo-fl">Date de création</div><div class="mo-fv">${c.date}</div></div>`:''}
+      ${c.date?`<div class="mo-field"><div class="mo-fl">Date de création</div><div class="mo-fv">${formatCompanyDate(c.date)}</div></div>`:''}
       <div class="mo-field"><div class="mo-fl">État</div><div class="mo-fv ${c.statut==='Actif'?'green':'red'}">${c.statut==='Actif'?'En activité':'Dissous'}</div></div>
       ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
     </div>
@@ -663,7 +750,6 @@ function openModal(id){
     ${c.addr||c.ville?`<div class="mo-field" style="margin-bottom:16px"><div class="mo-fl">Adresse officielle</div><div class="mo-fv">${[c.addr,c.ville].filter(Boolean).join(', ')} - Maroc</div></div>`:''}
     <div class="mo-btns">
       <button class="mo-btn" onclick="closeModal()">Fermer</button>
-      <button class="mo-btn fill" onclick="useClient(${c.id})">Utiliser comme client</button>
     </div>`;
   document.getElementById('modal').style.display='flex';
 }
