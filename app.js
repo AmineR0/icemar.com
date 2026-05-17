@@ -307,6 +307,9 @@ async function fetchCompanyDetails(base,id){
         ville:base.ville||data.ville||'',
         ice:data.ice||base.ice||'',
         rc:data.rc||base.rc||'',
+        if_:data.if_||base.if_||'',
+        pat:data.pat||base.pat||'',
+        date:data.date||base.date||'',
         tel:data.tel||base.tel||'',
         fax:data.fax||base.fax||'',
         email:data.email||base.email||'',
@@ -326,7 +329,10 @@ async function fetchCompanyDetails(base,id){
           ${c.email?`<div class="mo-field"><div class="mo-fl">Email</div><div class="mo-fv">${c.email}</div></div>`:''}
           ${c.website?`<div class="mo-field"><div class="mo-fl">Site web</div><div class="mo-fv"><a href="http://${c.website}" target="_blank">${c.website}</a></div></div>`:''}
           ${c.ice?`<div class="mo-field"><div class="mo-fl">ICE</div><div class="mo-fv amber">${c.ice}</div></div>`:''}
+          ${c.if_?`<div class="mo-field"><div class="mo-fl">IF</div><div class="mo-fv">${c.if_}</div></div>`:''}
           ${c.rc?`<div class="mo-field"><div class="mo-fl">RC</div><div class="mo-fv">${c.rc}</div></div>`:''}
+          ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
+          ${c.date?`<div class="mo-field"><div class="mo-fl">Création</div><div class="mo-fv">${c.date}</div></div>`:''}
           ${c.cap?`<div class="mo-field"><div class="mo-fl">Capital</div><div class="mo-fv">${c.cap}</div></div>`:''}
           ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
         </div>
@@ -372,7 +378,9 @@ function showLiveModal(c){
     ${c.type?`<div class="mo-type">${c.type}</div>`:''}
     <div class="mo-grid">
       ${c.ice?`<div class="mo-field"><div class="mo-fl">ICE</div><div class="mo-fv amber">${c.ice}</div></div>`:''}
+      ${c.if_?`<div class="mo-field"><div class="mo-fl">IF</div><div class="mo-fv">${c.if_}</div></div>`:''}
       ${c.rc?`<div class="mo-field"><div class="mo-fl">RC</div><div class="mo-fv">${c.rc}</div></div>`:''}
+      ${c.pat?`<div class="mo-field"><div class="mo-fl">Patente</div><div class="mo-fv">${c.pat}</div></div>`:''}
       ${c.ville?`<div class="mo-field"><div class="mo-fl">Ville</div><div class="mo-fv">${c.ville}</div></div>`:''}
       ${c.tel?`<div class="mo-field"><div class="mo-fl">Téléphone</div><div class="mo-fv">${c.tel}</div></div>`:''}
       ${c.email?`<div class="mo-field"><div class="mo-fl">Email</div><div class="mo-fv">${c.email}</div></div>`:''}

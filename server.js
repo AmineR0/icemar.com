@@ -313,6 +313,18 @@ function parseCompanyDetail(html) {
   const iceM = html.match(/(?:ice|ICE)\s*[:=]?\s*(\d{15})/);
   if (iceM) c.ice = iceM[1];
 
+  // IF
+  const ifM = html.match(/(?:if|I\.F\.|I\.F|Identifiant Fiscal)\s*[:=]?\s*(\d{7,10})/i);
+  if (ifM) c.if_ = ifM[1];
+
+  // RC
+  const rcM = html.match(/(?:rc|R\.C\.|R\.C|Registre de commerce)\s*[:=]?\s*([a-zA-Z0-9\s-]+)/i);
+  if (rcM) c.rc = strip(rcM[1]).substring(0, 30);
+
+  // Patente
+  const patM = html.match(/(?:patente|Taxe professionnelle)\s*[:=]?\s*(\d{8,15})/i);
+  if (patM) c.pat = patM[1];
+
   return c;
 }
 
