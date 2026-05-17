@@ -432,60 +432,39 @@ function renderResults(res,q){
     return;
   }
   empty.style.display='none';
+  
+  function esc(str){
+    return (str||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+  }
+
   list.innerHTML=res.map(c=>{
     const isLive=c._live;
-    const hasSource=!isLive&&c.source&&String(c.source).includes('charika.ma/');
-    const detailBtn=isLive
-      ?`<button class="ca-btn" onclick="fetchLiveDetails(${c.id})">Voir détails</button>`
-      :hasSource
-        ?`<button class="ca-btn" onclick="fetchLocalSourceDetails(${c.id})">Voir détails</button>`
-        :`<button class="ca-btn" onclick="openModal(${c.id})">Voir détails</button>`;
-    const liveBadge='';
-    const nameClick=isLive
-      ?`<a class="co-name-link" href="#" onclick="fetchLiveDetails(${c.id});return false">`
-      :hasSource
-        ?`<a class="co-name-link" href="#" onclick="fetchLocalSourceDetails(${c.id});return false">`
-        :`<a class="co-name-link" href="#" onclick="openModal(${c.id});return false">`;
-    const infoRow=renderInfoRow(c);
+    const addrText = [c.addr, c.ville].filter(Boolean).join(' - ');
 
     return `
-    <div class="co-card ${isLive?'co-card-live':''}">
-      <div class="co-card-top">
+    <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
         <div>
-          ${nameClick}
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            ${c.name}
-          </a>
-          <div class="co-legal">${c.type||''}${c.cap?` · Capital : ${c.cap}`:''}</div>
+          <div style="font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px;">${c.name}</div>
+          ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${liveBadge}
-          <span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>
-        </div>
+        <button class="ca-btn" style="background:var(--primary); color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:600;" onclick="useLiveClient('${esc(c.name)}','${esc(c.addr)}','${esc(c.ville)}','${esc(c.email)}','${esc(c.ice)}','${esc(c.tel)}')">Utiliser pour la Facture</button>
       </div>
-      ${infoRow}
-      ${c.act?`<div class="co-act">Activité : ${c.act}</div>`:''}
-      ${c.addr||c.ville?`<div class="co-addr">${c.addr?c.addr+', ':''}${c.ville||''} - Maroc</div>`:''}
-      <div class="co-actions">
-        ${detailBtn}
+
+      <div style="display:grid; grid-template-columns: 1fr; gap:8px; font-size:14px; color:var(--text-light);">
+        ${c.act ? `<div><strong style="color:var(--text-main)">Activité :</strong> ${c.act}</div>` : ''}
+        ${addrText ? `<div><strong style="color:var(--text-main)">Adresse :</strong> ${addrText}</div>` : ''}
+        
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+          ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px">${c.rc}</span></div>` : ''}
+          ${c.ice ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> <span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600;">${c.ice}</span></div>` : ''}
+          ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px">${c.type}</span></div>` : ''}
+          ${c.cap ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Capital</strong> <span style="font-size:15px">${c.cap}</span></div>` : ''}
+          ${c.date ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${c.date}</span></div>` : ''}
+        </div>
       </div>
     </div>`;
   }).join('');
-}
-
-function renderInfoRow(c){
-  const cells=[
-    ['ICE',c.ice,c.ice?`<button class="copy-btn" onclick="copyICE('${c.ice}')" title="Copier">Copier</button>`:'','ice'],
-    ['IF',c.if_,'',''],
-    ['RC',c.rc,'',''],
-    ['Création',c.date,'',''],
-  ].filter(([,value])=>value);
-  if(!cells.length)return '';
-  return `<div class="co-info-row">${cells.map(([label,value,extra,klass])=>`
-    <div class="co-info-cell">
-      <div class="ci-lbl">${label}</div>
-      <div class="ci-val ${klass}">${value}${extra}</div>
-    </div>`).join('')}</div>`;
 }
 
 function clearSearch(){
