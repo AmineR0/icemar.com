@@ -110,7 +110,7 @@ button{appearance:none}
 .home-search-submit.is-loading{pointer-events:none;opacity:.88;background:var(--brand)}
 .home-search-submit.is-loading .btn-spinner{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.seo-content{margin:24px auto 0;width:min(900px,100%);text-align:left}
+.seo-content{margin:10px auto 54px;padding:0 clamp(14px,4vw,46px);width:min(1000px,100%);text-align:left}
 .seo-intro,.seo-faq{padding:20px;border:1px solid rgba(228,221,209,.9);border-radius:22px;background:rgba(255,255,255,.72);box-shadow:0 14px 34px rgba(34,44,54,.06)}
 .seo-intro h2,.seo-faq h2{margin:0 0 10px;font-size:1.35rem;line-height:1.15;letter-spacing:-.04em}
 .seo-intro p,.seo-faq p{max-width:none;margin:0;color:var(--muted);font-size:.95rem;line-height:1.75}
