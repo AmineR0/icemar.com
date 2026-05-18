@@ -678,34 +678,43 @@ function renderResults(res,q){
     const createdAt=formatCompanyDate(c.date);
     const companyPath=`/entreprise/${slugifyCompany(c.name)}`;
     const icePath=String(c.ice||'').replace(/\D/g,'');
+    const statusLabel=c.statut==='Actif'?'EN ACTIVITÉ':(c.statut?'DISSOUS':'STATUT NON DISPONIBLE');
+    const statusClass=c.statut==='Actif'?'b-actif':(c.statut?'b-dissous':'b-muted');
+    const activityText=c.act||'Activité non disponible';
 
     return `
-    <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:12px;">
-        <div style="flex: 1 1 min-content;">
-          <a href="${companyPath}" style="display:inline-block;font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word; text-decoration:none;">${c.name}</a>
-          ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
+    <article class="co-card ${isLive?'co-card-live':''}">
+      <div class="co-card-top">
+        <div class="co-heading">
+          <a class="co-name-link" href="${companyPath}" title="Voir la page entreprise ${c.name}">
+            <span class="co-icon" aria-hidden="true">ICE</span>
+            <span>${c.name}</span>
+          </a>
+          <div class="co-legal-line">
+            ${c.type?`<span>${c.type}</span>`:''}
+            ${c.ville?`<span>${c.ville}</span>`:''}
+          </div>
         </div>
+        <span class="co-badge ${statusClass}">${statusLabel}</span>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr; gap:8px; font-size:14px; color:var(--text-light);">
-        ${c.act ? `<div><strong style="color:var(--text-main)">Activité :</strong> 
-          ${c.act.length > 80 ? `
-            <span id="act-short-${c.id}">${c.act.substring(0, 80)}<span style="color:var(--primary); cursor:pointer; font-weight:700;" onclick="document.getElementById('act-short-${c.id}').style.display='none'; document.getElementById('act-full-${c.id}').style.display='inline';">...</span></span>
-            <span id="act-full-${c.id}" style="display:none;">${c.act} <span style="color:var(--primary); cursor:pointer; font-weight:700; margin-left:4px;" onclick="document.getElementById('act-full-${c.id}').style.display='none'; document.getElementById('act-short-${c.id}').style.display='inline';">Voir moins</span></span>
-          ` : `<span>${c.act}</span>`}
-        </div>` : ''}
-        ${addrText ? `<div><strong style="color:var(--text-main)">Adresse :</strong> ${addrText}</div>` : ''}
-        
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
-          ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px; word-break:break-word;">${c.rc}</span></div>` : ''}
-          <div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> ${c.ice ? `<div style="display:flex; align-items:center; gap:6px;"><a href="/ice/${icePath}" style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all; text-decoration:none;">${c.ice}</a><button onclick="copyICE('${c.ice}')" style="background:transparent; border:none; cursor:pointer; color:var(--muted); padding:2px; display:flex; align-items:center; justify-content:center;" title="Copier l'ICE"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"></path><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect></svg></button></div>` : `<span style="font-size:15px; color:var(--muted); font-weight:700;">Non disponible</span>`}</div>
-          ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px; word-break:break-word;">${c.type}</span></div>` : ''}
-          ${c.cap ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Capital</strong> <span style="font-size:15px">${c.cap}</span></div>` : ''}
-          ${createdAt ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${createdAt}</span></div>` : ''}
+      <div class="co-main-grid">
+        <div class="co-primary-info">
+          <div class="co-section-label">Activité principale</div>
+          <p class="co-act">${activityText}</p>
+          ${addrText?`<div class="co-addr"><span>Adresse</span><strong>${addrText}</strong></div>`:''}
+        </div>
+        <div class="co-info-row">
+          <div class="co-info-cell co-info-ice">
+            <div class="ci-lbl">ICE</div>
+            ${c.ice?`<div class="ci-val ice"><a href="/ice/${icePath}">${c.ice}</a><button class="copy-btn" onclick="copyICE('${c.ice}')" title="Copier l'ICE">Copier</button></div>`:'<div class="ci-val muted">Non disponible</div>'}
+          </div>
+          ${c.rc?`<div class="co-info-cell"><div class="ci-lbl">RC</div><div class="ci-val">${c.rc}</div></div>`:''}
+          ${createdAt?`<div class="co-info-cell"><div class="ci-lbl">Création</div><div class="ci-val">${createdAt}</div></div>`:''}
+          ${c.cap?`<div class="co-info-cell"><div class="ci-lbl">Capital</div><div class="ci-val">${c.cap}</div></div>`:''}
         </div>
       </div>
-    </div>`;
+    </article>`;
   }).join('');
 }
 
