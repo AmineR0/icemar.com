@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   checkLiveSearch().then(()=>{
     const q=document.getElementById('q')?.value.trim();
     if(q&&document.body.classList.contains('is-search-page')){
-      go({updateUrl:false,scroll:false});
+      go({updateUrl:false,scroll:false,background:true});
     }
   });
 });
@@ -130,7 +130,7 @@ function restoreRoute(){
   const restoredQuery=q||'';
   if(restoredQuery){
     sv('q',restoredQuery);
-    go({updateUrl:false});
+    go({updateUrl:false,scroll:false,background:true});
   }else{
     showPage('search',{updateUrl:false});
   }
@@ -179,12 +179,13 @@ function setSearchLoading(loading,labelText='Recherche...'){
 async function go(opts={}){
   const updateUrl=opts.updateUrl!==false;
   const shouldScroll=opts.scroll!==false;
+  const background=opts.background===true;
   const input=document.getElementById('q');
   let raw=input.value.trim().toLowerCase();
   if(!raw) return;
   const runId=++searchRunId;
   if(liveSearchController)liveSearchController.abort();
-  setSearchLoading(true);
+  if(!background)setSearchLoading(true);
   try{
   const rawDigits=raw.replace(/\D/g,'');
   if(searchMode==='ice'){
@@ -222,9 +223,15 @@ async function go(opts={}){
   localRes.sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
   lastLiveResults=new Map(localRes.filter(c=>c._live).map(c=>[c.id,c]));
 
-  // Show local results immediately
-  renderResults(localRes,raw);
-  if(shouldScroll)scrollToResults();
+  // Show local results immediately, except focused live searches where broad
+  // partial matches would be misleading while the exact live lookup is pending.
+  const shouldRenderLocal=localRes.length>0||!useFocusedLiveOnly;
+  if(shouldRenderLocal){
+    renderResults(localRes,raw);
+    if(shouldScroll)scrollToResults();
+  }else{
+    hideResultsWhileSearching();
+  }
 
   // 2. Live search from charika.ma (if server is running)
   if(isLiveAvailable && canSearchLive){
@@ -232,7 +239,7 @@ async function go(opts={}){
     if(controller)liveSearchController=controller;
     const timeout=controller?setTimeout(()=>controller.abort(),LIVE_SEARCH_TIMEOUT):null;
     try{
-      setSearchLoading(true,'Recherche live...');
+      if(!background)setSearchLoading(true,'Recherche live...');
       const url=`/api/search?q=${encodeURIComponent(raw)}&mode=${encodeURIComponent(liveMode)}&_=${Date.now()}`;
       const fetchOptions={
         cache:'no-store',
@@ -291,6 +298,9 @@ async function go(opts={}){
           .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
         renderResults(fallback,raw);
         if(shouldScroll)scrollToResults();
+      }else if(!shouldRenderLocal){
+        renderResults([],raw);
+        if(shouldScroll)scrollToResults();
       }
     }catch(e){
       if(e.name!=='AbortError'){
@@ -300,6 +310,9 @@ async function go(opts={}){
             .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
           renderResults(fallback,raw);
           if(shouldScroll)scrollToResults();
+        }else if(runId===searchRunId&&!shouldRenderLocal){
+          renderResults([],raw);
+          if(shouldScroll)scrollToResults();
         }
       }
     }finally{
@@ -308,7 +321,7 @@ async function go(opts={}){
     }
   }
   }finally{
-    if(runId===searchRunId)setSearchLoading(false);
+    if(runId===searchRunId&&!background)setSearchLoading(false);
   }
 }
 
@@ -316,6 +329,16 @@ function scrollToResults(){
   const panel=document.getElementById('results-panel');
   if(!panel||panel.style.display==='none')return;
   setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function hideResultsWhileSearching(){
+  const panel=document.getElementById('results-panel');
+  const list=document.getElementById('res-list');
+  const empty=document.getElementById('res-empty');
+  if(panel)panel.style.display='none';
+  if(list)list.innerHTML='';
+  if(empty)empty.style.display='none';
+  document.getElementById('empty-state').style.display='flex';
 }
 
 function formatCompanyDate(value=''){
