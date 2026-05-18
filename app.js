@@ -838,8 +838,9 @@ function calc(){
 function fmt(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function syncCompany(){
   const n=document.getElementById('s-name')?.value||'';
-  const el=document.getElementById('ph-logo-box'); if(el)el.textContent=(n[0]||'E').toUpperCase();
-  const c=document.getElementById('ph-company'); if(c)c.textContent=n||'Votre Entreprise';
+  const el=document.getElementById('ph-logo-box');
+  if(el)el.textContent=n?'Société':'ICE';
+  const c=document.getElementById('ph-company'); if(c)c.textContent=n||'Nom de votre société';
   const city=document.getElementById('s-city')?.value;
   const tel=document.getElementById('s-tel')?.value;
   const email=document.getElementById('s-email')?.value;
@@ -870,6 +871,19 @@ function clearInv(){
   sv('inv-num',`${today.getFullYear()}-001`);
   calc();syncCompany();syncNum();syncDocType();
 }
+function fitInvoiceForPrint(){
+  const paper=document.getElementById('paper');
+  if(!paper)return;
+  paper.style.removeProperty('--print-scale');
+  const a4ContentHeightPx=1046; // A4 height minus 8mm margins at 96dpi.
+  const scale=Math.min(1,Math.max(.72,a4ContentHeightPx/paper.scrollHeight));
+  paper.style.setProperty('--print-scale',scale.toFixed(3));
+}
+function resetInvoicePrintFit(){
+  document.getElementById('paper')?.style.removeProperty('--print-scale');
+}
+window.addEventListener('beforeprint',fitInvoiceForPrint);
+window.addEventListener('afterprint',resetInvoicePrintFit);
 function sv(id,v){const e=document.getElementById(id);if(e)e.value=v;}
 function sv2(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function esc(v){return String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
