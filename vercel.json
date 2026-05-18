@@ -11,6 +11,7 @@
     { "source": "/api/(.*)", "destination": "/server.js" },
     { "source": "/robots.txt", "destination": "/server.js" },
     { "source": "/sitemap.xml", "destination": "/server.js" },
+    { "source": "/googleb10a982051ac7f8e.html", "destination": "/server.js" },
     { "source": "/about", "destination": "/server.js" },
     { "source": "/faq", "destination": "/server.js" },
     { "source": "/contact", "destination": "/server.js" },
