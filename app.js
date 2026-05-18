@@ -338,7 +338,11 @@ async function go(opts={}){
 function scrollToResults(){
   const panel=document.getElementById('results-panel');
   if(!panel||panel.style.display==='none')return;
-  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  setTimeout(()=>{
+    const offset=window.innerWidth<720?72:118;
+    const top=Math.max(0,panel.getBoundingClientRect().top+window.scrollY-offset);
+    window.scrollTo({top,behavior:'smooth'});
+  },80);
 }
 
 function hideResultsWhileSearching(){
