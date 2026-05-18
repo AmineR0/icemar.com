@@ -3,15 +3,30 @@ let searchMode='nom';
 let isLiveAvailable=false; // true when server.js is running
 let lastLiveResults=new Map();
 let searchInFlight=false;
-const LIVE_CACHE_KEY='icm_live_company_cache_v1';
+let searchRunId=0;
+let liveSearchController=null;
+const LIVE_CACHE_KEY='icm_live_company_cache_v2';
+const LEGACY_LIVE_CACHE_KEYS=['icm_live_company_cache_v1'];
 const SEARCH_STATE_KEY='icm_search_state_v1';
+const LIVE_CACHE_MAX_AGE=1000*60*60*24*7;
+const LIVE_HEALTH_TIMEOUT=2500;
+const LIVE_SEARCH_TIMEOUT=18000;
 
 // Check if live search server is available
 async function checkLiveSearch(){
+  let controller=null;
+  let timeout=null;
   try{
-    const r=await fetch('/api/health',{signal:AbortSignal.timeout(1200)});
+    const opts={cache:'no-store'};
+    if(typeof AbortController!=='undefined'){
+      controller=new AbortController();
+      timeout=setTimeout(()=>controller.abort(),LIVE_HEALTH_TIMEOUT);
+      opts.signal=controller.signal;
+    }
+    const r=await fetch('/api/health',opts);
     isLiveAvailable=r.ok;
   }catch{isLiveAvailable=false;}
+  finally{if(timeout)clearTimeout(timeout);}
   const el=document.getElementById('db-count');
   if(isLiveAvailable){
     el.textContent='999 000+';
@@ -23,6 +38,7 @@ async function checkLiveSearch(){
 
 // Init
 document.addEventListener('DOMContentLoaded',async()=>{
+  clearLegacySearchCache();
   document.getElementById('db-count').textContent=DB.length.toLocaleString('fr-FR');
   const t=new Date().toISOString().split('T')[0];
   const d=new Date(); d.setDate(d.getDate()+30);
@@ -34,8 +50,13 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('inv-num').addEventListener('input',syncNum);
   syncDocType();
   initBusinessTools();
-  await checkLiveSearch();
   restoreRoute();
+  checkLiveSearch().then(()=>{
+    const q=document.getElementById('q')?.value.trim();
+    if(q&&document.body.classList.contains('is-search-page')){
+      go({updateUrl:false,scroll:false});
+    }
+  });
 });
 
 // Pages
@@ -142,7 +163,7 @@ function setMode(m){
   applySearchMode(m,{clear:true});
 }
 
-function setSearchLoading(loading){
+function setSearchLoading(loading,labelText='Recherche...'){
   searchInFlight=loading;
   const btn=document.getElementById('search-submit');
   if(!btn)return;
@@ -150,16 +171,18 @@ function setSearchLoading(loading){
   btn.disabled=loading;
   btn.setAttribute('aria-busy',String(loading));
   const label=btn.querySelector('.btn-label');
-  if(label)label.textContent=loading?'Recherche...':'Rechercher';
+  if(label)label.textContent=loading?labelText:'Rechercher';
 }
 
 // Search — local DB first, then live charika.ma
 async function go(opts={}){
-  if(searchInFlight)return;
   const updateUrl=opts.updateUrl!==false;
+  const shouldScroll=opts.scroll!==false;
   const input=document.getElementById('q');
   let raw=input.value.trim().toLowerCase();
   if(!raw) return;
+  const runId=++searchRunId;
+  if(liveSearchController)liveSearchController.abort();
   setSearchLoading(true);
   try{
   const rawDigits=raw.replace(/\D/g,'');
@@ -172,6 +195,8 @@ async function go(opts={}){
   const words=raw.split(/\s+/).filter(Boolean);
   const nameTokens=searchTokens(raw);
   const liveMode=searchMode;
+  const canSearchLive=liveMode==='nom' ? raw.length>=2 : raw.length>=6;
+  const useFocusedLiveOnly=searchMode==='nom'&&nameTokens.length>1&&isLiveAvailable&&canSearchLive;
   const cachedResults=getCachedCompanies().map((c,i)=>({
     ...c,
     id:85000+i,
@@ -192,20 +217,39 @@ async function go(opts={}){
   const strictLocalRes=searchMode==='nom'&&nameTokens.length>1
     ? broadLocalRes.filter(c=>nameTokens.every(t=>normalizeCompanyKey(c.name).includes(t)))
     : [];
-  let localRes=dedupeResults(strictLocalRes.length?strictLocalRes:broadLocalRes);
+  let localRes=dedupeResults(strictLocalRes.length?strictLocalRes:(useFocusedLiveOnly?[]:broadLocalRes));
   localRes.sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
   lastLiveResults=new Map(localRes.filter(c=>c._live).map(c=>[c.id,c]));
 
   // Show local results immediately
   renderResults(localRes,raw);
-  scrollToResults();
+  if(shouldScroll)scrollToResults();
 
   // 2. Live search from charika.ma (if server is running)
-  const canSearchLive=liveMode==='nom' ? raw.length>=2 : raw.length>=6;
   if(isLiveAvailable && canSearchLive){
+    const controller=typeof AbortController!=='undefined'?new AbortController():null;
+    if(controller)liveSearchController=controller;
+    const timeout=controller?setTimeout(()=>controller.abort(),LIVE_SEARCH_TIMEOUT):null;
     try{
-      const r=await fetch(`/api/search?q=${encodeURIComponent(raw)}&mode=${encodeURIComponent(liveMode)}`);
+      setSearchLoading(true,'Recherche live...');
+      const url=`/api/search?q=${encodeURIComponent(raw)}&mode=${encodeURIComponent(liveMode)}&_=${Date.now()}`;
+      const fetchOptions={
+        cache:'no-store',
+        headers:{
+          'Cache-Control':'no-cache, no-store, max-age=0',
+          'Pragma':'no-cache',
+        },
+      };
+      if(controller)fetchOptions.signal=controller.signal;
+      const liveFetch=fetch(url,fetchOptions);
+      const r=controller
+        ? await liveFetch
+        : await Promise.race([
+          liveFetch,
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error('Live search timeout')),LIVE_SEARCH_TIMEOUT)),
+        ]);
       const data=await r.json();
+      if(runId!==searchRunId)return;
       if(data.results&&data.results.length>0){
         let liveResults=data.results.map((c,i)=>({
           id:90000+i,
@@ -240,14 +284,30 @@ async function go(opts={}){
           .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
         lastLiveResults=new Map(merged.filter(c=>c._live).map(c=>[c.id,c]));
         renderResults(merged,raw);
-        scrollToResults();
+        if(shouldScroll)scrollToResults();
+      }else if(useFocusedLiveOnly&&broadLocalRes.length>0){
+        const fallback=dedupeResults(broadLocalRes)
+          .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
+        renderResults(fallback,raw);
+        if(shouldScroll)scrollToResults();
       }
     }catch(e){
-      console.log('Live search unavailable:',e.message);
+      if(e.name!=='AbortError'){
+        console.log('Live search unavailable:',e.message);
+        if(runId===searchRunId&&useFocusedLiveOnly&&broadLocalRes.length>0){
+          const fallback=dedupeResults(broadLocalRes)
+            .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
+          renderResults(fallback,raw);
+          if(shouldScroll)scrollToResults();
+        }
+      }
+    }finally{
+      if(timeout)clearTimeout(timeout);
+      if(controller&&liveSearchController===controller)liveSearchController=null;
     }
   }
   }finally{
-    setSearchLoading(false);
+    if(runId===searchRunId)setSearchLoading(false);
   }
 }
 
@@ -332,7 +392,7 @@ function isSameCompany(a,b){
 
 function mergeCompanyData(primary,secondary){
   const merged={...secondary,...primary};
-  ['type','ice','if_','rc','pat','cap','addr','ville','act','date','statut','tel','fax','email','website','_slug','_url','_source']
+  ['type','ice','if_','rc','pat','cap','addr','ville','act','date','statut','tel','fax','email','website','_slug','_url','_source','_cachedAt']
     .forEach(k=>{merged[k]=primary[k]||secondary[k]||'';});
   return merged;
 }
@@ -379,16 +439,28 @@ function mergeResults(localRes,liveResults){
 function getCachedCompanies(){
   try{
     const cached=JSON.parse(localStorage.getItem(LIVE_CACHE_KEY)||'[]');
-    return Array.isArray(cached)?cached:[];
+    if(!Array.isArray(cached))return [];
+    const now=Date.now();
+    return cached.filter(c=>c._cachedAt&&now-c._cachedAt<LIVE_CACHE_MAX_AGE);
   }catch{
     return [];
   }
 }
 
+function clearLegacySearchCache(){
+  try{
+    LEGACY_LIVE_CACHE_KEYS.forEach(key=>localStorage.removeItem(key));
+  }catch{}
+}
+
 function cacheCompanies(companies=[]){
   if(!Array.isArray(companies)||!companies.length)return;
+  const now=Date.now();
+  const freshCompanies=companies
+    .filter(c=>c&&c.name)
+    .map(c=>({...c,_cachedAt:now}));
   const cached=dedupeResults(getCachedCompanies());
-  const all=dedupeResults([...cached,...companies]);
+  const all=dedupeResults([...cached,...freshCompanies]);
   const byKey=new Map();
   all.forEach(c=>{
     const key=companyCacheKey(c);
