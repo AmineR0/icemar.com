@@ -408,6 +408,17 @@ function companyCacheKey(c){
   return name?`name:${name}`:'';
 }
 
+function slugifyCompany(v=''){
+  return String(v)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/&/g,' et ')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'')
+    .substring(0,90)||'entreprise';
+}
+
 // Fetch full company details from charika.ma
 async function fetchLiveDetails(id){
   if(!isLiveAvailable)return;
@@ -568,12 +579,14 @@ function renderResults(res,q){
     const isLive=c._live;
     const addrText = [c.addr, c.ville].filter(Boolean).join(' - ');
     const createdAt=formatCompanyDate(c.date);
+    const companyPath=`/entreprise/${slugifyCompany(c.name)}`;
+    const icePath=String(c.ice||'').replace(/\D/g,'');
 
     return `
     <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:12px;">
         <div style="flex: 1 1 min-content;">
-          <div style="font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word;">${c.name}</div>
+          <a href="${companyPath}" style="display:inline-block;font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word; text-decoration:none;">${c.name}</a>
           ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
         </div>
       </div>
@@ -589,7 +602,7 @@ function renderResults(res,q){
         
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:8px; background:var(--bg-lighter); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
           ${c.rc ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">RC</strong> <span style="font-size:15px; word-break:break-word;">${c.rc}</span></div>` : ''}
-          <div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> ${c.ice ? `<div style="display:flex; align-items:center; gap:6px;"><span style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all;">${c.ice}</span><button onclick="copyICE('${c.ice}')" style="background:transparent; border:none; cursor:pointer; color:var(--muted); padding:2px; display:flex; align-items:center; justify-content:center;" title="Copier l'ICE"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"></path><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect></svg></button></div>` : `<span style="font-size:15px; color:var(--muted); font-weight:700;">Non disponible</span>`}</div>
+          <div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">ICE</strong> ${c.ice ? `<div style="display:flex; align-items:center; gap:6px;"><a href="/ice/${icePath}" style="font-size:15px; font-family:monospace; color:var(--primary); font-weight:600; word-break:break-all; text-decoration:none;">${c.ice}</a><button onclick="copyICE('${c.ice}')" style="background:transparent; border:none; cursor:pointer; color:var(--muted); padding:2px; display:flex; align-items:center; justify-content:center;" title="Copier l'ICE"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"></path><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect></svg></button></div>` : `<span style="font-size:15px; color:var(--muted); font-weight:700;">Non disponible</span>`}</div>
           ${c.type ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Forme juridique</strong> <span style="font-size:15px; word-break:break-word;">${c.type}</span></div>` : ''}
           ${c.cap ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Capital</strong> <span style="font-size:15px">${c.cap}</span></div>` : ''}
           ${createdAt ? `<div><strong style="color:var(--text-main); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Date Création</strong> <span style="font-size:15px">${createdAt}</span></div>` : ''}

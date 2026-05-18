@@ -11,10 +11,12 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 const { URLSearchParams } = require('url');
 
 const PORT = 3000;
 const STATIC_DIR = __dirname;
+const SITE_URL = (process.env.SITE_URL || 'https://icemar.com').replace(/\/$/, '');
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
 
@@ -22,6 +24,7 @@ const discoveredCompanies = new Map();
 const MIME = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
   '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon',
+  '.xml': 'application/xml', '.txt': 'text/plain',
 };
 
 // ─── Fetch external URL (GET or POST) ─────────────────────────
@@ -162,6 +165,253 @@ function dedupeCompanies(companies = []) {
     results[existingIndex] = mergeCompanyRecords(preferred, fallback);
   });
   return results;
+}
+
+function loadCompaniesFromScript(fileName, variableName) {
+  try {
+    const code = fs.readFileSync(path.join(STATIC_DIR, fileName), 'utf8');
+    const companies = vm.runInNewContext(`${code}\n${variableName};`, {});
+    return Array.isArray(companies) ? companies : [];
+  } catch (err) {
+    console.warn(`SEO data load skipped for ${fileName}: ${err.message}`);
+    return [];
+  }
+}
+
+const LOCAL_COMPANIES = dedupeCompanies([
+  ...loadCompaniesFromScript('data.js', 'DB'),
+  ...loadCompaniesFromScript('scraped_data.js', 'SCRAPED_DB'),
+]);
+
+function slugify(value = '') {
+  return decodeHtml(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' et ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 90) || 'entreprise';
+}
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function escapeXml(value = '') {
+  return escapeHtml(value).replace(/&apos;/g, '&#039;');
+}
+
+function companySlug(company = {}) {
+  return slugify(company.name);
+}
+
+function companySeoUrl(company = {}) {
+  return `${SITE_URL}/entreprise/${companySlug(company)}`;
+}
+
+function iceSeoUrl(company = {}) {
+  const ice = normalizeIce(company.ice);
+  return ice ? `${SITE_URL}/ice/${ice}` : companySeoUrl(company);
+}
+
+function findCompanyBySlug(slug = '') {
+  return LOCAL_COMPANIES.find(company => companySlug(company) === slug)
+    || LOCAL_COMPANIES.find(company => companySlug(company).startsWith(slug) || slug.startsWith(companySlug(company)));
+}
+
+function findCompanyByIce(ice = '') {
+  const needle = normalizeIce(ice);
+  return LOCAL_COMPANIES.find(company => normalizeIce(company.ice) === needle);
+}
+
+function inferCategory(company = {}) {
+  const text = `${company.name || ''} ${company.act || ''}`.toLowerCase();
+  if (/informatique|logiciel|digital|web|telecom|télécom/.test(text)) return 'informatique';
+  if (/btp|construction|b[aâ]timent|travaux|g[eé]nie civil/.test(text)) return 'btp';
+  if (/transport|logistique|douane/.test(text)) return 'transport';
+  if (/banque|cr[eé]dit|assurance|finance/.test(text)) return 'finance';
+  if (/commerce|distribution|import|export|vente/.test(text)) return 'commerce';
+  return 'entreprises';
+}
+
+const SEO_CATEGORIES = {
+  entreprises: { label: 'Entreprises marocaines', title: 'Entreprises marocaines' },
+  informatique: { label: 'Sociétés informatiques Maroc', title: 'Sociétés informatiques au Maroc' },
+  btp: { label: 'Entreprises BTP Maroc', title: 'Entreprises BTP au Maroc' },
+  transport: { label: 'Entreprises de transport Maroc', title: 'Entreprises de transport au Maroc' },
+  finance: { label: 'Banques et assurances Maroc', title: 'Entreprises finance au Maroc' },
+  commerce: { label: 'Sociétés de commerce Maroc', title: 'Sociétés de commerce au Maroc' },
+};
+
+const SEO_CITIES = ['Casablanca', 'Rabat', 'Tanger', 'Marrakech', 'Agadir', 'Fès', 'Berrechid'];
+
+function relatedCompanies(company = {}, limit = 6) {
+  const category = inferCategory(company);
+  return LOCAL_COMPANIES
+    .filter(other => other.name !== company.name && (other.ville === company.ville || inferCategory(other) === category))
+    .slice(0, limit);
+}
+
+function renderSeoLayout({ title, description, canonical, h1, lead, body = '', schema = [] }) {
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeCanonical = escapeHtml(canonical);
+  const jsonLd = JSON.stringify(Array.isArray(schema) ? schema : [schema]).replace(/</g, '\\u003c');
+  return `<!doctype html>
+<html lang="fr-MA">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${safeTitle}</title>
+<meta name="description" content="${safeDescription}"/>
+<meta name="robots" content="index,follow,max-image-preview:large"/>
+<link rel="canonical" href="${safeCanonical}"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="fr_MA"/>
+<meta property="og:site_name" content="IceMorocco"/>
+<meta property="og:title" content="${safeTitle}"/>
+<meta property="og:description" content="${safeDescription}"/>
+<meta property="og:url" content="${safeCanonical}"/>
+<meta property="og:image" content="${SITE_URL}/logo.png"/>
+<link rel="stylesheet" href="/style.css"/>
+<script type="application/ld+json">${jsonLd}</script>
+</head>
+<body class="seo-static-body">
+<main class="seo-static">
+  <nav class="seo-breadcrumb"><a href="/">Recherche ICE Maroc</a> / ${escapeHtml(h1)}</nav>
+  <header class="seo-static-head">
+    <a class="seo-logo-link" href="/"><img src="/logo.png" alt="IceMorocco" width="254" height="47"/></a>
+    <h1>${escapeHtml(h1)}</h1>
+    <p>${escapeHtml(lead)}</p>
+    <form action="/" method="get" class="seo-search-form">
+      <input name="q" placeholder="Nom société ou numéro ICE" aria-label="Recherche ICE Maroc"/>
+      <input type="hidden" name="mode" value="nom"/>
+      <button type="submit">Rechercher</button>
+    </form>
+  </header>
+  ${body}
+</main>
+</body>
+</html>`;
+}
+
+function companyCard(company = {}) {
+  const ice = normalizeIce(company.ice);
+  return `<article class="seo-card">
+    <h2><a href="/entreprise/${companySlug(company)}">${escapeHtml(company.name)}</a></h2>
+    <p>${escapeHtml([company.type, company.ville, company.rc].filter(Boolean).join(' · '))}</p>
+    ${ice ? `<a class="seo-pill" href="/ice/${ice}">ICE ${ice}</a>` : '<span class="seo-pill muted">ICE non disponible</span>'}
+  </article>`;
+}
+
+function companySchema(company = {}, canonical = companySeoUrl(company)) {
+  const ice = normalizeIce(company.ice);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: company.name,
+    url: canonical,
+    identifier: ice ? [{ '@type': 'PropertyValue', name: 'ICE', value: ice }] : undefined,
+    address: company.ville || company.addr ? {
+      '@type': 'PostalAddress',
+      streetAddress: company.addr || undefined,
+      addressLocality: company.ville || undefined,
+      addressCountry: 'MA',
+    } : undefined,
+    foundingDate: company.date || undefined,
+    legalName: company.name,
+    description: company.act || undefined,
+  };
+}
+
+function renderCompanyPage(company = {}, canonical = companySeoUrl(company)) {
+  const ice = normalizeIce(company.ice);
+  const title = `${company.name} - ICE ${ice || 'Maroc'} | Fiche entreprise`;
+  const description = `${company.name} : recherche ICE Maroc, forme juridique ${company.type || 'non disponible'}, ville ${company.ville || 'Maroc'}, RC ${company.rc || 'non disponible'}.`;
+  const rows = [
+    ['Nom société', company.name],
+    ['ICE', ice],
+    ['Ville', company.ville],
+    ['Forme juridique', company.type],
+    ['RC', company.rc],
+    ['Date création', company.date],
+    ['Activité', company.act],
+    ['Adresse', company.addr],
+  ].filter(([, value]) => value);
+  const related = relatedCompanies(company);
+  const body = `
+    <section class="seo-panel"><h2>Informations entreprise</h2><dl class="seo-dl">${rows.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl></section>
+    <section class="seo-panel"><h2>Description SEO</h2><p>${escapeHtml(company.name)} est une entreprise marocaine${company.ville ? ` basée à ${company.ville}` : ''}. Cette page permet de consulter les informations disponibles pour la recherche ICE Maroc, la vérification d'entreprise et l'identification de société.</p></section>
+    <section class="seo-panel"><h2>Liens utiles</h2><div class="seo-links">${ice ? `<a href="/ice/${ice}">Page ICE ${ice}</a>` : ''}${company.ville ? `<a href="/ville/${slugify(company.ville)}">Entreprises à ${escapeHtml(company.ville)}</a>` : ''}<a href="/categorie/${inferCategory(company)}">${escapeHtml(SEO_CATEGORIES[inferCategory(company)]?.label || 'Entreprises marocaines')}</a></div></section>
+    ${related.length ? `<section class="seo-panel"><h2>Entreprises similaires</h2><div class="seo-card-grid">${related.map(companyCard).join('')}</div></section>` : ''}`;
+  return renderSeoLayout({
+    title,
+    description,
+    canonical,
+    h1: `${company.name}${ice ? ` - ICE ${ice}` : ''}`,
+    lead: `Fiche indexable pour rechercher et vérifier cette entreprise marocaine par ICE, nom, ville et activité.`,
+    body,
+    schema: [
+      companySchema(company, canonical),
+      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Recherche ICE Maroc', item: `${SITE_URL}/` },
+        { '@type': 'ListItem', position: 2, name: company.name, item: canonical },
+      ] },
+    ],
+  });
+}
+
+function renderListingPage({ slug, title, h1, lead, description, companies }) {
+  const canonical = `${SITE_URL}/${slug}`;
+  const body = `<section class="seo-panel"><h2>Entreprises référencées</h2><div class="seo-card-grid">${companies.map(companyCard).join('')}</div></section>
+    <section class="seo-panel"><h2>Recherches populaires</h2><div class="seo-links"><a href="/top-recherches-ice">Top recherches ICE</a><a href="/ville/casablanca">Entreprises à Casablanca</a><a href="/categorie/btp">Entreprises BTP Maroc</a><a href="/categorie/informatique">Sociétés informatiques Maroc</a></div></section>`;
+  return renderSeoLayout({
+    title,
+    description,
+    canonical,
+    h1,
+    lead,
+    body,
+    schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: h1, url: canonical, description },
+  });
+}
+
+function renderRobots() {
+  return `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+}
+
+function sitemapEntry(loc, priority = '0.7') {
+  return `<url><loc>${escapeXml(loc)}</loc><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+}
+
+function renderSitemap() {
+  const urls = [
+    sitemapEntry(`${SITE_URL}/`, '1.0'),
+    sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '0.95'),
+    sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
+    sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
+    ...SEO_CITIES.map(city => sitemapEntry(`${SITE_URL}/ville/${slugify(city)}`, '0.8')),
+    ...Object.keys(SEO_CATEGORIES).map(cat => sitemapEntry(`${SITE_URL}/categorie/${cat}`, '0.8')),
+    ...LOCAL_COMPANIES.filter(company => company.name).slice(0, 500).flatMap(company => {
+      const entries = [sitemapEntry(companySeoUrl(company), '0.7')];
+      if (normalizeIce(company.ice)) entries.push(sitemapEntry(iceSeoUrl(company), '0.7'));
+      return entries;
+    }),
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('\n')}
+</urlset>`;
 }
 
 function rememberCompanies(companies = []) {
@@ -433,6 +683,107 @@ function parseCompanyDetail(html) {
 // ─── HTTP Server ──────────────────────────────────────────────
 const requestHandler = async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORTS[0]}`);
+  const pathname = decodeURIComponent(url.pathname);
+
+  // ── SEO: robots, sitemap, and crawlable landing pages ──
+  if (pathname === '/robots.txt') {
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end(renderRobots());
+  }
+
+  if (pathname === '/sitemap.xml') {
+    res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+    return res.end(renderSitemap());
+  }
+
+  if (pathname === '/recherche-ice-maroc' || pathname === '/annuaire-entreprises-marocaines') {
+    const companies = LOCAL_COMPANIES.filter(company => normalizeIce(company.ice)).slice(0, 24);
+    const html = renderListingPage({
+      slug: pathname.slice(1),
+      title: pathname === '/recherche-ice-maroc'
+        ? 'Recherche ICE Maroc - Trouver une entreprise par ICE | IceMorocco'
+        : 'Annuaire entreprises marocaines - Recherche société Maroc | IceMorocco',
+      h1: pathname === '/recherche-ice-maroc' ? 'Recherche ICE Maroc' : 'Annuaire entreprises marocaines',
+      lead: 'Consultez les entreprises marocaines par nom, numéro ICE, ville, forme juridique et activité.',
+      description: 'Moteur de recherche ICE Maroc et annuaire des entreprises marocaines pour vérifier une société par ICE, nom ou ville.',
+      companies,
+    });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(html);
+  }
+
+  if (pathname === '/top-recherches-ice') {
+    const companies = LOCAL_COMPANIES
+      .filter(company => normalizeIce(company.ice))
+      .sort((a, b) => companyCompleteness(b) - companyCompleteness(a))
+      .slice(0, 30);
+    const html = renderListingPage({
+      slug: 'top-recherches-ice',
+      title: 'Top recherches ICE Maroc - Sociétés les plus recherchées | IceMorocco',
+      h1: 'Top recherches ICE Maroc',
+      lead: 'Une sélection de recherches populaires pour trouver rapidement une société marocaine par ICE ou nom.',
+      description: 'Top recherches ICE Maroc : liste de sociétés marocaines indexables avec ICE, ville, activité et forme juridique.',
+      companies,
+    });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(html);
+  }
+
+  if (pathname.startsWith('/entreprise/')) {
+    const slug = pathname.replace('/entreprise/', '').replace(/\/$/, '');
+    const company = findCompanyBySlug(slug);
+    if (company) {
+      const html = renderCompanyPage(company, `${SITE_URL}/entreprise/${companySlug(company)}`);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(html);
+    }
+  }
+
+  if (pathname.startsWith('/ice/')) {
+    const ice = normalizeIce(pathname.replace('/ice/', ''));
+    const company = findCompanyByIce(ice);
+    if (company) {
+      const html = renderCompanyPage(company, `${SITE_URL}/ice/${normalizeIce(company.ice)}`);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(html);
+    }
+  }
+
+  if (pathname.startsWith('/ville/')) {
+    const citySlug = pathname.replace('/ville/', '').replace(/\/$/, '');
+    const city = SEO_CITIES.find(item => slugify(item) === citySlug) || citySlug.replace(/-/g, ' ');
+    const companies = LOCAL_COMPANIES
+      .filter(company => slugify(company.ville || '') === slugify(city))
+      .slice(0, 30);
+    const html = renderListingPage({
+      slug: `ville/${citySlug}`,
+      title: `Entreprises à ${city} - Recherche ICE Maroc | IceMorocco`,
+      h1: `Entreprises à ${city}`,
+      lead: `Recherchez les sociétés basées à ${city} par ICE, nom, activité ou forme juridique.`,
+      description: `Liste d'entreprises à ${city} avec recherche ICE Maroc, numéro ICE, RC, activité et forme juridique disponibles.`,
+      companies: companies.length ? companies : LOCAL_COMPANIES.filter(company => company.ville).slice(0, 12),
+    });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(html);
+  }
+
+  if (pathname.startsWith('/categorie/')) {
+    const category = pathname.replace('/categorie/', '').replace(/\/$/, '');
+    const meta = SEO_CATEGORIES[category] || { label: 'Entreprises marocaines', title: 'Entreprises marocaines' };
+    const companies = LOCAL_COMPANIES
+      .filter(company => inferCategory(company) === category)
+      .slice(0, 30);
+    const html = renderListingPage({
+      slug: `categorie/${category}`,
+      title: `${meta.label} - Recherche ICE Maroc | IceMorocco`,
+      h1: meta.title,
+      lead: `Trouvez des ${meta.label.toLowerCase()} et consultez les informations disponibles par ICE, nom et ville.`,
+      description: `${meta.label} : recherche ICE Maroc, annuaire sociétés, forme juridique, ville et activité des entreprises.`,
+      companies: companies.length ? companies : LOCAL_COMPANIES.slice(0, 12),
+    });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(html);
+  }
 
   // ── API: Server health check ──
   if (url.pathname === '/api/health') {

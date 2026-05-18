@@ -3,11 +3,62 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>IceMorocco – Recherche ICE, Facture Conforme & Outils Société</title>
-<meta name="description" content="Recherchez une entreprise marocaine par nom ou ICE, créez une facture conforme et utilisez des outils simples pour votre société."/>
+<title>Recherche ICE Maroc - Trouver une entreprise par ICE ou nom | IceMorocco</title>
+<meta name="description" content="Recherche ICE Maroc rapide et gratuite. Trouvez une entreprise marocaine par numéro ICE, nom de société, ville, RC ou activité avec IceMorocco."/>
+<meta name="robots" content="index,follow,max-image-preview:large"/>
+<meta name="author" content="IceMorocco"/>
+<link rel="canonical" href="https://icemar.com/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="fr_MA"/>
+<meta property="og:site_name" content="IceMorocco"/>
+<meta property="og:title" content="Recherche ICE Maroc - Trouver une entreprise par ICE ou nom"/>
+<meta property="og:description" content="Moteur de recherche ICE Maroc pour retrouver les informations d'une entreprise marocaine par numéro ICE ou nom de société."/>
+<meta property="og:url" content="https://icemar.com/"/>
+<meta property="og:image" content="https://icemar.com/logo.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Recherche ICE Maroc - IceMorocco"/>
+<meta name="twitter:description" content="Recherchez une société marocaine par ICE, nom, ville ou activité."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"Organization",
+      "@id":"https://icemar.com/#organization",
+      "name":"IceMorocco",
+      "url":"https://icemar.com/",
+      "logo":"https://icemar.com/logo.png",
+      "description":"Plateforme marocaine de recherche ICE et d'informations entreprises."
+    },
+    {
+      "@type":"WebSite",
+      "@id":"https://icemar.com/#website",
+      "url":"https://icemar.com/",
+      "name":"IceMorocco",
+      "inLanguage":"fr-MA",
+      "publisher":{"@id":"https://icemar.com/#organization"},
+      "potentialAction":{
+        "@type":"SearchAction",
+        "target":"https://icemar.com/?q={search_term_string}&mode=nom",
+        "query-input":"required name=search_term_string"
+      }
+    },
+    {
+      "@type":"FAQPage",
+      "@id":"https://icemar.com/#faq",
+      "mainEntity":[
+        {"@type":"Question","name":"Comment faire une recherche ICE Maroc ?","acceptedAnswer":{"@type":"Answer","text":"Saisissez le numéro ICE à 15 chiffres ou le nom de l'entreprise dans le moteur de recherche IceMorocco, puis consultez les résultats disponibles."}},
+        {"@type":"Question","name":"Peut-on trouver une entreprise marocaine par nom ?","acceptedAnswer":{"@type":"Answer","text":"Oui. IceMorocco permet de rechercher une société marocaine par nom, activité, ville ou numéro ICE selon les données disponibles."}},
+        {"@type":"Question","name":"Les données sont-elles officielles ?","acceptedAnswer":{"@type":"Answer","text":"Les données sont fournies à titre indicatif. Pour un usage juridique, fiscal ou administratif, vérifiez toujours auprès des organismes officiels compétents."}}
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body class="is-search-page">
 
@@ -18,7 +69,7 @@
   <aside class="sidebar">
     <div class="sb-top">
       <div class="brand">
-        <img src="logo.png" alt="IceMorocco Logo" class="brand-logo-img">
+        <img src="logo.png" alt="IceMorocco - Recherche ICE Maroc" class="brand-logo-img" width="508" height="94" fetchpriority="high">
         <span class="brand-text-mobile">Ice<span>Morocco</span></span>
       </div>
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu">
@@ -104,8 +155,8 @@
       <div class="empty-state" id="empty-state">
         <section class="ice-landing">
           <div class="hero-kicker">Recherche entreprise Maroc</div>
-          <h2>Rechercher une entreprise par nom ou ICE.</h2>
-          <p>Un seul champ pour trouver une société marocaine. Choisissez le type de recherche, saisissez votre terme, puis consultez les résultats.</p>
+          <h1>Recherche ICE Maroc</h1>
+          <p>Recherchez une entreprise marocaine par numéro ICE, nom de société, ville ou activité. IceMorocco aide les professionnels à vérifier rapidement les informations disponibles sur les sociétés au Maroc.</p>
           <div class="home-ice-card">
             <div class="mode-toggle home-mode-toggle">
               <button class="mt-btn active" id="mt-nom" onclick="setMode('nom')">Nom</button>
@@ -119,6 +170,26 @@
                 <span class="btn-label">Rechercher</span>
               </button>
             </div>
+          </div>
+          <div class="seo-content">
+            <section class="seo-intro">
+              <h2>Trouver l'ICE d'une entreprise marocaine</h2>
+              <p>IceMorocco centralise les recherches utiles autour de l'ICE Maroc : identification commune de l'entreprise, registre de commerce, forme juridique, ville, activité et date de création lorsque ces informations sont disponibles. L'objectif est de proposer un moteur de recherche simple, rapide et professionnel pour consulter une société au Maroc avant une facture, un devis, un partenariat ou une vérification administrative.</p>
+            </section>
+            <div class="seo-grid">
+              <a href="/top-recherches-ice">Top recherches ICE</a>
+              <a href="/annuaire-entreprises-marocaines">Annuaire entreprises marocaines</a>
+              <a href="/ville/casablanca">Entreprises à Casablanca</a>
+              <a href="/ville/rabat">Entreprises à Rabat</a>
+              <a href="/categorie/informatique">Sociétés informatiques Maroc</a>
+              <a href="/categorie/btp">Entreprises BTP Maroc</a>
+            </div>
+            <section class="seo-faq">
+              <h2>Questions fréquentes sur la recherche ICE</h2>
+              <details open><summary>Comment rechercher une société par ICE ?</summary><p>Choisissez le mode ICE, saisissez le numéro à 15 chiffres, puis lancez la recherche pour consulter les informations associées si elles sont disponibles.</p></details>
+              <details><summary>Comment trouver l'ICE avec le nom d'une entreprise ?</summary><p>Choisissez le mode Nom et saisissez la raison sociale ou une partie du nom. Les résultats peuvent afficher l'ICE, la ville, le RC, la forme juridique et l'activité.</p></details>
+              <details><summary>Pourquoi vérifier une entreprise marocaine ?</summary><p>La vérification permet de limiter les erreurs de facturation, de mieux identifier un client ou fournisseur et de préparer les documents commerciaux avec plus de confiance.</p></details>
+            </section>
           </div>
         </section>
 

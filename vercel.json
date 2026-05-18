@@ -7,6 +7,15 @@
     { "src": "*.png", "use": "@vercel/static" }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/server.js" }
+    { "source": "/api/(.*)", "destination": "/server.js" },
+    { "source": "/robots.txt", "destination": "/server.js" },
+    { "source": "/sitemap.xml", "destination": "/server.js" },
+    { "source": "/recherche-ice-maroc", "destination": "/server.js" },
+    { "source": "/annuaire-entreprises-marocaines", "destination": "/server.js" },
+    { "source": "/top-recherches-ice", "destination": "/server.js" },
+    { "source": "/entreprise/(.*)", "destination": "/server.js" },
+    { "source": "/ice/(.*)", "destination": "/server.js" },
+    { "source": "/ville/(.*)", "destination": "/server.js" },
+    { "source": "/categorie/(.*)", "destination": "/server.js" }
   ]
 }
