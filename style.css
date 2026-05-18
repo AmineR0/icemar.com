@@ -39,7 +39,7 @@ button{appearance:none}
 .sidebar::before{display:none}
 .sb-top,.sb-foot{position:relative;z-index:1}
 .sb-top{display:flex;align-items:center;justify-content:space-between;gap:18px;width:min(1180px,100%);margin:0 auto;padding:10px clamp(18px,4vw,34px)}
-.brand{display:flex;align-items:center;justify-content:flex-start;width:auto;margin:0;gap:0;min-width:0}
+.brand{display:flex;align-items:center;justify-content:flex-start;width:auto;margin:0;gap:0;min-width:0;text-decoration:none}
 .brand-logo-img{width:254px;height:47px;transition:transform .2s ease;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.24))}
 .brand-text-mobile{display:none}
 .brand-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand-2),var(--brand));box-shadow:0 16px 36px rgba(20,184,166,.28)}
