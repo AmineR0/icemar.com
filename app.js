@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('inv-num').addEventListener('input',syncNum);
   syncDocType();
   initBusinessTools();
+  initPopularCompanyLists();
   restoreRoute();
   checkLiveSearch().then(()=>{
     const q=document.getElementById('q')?.value.trim();
@@ -625,6 +626,7 @@ function useLiveClient(name,addr,ville,email,ice,tel=''){
 
 function renderResults(res,q){
   document.getElementById('empty-state').style.display='flex';
+  document.getElementById('res-title').textContent='Résultats de la recherche :';
   const panel=document.getElementById('results-panel');
   panel.style.display='block';
   document.getElementById('res-count-badge').textContent=`${res.length} résultat${res.length!==1?'s':''}`;
@@ -688,6 +690,68 @@ function clearSearch(){
   document.getElementById('results-panel').style.display='none';
   document.getElementById('empty-state').style.display='flex';
   document.getElementById('res-list').innerHTML='';
+}
+
+function initPopularCompanyLists(){
+  document.querySelectorAll('[data-company-list]').forEach(link=>{
+    link.addEventListener('click',event=>{
+      event.preventDefault();
+      showPopularCompanyList(link.dataset.companyList);
+    });
+  });
+}
+
+function showPopularCompanyList(type='top'){
+  const listMeta={
+    top:{
+      title:'Top recherches ICE',
+      query:'top recherches ice',
+      filter:c=>hasValidIce(c)&&dataCompleteness(c)>=5,
+      limit:24,
+    },
+    directory:{
+      title:'Annuaire entreprises marocaines',
+      query:'annuaire entreprises marocaines',
+      filter:c=>c.name&&dataCompleteness(c)>=3,
+      limit:36,
+    },
+    verified:{
+      title:'Recherche ICE Maroc',
+      query:'recherche ice maroc',
+      filter:c=>hasValidIce(c),
+      limit:30,
+    },
+  };
+  const meta=listMeta[type]||listMeta.top;
+  const companies=dedupeResults([...DB,...getCachedCompanies()])
+    .filter(meta.filter)
+    .sort((a,b)=>featuredCompanyScore(b)-featuredCompanyScore(a))
+    .slice(0,meta.limit);
+  applySearchMode('nom',{clear:false});
+  sv('q','');
+  renderResults(companies,meta.query);
+  document.getElementById('res-title').textContent=meta.title;
+  document.getElementById('res-count-badge').textContent=`${companies.length} entreprise${companies.length!==1?'s':''}`;
+  saveSearchState('');
+  const url=new URL(window.location.href);
+  url.searchParams.delete('q');
+  url.searchParams.delete('mode');
+  url.hash='';
+  history.replaceState(null,'',url);
+  scrollToResults();
+}
+
+function hasValidIce(company){
+  return String(company?.ice||'').replace(/\D/g,'').length===15;
+}
+
+function featuredCompanyScore(company){
+  const iceScore=hasValidIce(company)?30:0;
+  const cityScore=company.ville?6:0;
+  const activityScore=company.act?5:0;
+  const dateScore=company.date?4:0;
+  const capitalScore=company.cap?3:0;
+  return iceScore+cityScore+activityScore+dateScore+capitalScore+dataCompleteness(company);
 }
 
 // Copy ICE

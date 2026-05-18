@@ -116,9 +116,12 @@ button{appearance:none}
 .seo-intro p,.seo-faq p{max-width:none;margin:0;color:var(--muted);font-size:.95rem;line-height:1.75}
 .seo-directory{margin:12px 0}
 .seo-directory h2{margin:0 0 10px;font-family:var(--display);font-size:1.25rem;letter-spacing:-.04em;color:var(--ink)}
-.seo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
-.seo-grid a{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink-3);font-weight:900;text-decoration:none;box-shadow:0 10px 24px rgba(34,44,54,.05)}
-.seo-grid a:hover{border-color:var(--brand-2);color:var(--brand)}
+.seo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+.seo-feature-card{display:grid;gap:9px;min-height:154px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#fff,#fffaf2);color:var(--ink-3);font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(34,44,54,.06);transition:transform .18s,border .18s,box-shadow .18s}
+.seo-feature-card:hover{transform:translateY(-2px);border-color:var(--brand-2);box-shadow:0 18px 42px rgba(34,44,54,.1)}
+.seo-feature-card span{width:max-content;padding:5px 8px;border-radius:999px;background:#e0fff8;color:var(--brand);font-size:.72rem;font-weight:950;letter-spacing:.08em}
+.seo-feature-card strong{font-family:var(--display);font-size:1.08rem;line-height:1.08;letter-spacing:-.04em;color:var(--ink)}
+.seo-feature-card small{color:var(--muted);font-size:.84rem;font-weight:750;line-height:1.5}
 .seo-faq{display:grid;gap:8px}
 .seo-faq details{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px 14px}
 .seo-faq summary{cursor:pointer;color:var(--ink);font-weight:950}
@@ -478,7 +481,7 @@ button{appearance:none}
   .seo-content{margin-top:18px}
   .seo-intro,.seo-faq{padding:16px;border-radius:18px}
   .seo-grid{grid-template-columns:1fr;gap:8px}
-  .seo-grid a{padding:11px 12px}
+  .seo-feature-card{min-height:auto;padding:15px}
   .seo-static{padding:16px 12px 44px}
   .seo-static-head,.seo-panel{padding:16px;border-radius:18px}
   .seo-logo-link img{width:190px}

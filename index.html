@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="style.css?v=20260518-seo-cards"/>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -202,22 +202,21 @@
         <section class="seo-directory" aria-labelledby="seo-directory-title">
           <h2 id="seo-directory-title">Recherches populaires ICE Maroc</h2>
           <div class="seo-grid">
-            <a href="/top-recherches-ice">Top recherches ICE</a>
-            <a href="/annuaire-entreprises-marocaines">Annuaire entreprises marocaines</a>
-            <a href="/recherche-ice-maroc">Recherche ICE Maroc</a>
-            <a href="/categorie/entreprises">Entreprises marocaines</a>
-            <a href="/ville/casablanca">Entreprises à Casablanca</a>
-            <a href="/ville/rabat">Entreprises à Rabat</a>
-            <a href="/ville/tanger">Entreprises à Tanger</a>
-            <a href="/ville/marrakech">Entreprises à Marrakech</a>
-            <a href="/ville/agadir">Entreprises à Agadir</a>
-            <a href="/ville/fes">Entreprises à Fès</a>
-            <a href="/ville/berrechid">Entreprises à Berrechid</a>
-            <a href="/categorie/informatique">Sociétés informatiques Maroc</a>
-            <a href="/categorie/btp">Entreprises BTP Maroc</a>
-            <a href="/categorie/transport">Entreprises transport Maroc</a>
-            <a href="/categorie/finance">Banques et assurances Maroc</a>
-            <a href="/categorie/commerce">Sociétés de commerce Maroc</a>
+            <a class="seo-feature-card" href="/top-recherches-ice" data-company-list="top">
+              <span>01</span>
+              <strong>Top recherches ICE</strong>
+              <small>Les fiches les plus complètes avec numéro ICE, RC, ville et activité.</small>
+            </a>
+            <a class="seo-feature-card" href="/annuaire-entreprises-marocaines" data-company-list="directory">
+              <span>02</span>
+              <strong>Annuaire entreprises marocaines</strong>
+              <small>Une sélection d'entreprises marocaines à consulter rapidement.</small>
+            </a>
+            <a class="seo-feature-card" href="/recherche-ice-maroc" data-company-list="verified">
+              <span>03</span>
+              <strong>Recherche ICE Maroc</strong>
+              <small>Des sociétés avec ICE disponible pour vérifier avant facture ou devis.</small>
+            </a>
           </div>
         </section>
         <section class="seo-faq">
@@ -632,6 +631,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260518-search-fresh-2"></script>
+<script src="app.js?v=20260518-seo-cards"></script>
 </body>
 </html>
