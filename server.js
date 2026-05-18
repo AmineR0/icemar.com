@@ -19,6 +19,9 @@ const STATIC_DIR = __dirname;
 const SITE_URL = (process.env.SITE_URL || 'https://icemar.com').replace(/\/$/, '');
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
+const FAST_SOURCE_TIMEOUT = 1200;
+const ENRICH_SOURCE_TIMEOUT = 700;
+const FALLBACK_SOURCE_TIMEOUT = 2600;
 
 // ─── MIME types ───────────────────────────────────────────────
 const MIME = {
@@ -67,6 +70,13 @@ function fetchUrl(url, options = {}) {
     if (options.body) req.write(options.body);
     req.end();
   });
+}
+
+function withTimeout(promise, ms, fallback = []) {
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(fallback), ms)),
+  ]);
 }
 
 // ─── Parse charika.ma search results ──────────────────────────
@@ -833,10 +843,17 @@ async function searchIcemaroc(query) {
 
     try {
       console.log(`🔍 Searching APIs (${mode}): "${q}"`);
-      const [charikaResults, iceMarocResults] = await Promise.all([
-        searchCharikaAutocomplete(q).catch(() => []),
-        searchIcemaroc(q).catch(() => [])
-      ]);
+      const charikaPromise = searchCharikaAutocomplete(q).catch(() => []);
+      const iceMarocResults = await withTimeout(
+        searchIcemaroc(q).catch(() => []),
+        FAST_SOURCE_TIMEOUT,
+        []
+      );
+      const charikaResults = await withTimeout(
+        charikaPromise,
+        iceMarocResults.length ? ENRICH_SOURCE_TIMEOUT : FALLBACK_SOURCE_TIMEOUT,
+        []
+      );
 
       let results = dedupeCompanies([...charikaResults, ...iceMarocResults]);
 

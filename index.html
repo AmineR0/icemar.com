@@ -7,6 +7,7 @@
 <meta name="description" content="Recherche ICE Maroc rapide et gratuite. Trouvez une entreprise marocaine par numéro ICE, nom de société, ville, RC ou activité avec IceMorocco."/>
 <meta name="robots" content="index,follow,max-image-preview:large"/>
 <meta name="author" content="IceMorocco"/>
+<meta name="google-site-verification" content="-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ"/>
 <link rel="canonical" href="https://icemar.com/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:locale" content="fr_MA"/>
@@ -24,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css?v=20260518-result-cards"/>
+<link rel="stylesheet" href="style.css?v=20260518-search-fast"/>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -172,6 +173,10 @@
                 <span class="btn-spinner" aria-hidden="true"></span>
                 <span class="btn-label">Rechercher</span>
               </button>
+            </div>
+            <div id="search-status" class="search-status" aria-live="polite" style="display:none">
+              <span class="search-status-dot" aria-hidden="true"></span>
+              <span id="search-status-text">Recherche en cours...</span>
             </div>
           </div>
         </section>
@@ -631,6 +636,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260518-result-cards"></script>
+<script src="app.js?v=20260518-search-fast"></script>
 </body>
 </html>
