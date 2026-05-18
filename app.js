@@ -130,7 +130,7 @@ function restoreRoute(){
   const restoredQuery=q||'';
   if(restoredQuery){
     sv('q',restoredQuery);
-    go({updateUrl:false,scroll:false,background:true});
+    go({updateUrl:false,scroll:false,background:true,deferEmpty:true});
   }else{
     showPage('search',{updateUrl:false});
   }
@@ -187,6 +187,7 @@ async function go(opts={}){
   const updateUrl=opts.updateUrl!==false;
   const shouldScroll=opts.scroll!==false;
   const background=opts.background===true;
+  const deferEmpty=opts.deferEmpty===true;
   const input=document.getElementById('q');
   let raw=input.value.trim().toLowerCase();
   if(!raw) return;
@@ -219,8 +220,7 @@ async function go(opts={}){
       const iceDigits=String(c.ice||'').replace(/\D/g,'');
       return rawDigits&&iceDigits&&(iceDigits.startsWith(rawDigits)||iceDigits===rawDigits);
     }
-    const h=[c.name,c.ville,c.act,c.type,c.rc,c.if_,c.cap].join(' ').toLowerCase();
-    return words.some(w=>h.includes(w));
+    return isLocalNameCandidate(c,raw,words,nameTokens);
   });
   const strictLocalRes=searchMode==='nom'&&nameTokens.length>1
     ? broadLocalRes.filter(c=>nameTokens.every(t=>normalizeCompanyKey(c.name).includes(t)))
@@ -240,6 +240,9 @@ async function go(opts={}){
     if(shouldScroll&&localRes.length)scrollToResults();
   }else{
     hideResultsWhileSearching();
+    if((!isLiveAvailable||!canSearchLive)&&!deferEmpty){
+      renderResults([],raw);
+    }
   }
 
   // 2. Live search from charika.ma (if server is running)
@@ -374,6 +377,26 @@ function searchTokens(q=''){
   return normalizeCompanyKey(q)
     .split(/\s+/)
     .filter(t=>t.length>1&&!['ste','societe','sarl','sa','au','maroc','ma'].includes(t));
+}
+
+function isLocalNameCandidate(c,raw,words,nameTokens){
+  const nameKey=normalizeCompanyKey(c.name);
+  const rawKey=normalizeCompanyKey(raw);
+  const rcKey=normalizeCompanyKey(c.rc||'');
+  const iceDigits=String(c.ice||'').replace(/\D/g,'');
+  const queryDigits=String(raw||'').replace(/\D/g,'');
+  if(rawKey&&nameKey.includes(rawKey))return true;
+  if(queryDigits.length>=4&&iceDigits.includes(queryDigits))return true;
+  if(rawKey.length>=3&&rcKey.includes(rawKey))return true;
+  if(nameTokens.length>1){
+    const matchedNameTokens=nameTokens.filter(t=>nameKey.includes(t)).length;
+    if(matchedNameTokens>=Math.min(2,nameTokens.length))return true;
+  }
+  if(words.length===1&&rawKey.length>=3){
+    const extraKey=normalizeCompanyKey([c.ville,c.act,c.type].join(' '));
+    return extraKey.includes(rawKey);
+  }
+  return false;
 }
 
 function normalizeCompanyKey(v=''){
