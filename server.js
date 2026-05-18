@@ -118,6 +118,7 @@ function sameCompany(a = {}, b = {}) {
 
   const nameMatch = aName === bName || aName.includes(bName) || bName.includes(aName);
   if (!nameMatch) return false;
+  if (aName === bName) return true;
 
   const aCity = normalizeCompanyName(a.ville);
   const bCity = normalizeCompanyName(b.ville);
@@ -132,6 +133,35 @@ function mergeCompanyRecords(primary = {}, secondary = {}) {
     });
   merged.date = formatCompanyDate(merged.date);
   return merged;
+}
+
+function companyCompleteness(company = {}) {
+  return ['ice', 'if_', 'rc', 'pat', 'date', 'cap', 'act', 'addr', 'ville', 'url', 'tel', 'email', 'website']
+    .reduce((count, key) => count + (company[key] ? 1 : 0), 0);
+}
+
+function preferCompanyRecord(a = {}, b = {}) {
+  const aHasIce = normalizeIce(a.ice).length === 15;
+  const bHasIce = normalizeIce(b.ice).length === 15;
+  if (aHasIce !== bHasIce) return aHasIce ? a : b;
+  return companyCompleteness(a) >= companyCompleteness(b) ? a : b;
+}
+
+function dedupeCompanies(companies = []) {
+  const results = [];
+  companies.forEach(company => {
+    if (!company || !company.name) return;
+    const incoming = { ...company, date: formatCompanyDate(company.date || '') };
+    const existingIndex = results.findIndex(existing => sameCompany(existing, incoming));
+    if (existingIndex === -1) {
+      results.push(incoming);
+      return;
+    }
+    const preferred = preferCompanyRecord(incoming, results[existingIndex]);
+    const fallback = preferred === incoming ? results[existingIndex] : incoming;
+    results[existingIndex] = mergeCompanyRecords(preferred, fallback);
+  });
+  return results;
 }
 
 function rememberCompanies(companies = []) {
@@ -457,26 +487,7 @@ async function searchIcemaroc(query) {
         searchIcemaroc(q).catch(() => [])
       ]);
 
-      let results = [];
-      const normalize = name => normalizeCompanyName(name).replace(/\s+/g, '');
-
-      [...charikaResults, ...iceMarocResults].forEach(rawCompany => {
-        const c = { ...rawCompany, date: formatCompanyDate(rawCompany.date || '') };
-        if (!c.name) return;
-        const existingIndex = results.findIndex(existing => sameCompany(existing, c));
-
-        if (existingIndex === -1) {
-          results.push(c);
-          return;
-        }
-
-        const existing = results[existingIndex];
-        const incomingHasIce = Boolean(normalizeIce(c.ice));
-        const existingHasIce = Boolean(normalizeIce(existing.ice));
-        results[existingIndex] = incomingHasIce && !existingHasIce
-          ? mergeCompanyRecords(c, existing)
-          : mergeCompanyRecords(existing, c);
-      });
+      let results = dedupeCompanies([...charikaResults, ...iceMarocResults]);
 
       rememberCompanies(results);
 
@@ -485,7 +496,7 @@ async function searchIcemaroc(query) {
         const exactLiveResults = results.filter(company => normalizeIce(company.ice) === ice);
         const cachedResults = searchDiscoveredByIce(q);
         const seen = new Set();
-        results = [...exactLiveResults, ...cachedResults].filter(company => {
+        results = dedupeCompanies([...exactLiveResults, ...cachedResults]).filter(company => {
           const key = companyCacheKey(company);
           if (!key || seen.has(key)) return false;
           seen.add(key);

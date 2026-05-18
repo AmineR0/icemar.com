@@ -114,10 +114,12 @@
             <label for="q">Recherche</label>
             <div class="home-ice-row">
               <input id="q" autocomplete="off" placeholder="Nom de société ou marque" onkeydown="if(event.key==='Enter')go()"/>
-              <button onclick="go()">Rechercher</button>
+              <button id="search-submit" class="home-search-submit" onclick="go()">
+                <span class="btn-spinner" aria-hidden="true"></span>
+                <span class="btn-label">Rechercher</span>
+              </button>
             </div>
           </div>
-          <div class="ad-slot ad-slot-home no-print" data-ad-slot="home-search">Publicité</div>
         </section>
 
       </div>
@@ -131,7 +133,6 @@
           </div>
           <button class="rh-close" onclick="clearSearch()">Fermer</button>
         </div>
-        <div class="ad-slot ad-slot-results no-print" data-ad-slot="search-results">Publicité</div>
         <div id="res-list"></div>
         <div id="res-empty" class="res-no-result" style="display:none">
           <div>Aucun résultat</div>
@@ -155,7 +156,6 @@
             <div class="tool-note">Format attendu : 15 chiffres</div>
           </div>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="ice-check">Publicité</div>
         <div class="tool-grid two">
           <div class="tool-card">
             <label class="tool-label" for="ice-check-input">Numéro ICE</label>
@@ -186,7 +186,6 @@
             <div class="tool-note">Simulation indicative</div>
           </div>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="salary">Publicité</div>
         <div class="tool-grid two">
           <div class="tool-card form-stack">
             <label class="tool-label" for="salary-gross">Salaire brut mensuel</label>
@@ -221,8 +220,6 @@
             <button class="tb-btn solid" onclick="window.print()">Imprimer / PDF</button>
           </div>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="invoice">Publicité</div>
-        <div class="inv-notice no-print">Conseil : vérifiez toujours ICE, IF, RC, numérotation et conditions de paiement avant l'envoi.</div>
 
         <div class="invoice-workbench">
 
@@ -247,58 +244,39 @@
                 <div class="ph-inv-label" id="ph-doc-type">FACTURE CONFORME</div>
                 <div class="ph-inv-num" id="ph-inv-num">#2024-001</div>
               </div>
-              <div class="ph-dates">
-                <div class="ph-date-row no-print">
-                  <label>N°</label><input class="pf" id="inv-num" placeholder="2024-001" oninput="syncNum()"/>
-                </div>
-                <div class="ph-date-row no-print">
-                  <label>Date</label><input class="pf" type="date" id="inv-date"/>
-                </div>
-                <div class="ph-date-row no-print">
-                  <label>Échéance</label><input class="pf" type="date" id="inv-due"/>
-                </div>
-                <div class="ph-date-row no-print">
-                  <label>Réf.</label><input class="pf" id="inv-ref" placeholder="BC, contrat, projet..."/>
-                </div>
-                <div class="ph-date-row no-print">
-                  <label>TVA</label>
-                  <select class="pf" id="tva" onchange="calc()">
-                    <option value="0">0%</option><option value="7">7%</option>
-                    <option value="10">10%</option><option value="14">14%</option>
-                    <option value="20" selected>20%</option>
-                  </select>
-                </div>
-                <div class="ph-date-row no-print">
-                  <label>Devise</label>
-                  <select class="pf" id="cur" onchange="calc()">
-                    <option>MAD</option><option>EUR</option><option>USD</option>
-                  </select>
-                </div>
-              </div>
             </div>
           </div>
 
-          <div class="doc-subject">
-            <label>Objet du document</label>
-            <input class="pf bold" id="inv-subject" placeholder="Ex: Prestations de service, marchandise, acompte..."/>
+          <div class="invoice-settings">
+            <label><span>N° facture</span><input class="pf" id="inv-num" placeholder="2024-001" oninput="syncNum()"/></label>
+            <label><span>Date</span><input class="pf" type="date" id="inv-date"/></label>
+            <label><span>Échéance</span><input class="pf" type="date" id="inv-due"/></label>
+            <label><span>Référence</span><input class="pf" id="inv-ref" placeholder="Bon, contrat..."/></label>
+            <label><span>TVA</span><select class="pf" id="tva" onchange="calc()">
+              <option value="0">0%</option><option value="7">7%</option>
+              <option value="10">10%</option><option value="14">14%</option>
+              <option value="20" selected>20%</option>
+            </select></label>
+            <label><span>Devise</span><select class="pf" id="cur" onchange="calc()">
+              <option>MAD</option><option>EUR</option><option>USD</option>
+            </select></label>
           </div>
 
           <div class="paper-parties">
             <div class="party">
-              <div class="party-label">Émetteur</div>
+              <div class="party-label">Votre société</div>
               <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany()"/>
               <input class="pf" id="s-addr" placeholder="Adresse"/>
-              <div class="pf-2"><input class="pf" id="s-city" placeholder="Ville"/><input class="pf" id="s-tel" placeholder="Téléphone"/></div>
-              <input class="pf" id="s-email" placeholder="Email"/>
-              <div class="pf-2"><input class="pf" id="s-if" placeholder="IF"/><input class="pf" id="s-rc" placeholder="RC"/></div>
-              <input class="pf ice-f" id="s-ice" placeholder="ICE (15 chiffres)" maxlength="15"/>
+              <div class="pf-2"><input class="pf" id="s-city" placeholder="Ville"/><input class="pf ice-f" id="s-ice" placeholder="ICE" maxlength="15"/></div>
+              <div class="pf-2 optional-fields"><input class="pf" id="s-if" placeholder="IF"/><input class="pf" id="s-rc" placeholder="RC"/></div>
+              <div class="pf-2 optional-fields"><input class="pf" id="s-tel" placeholder="Téléphone"/><input class="pf" id="s-email" placeholder="Email"/></div>
             </div>
             <div class="party">
-              <div class="party-label client-lbl">Facturé à</div>
+              <div class="party-label client-lbl">Client</div>
               <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client"/>
               <input class="pf" id="c-addr" placeholder="Adresse du client"/>
-              <div class="pf-2"><input class="pf" id="c-city" placeholder="Ville"/><input class="pf" id="c-tel" placeholder="Téléphone"/></div>
-              <div class="pf-2"><input class="pf" id="c-if" placeholder="IF client"/><input class="pf ice-f" id="c-ice" placeholder="ICE client (15 chiffres)" maxlength="15"/></div>
+              <div class="pf-2"><input class="pf" id="c-city" placeholder="Ville"/><input class="pf ice-f" id="c-ice" placeholder="ICE client" maxlength="15"/></div>
+              <div class="pf-2 optional-fields"><input class="pf" id="c-if" placeholder="IF client"/><input class="pf" id="c-tel" placeholder="Téléphone"/></div>
             </div>
           </div>
 
@@ -363,7 +341,6 @@
             <div class="tool-note">MAD · EUR · USD</div>
           </div>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="words">Publicité</div>
         <div class="tool-grid two">
           <div class="tool-card form-stack">
             <label class="tool-label" for="words-amount">Montant</label>
@@ -398,7 +375,6 @@
             <div class="tool-note">Plus de modules à ajouter</div>
           </div>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="tools">Publicité</div>
         <div class="tool-grid three">
           <div class="tool-card mini-tool">
             <div class="mini-code">TVA</div>
@@ -451,7 +427,6 @@
           <p>IceMorocco est une plateforme pratique pour rechercher des entreprises marocaines, vérifier des identifiants et préparer des documents commerciaux simples.</p>
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="about">Publicité</div>
         <div class="info-card">
           <h3>Notre objectif</h3>
           <p>Centraliser les outils dont une entreprise a besoin au quotidien : recherche par nom ou ICE, génération de facture, conversion des montants en lettres, simulation salariale et calculs rapides.</p>
@@ -472,7 +447,6 @@
           <p>Les réponses aux questions les plus courantes sur la recherche, les outils et l'utilisation des données.</p>
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="faq">Publicité</div>
         <div class="faq-list">
           <details open><summary>Est-ce que les données sont officielles ?</summary><p>Les données sont affichées à titre indicatif. Pour un usage juridique, fiscal ou administratif, vérifiez toujours auprès des sources officielles compétentes.</p></details>
           <details><summary>Pourquoi une entreprise ne s'affiche pas par ICE ?</summary><p>Certaines sources ne permettent pas toujours la recherche directe par ICE. Dans ce cas, essayez une recherche par nom de société.</p></details>
@@ -492,7 +466,6 @@
           <p>Pour signaler une erreur, proposer une amélioration ou demander une collaboration, utilisez les informations ci-dessous.</p>
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="contact">Publicité</div>
         <div class="info-card contact-card">
           <div><span>Email</span><strong>contact@icemorocco.ma</strong></div>
           <div><span>Objet conseillé</span><strong>Erreur donnée · Suggestion · Partenariat</strong></div>
@@ -511,7 +484,6 @@
           <p>Ces conditions décrivent les règles générales d'utilisation de la plateforme.</p>
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="terms">Publicité</div>
         <div class="info-card legal-copy">
           <h3>1. Acceptation</h3>
           <p>En utilisant ce site, vous acceptez d'utiliser les informations et outils sous votre propre responsabilité.</p>
@@ -536,7 +508,6 @@
           <p>Cette page explique les principes de confidentialité prévus pour la plateforme.</p>
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
-        <div class="ad-slot page-ad no-print" data-ad-slot="privacy">Publicité</div>
         <div class="info-card legal-copy">
           <h3>Données saisies</h3>
           <p>Les recherches, montants et informations saisies dans les outils servent à fournir la fonctionnalité demandée. Certaines préférences ou informations de facture peuvent être conservées localement dans votre navigateur.</p>

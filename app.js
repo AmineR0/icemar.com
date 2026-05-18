@@ -2,6 +2,7 @@
 let searchMode='nom';
 let isLiveAvailable=false; // true when server.js is running
 let lastLiveResults=new Map();
+let searchInFlight=false;
 const LIVE_CACHE_KEY='icm_live_company_cache_v1';
 const SEARCH_STATE_KEY='icm_search_state_v1';
 
@@ -141,12 +142,26 @@ function setMode(m){
   applySearchMode(m,{clear:true});
 }
 
+function setSearchLoading(loading){
+  searchInFlight=loading;
+  const btn=document.getElementById('search-submit');
+  if(!btn)return;
+  btn.classList.toggle('is-loading',loading);
+  btn.disabled=loading;
+  btn.setAttribute('aria-busy',String(loading));
+  const label=btn.querySelector('.btn-label');
+  if(label)label.textContent=loading?'Recherche...':'Rechercher';
+}
+
 // Search — local DB first, then live charika.ma
 async function go(opts={}){
+  if(searchInFlight)return;
   const updateUrl=opts.updateUrl!==false;
   const input=document.getElementById('q');
   let raw=input.value.trim().toLowerCase();
   if(!raw) return;
+  setSearchLoading(true);
+  try{
   const rawDigits=raw.replace(/\D/g,'');
   if(searchMode==='ice'){
     raw=rawDigits;
@@ -177,7 +192,7 @@ async function go(opts={}){
   const strictLocalRes=searchMode==='nom'&&nameTokens.length>1
     ? broadLocalRes.filter(c=>nameTokens.every(t=>normalizeCompanyKey(c.name).includes(t)))
     : [];
-  let localRes=strictLocalRes.length?strictLocalRes:broadLocalRes;
+  let localRes=dedupeResults(strictLocalRes.length?strictLocalRes:broadLocalRes);
   localRes.sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
   lastLiveResults=new Map(localRes.filter(c=>c._live).map(c=>[c.id,c]));
 
@@ -220,8 +235,9 @@ async function go(opts={}){
             hasStrictLive=true;
           }
         }
-        const baseResults=hasStrictLive ? strictLocalRes : localRes;
-        const merged=mergeResults(baseResults,liveResults).sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
+        const baseResults=hasStrictLive ? dedupeResults(strictLocalRes) : localRes;
+        const merged=dedupeResults(mergeResults(baseResults,liveResults))
+          .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
         lastLiveResults=new Map(merged.filter(c=>c._live).map(c=>[c.id,c]));
         renderResults(merged,raw);
         scrollToResults();
@@ -229,6 +245,9 @@ async function go(opts={}){
     }catch(e){
       console.log('Live search unavailable:',e.message);
     }
+  }
+  }finally{
+    setSearchLoading(false);
   }
 }
 
@@ -288,20 +307,23 @@ function scoreResult(c,raw,words){
   if(name===raw)score+=20;
   if(name.includes(raw))score+=8;
   if(name.startsWith(raw))score+=6;
+  if(String(c.ice||'').replace(/\D/g,'').length===15)score+=10;
   score+=Math.min(dataCompleteness(c),6);
   return score;
 }
 
 function isSameCompany(a,b){
-  if(a.ice&&b.ice&&a.ice===b.ice)return true;
+  const aIce=String(a.ice||'').replace(/\D/g,'');
+  const bIce=String(b.ice||'').replace(/\D/g,'');
+  if(aIce&&bIce)return aIce===bIce;
   const ak=normalizeCompanyKey(a.name);
   const bk=normalizeCompanyKey(b.name);
   if(!ak||!bk)return false;
   
   const nameMatch = ak===bk||ak.includes(bk)||bk.includes(ak);
   if (nameMatch) {
-    const vA = (a.ville || '').toLowerCase().trim();
-    const vB = (b.ville || '').toLowerCase().trim();
+    const vA = normalizeCompanyKey(a.ville || '');
+    const vB = normalizeCompanyKey(b.ville || '');
     if (vA && vB && vA !== vB) return false;
     return true;
   }
@@ -315,8 +337,32 @@ function mergeCompanyData(primary,secondary){
   return merged;
 }
 
+function preferCompanyRecord(a={},b={}){
+  const aHasIce=String(a.ice||'').replace(/\D/g,'').length===15;
+  const bHasIce=String(b.ice||'').replace(/\D/g,'').length===15;
+  if(aHasIce!==bHasIce)return aHasIce?a:b;
+  if(Boolean(a._live)!==Boolean(b._live))return a._live?a:b;
+  return dataCompleteness(a)>=dataCompleteness(b)?a:b;
+}
+
+function dedupeResults(results=[]){
+  const merged=[];
+  results.forEach(item=>{
+    if(!item||!item.name)return;
+    const idx=merged.findIndex(existing=>isSameCompany(existing,item));
+    if(idx===-1){
+      merged.push(item);
+      return;
+    }
+    const preferred=preferCompanyRecord(item,merged[idx]);
+    const fallback=preferred===item?merged[idx]:item;
+    merged[idx]=mergeCompanyData(preferred,fallback);
+  });
+  return merged;
+}
+
 function mergeResults(localRes,liveResults){
-  const merged=[...localRes];
+  const merged=dedupeResults(localRes);
   liveResults.forEach(live=>{
     const idx=merged.findIndex(local=>isSameCompany(local,live));
     if(idx===-1){
@@ -341,20 +387,14 @@ function getCachedCompanies(){
 
 function cacheCompanies(companies=[]){
   if(!Array.isArray(companies)||!companies.length)return;
+  const cached=dedupeResults(getCachedCompanies());
+  const all=dedupeResults([...cached,...companies]);
   const byKey=new Map();
-  getCachedCompanies().forEach(c=>{
+  all.forEach(c=>{
     const key=companyCacheKey(c);
     if(key)byKey.set(key,c);
   });
-  companies.forEach(c=>{
-    if(!c||!c.name)return;
-    const key=companyCacheKey(c);
-    if(!key)return;
-    const old=byKey.get(key)||{};
-    byKey.set(key,mergeCompanyData(c,old));
-  });
-  const cached=[...byKey.values()].slice(-600);
-  try{localStorage.setItem(LIVE_CACHE_KEY,JSON.stringify(cached));}catch{}
+  try{localStorage.setItem(LIVE_CACHE_KEY,JSON.stringify([...byKey.values()].slice(-600)));}catch{}
 }
 
 function cacheCompany(company){
