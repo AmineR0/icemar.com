@@ -17,6 +17,7 @@ const { URLSearchParams } = require('url');
 const PORT = 3000;
 const STATIC_DIR = __dirname;
 const SITE_URL = (process.env.SITE_URL || 'https://icemar.com').replace(/\/$/, '');
+const GOOGLE_SITE_VERIFICATION = '-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
 const FAST_SOURCE_TIMEOUT = 1200;
@@ -281,6 +282,7 @@ function renderSeoLayout({ title, description, canonical, h1, lead, body = '', s
 <title>${safeTitle}</title>
 <meta name="description" content="${safeDescription}"/>
 <meta name="robots" content="index,follow,max-image-preview:large"/>
+<meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}"/>
 <link rel="canonical" href="${safeCanonical}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:locale" content="fr_MA"/>
@@ -289,6 +291,8 @@ function renderSeoLayout({ title, description, canonical, h1, lead, body = '', s
 <meta property="og:description" content="${safeDescription}"/>
 <meta property="og:url" content="${safeCanonical}"/>
 <meta property="og:image" content="${SITE_URL}/logo.png"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
 <link rel="stylesheet" href="/style.css"/>
 <script type="application/ld+json">${jsonLd}</script>
 </head>
@@ -392,6 +396,110 @@ function renderListingPage({ slug, title, h1, lead, description, companies }) {
   });
 }
 
+const STATIC_INFO_PAGES = {
+  about: {
+    title: 'À propos - IceMorocco',
+    h1: 'À propos d’IceMorocco',
+    lead: 'IceMorocco aide les professionnels au Maroc à rechercher une société par ICE ou par nom, puis à préparer leurs documents commerciaux plus rapidement.',
+    description: 'À propos d’IceMorocco, plateforme marocaine de recherche ICE, annuaire entreprises et outils professionnels pour facture, salaire et chiffres en lettres.',
+    body: `
+      <h2>Notre mission</h2>
+      <p>IceMorocco rassemble un moteur de recherche ICE Maroc et des outils pratiques pour les entrepreneurs, freelances, comptables et petites entreprises. Le service vise à rendre la vérification d’une société plus simple avant un devis, une facture, un partenariat ou une démarche administrative.</p>
+      <h2>Ce que le site propose</h2>
+      <p>La plateforme permet de rechercher une entreprise par nom ou numéro ICE, consulter les informations disponibles, vérifier le format d’un ICE, générer une facture conforme, convertir des montants en lettres et utiliser des calculateurs utiles pour la gestion quotidienne.</p>
+      <h2>Important</h2>
+      <p>IceMorocco n’est pas un site gouvernemental et ne remplace pas les organismes officiels. Les informations sont fournies à titre indicatif et doivent être vérifiées auprès des administrations ou professionnels compétents avant toute décision importante.</p>
+    `,
+  },
+  contact: {
+    title: 'Contact - IceMorocco',
+    h1: 'Contact',
+    lead: 'Une erreur à signaler, une amélioration à proposer ou une question sur IceMorocco ? Vous pouvez nous contacter directement.',
+    description: 'Contact IceMorocco pour signaler une erreur de donnée entreprise, demander une correction, proposer une amélioration ou une collaboration.',
+    body: `
+      <h2>Nous contacter</h2>
+      <p>Pour toute demande liée au site, envoyez un message à <strong>contact@icemar.com</strong>.</p>
+      <h2>Demandes fréquentes</h2>
+      <p>Vous pouvez nous écrire pour signaler une information incorrecte, demander une correction, proposer une fonctionnalité, signaler un problème technique ou discuter d’une collaboration professionnelle.</p>
+      <h2>Données entreprises</h2>
+      <p>Si votre demande concerne une fiche entreprise, indiquez le nom de la société, le numéro ICE si disponible et la correction souhaitée afin de faciliter la vérification.</p>
+    `,
+  },
+  privacy: {
+    title: 'Politique de Confidentialité - IceMorocco',
+    h1: 'Politique de Confidentialité',
+    lead: 'Cette politique explique comment IceMorocco traite les recherches, le stockage local, les cookies et les services publicitaires éventuels.',
+    description: 'Politique de confidentialité IceMorocco : données saisies, stockage local, cookies, publicité Google AdSense et contact confidentialité.',
+    body: `
+      <h2>Données saisies</h2>
+      <p>Les informations saisies dans le moteur de recherche ou dans les outils servent à fournir la fonctionnalité demandée. Les recherches peuvent être utilisées pour interroger les sources disponibles et afficher des résultats pertinents.</p>
+      <h2>Stockage local</h2>
+      <p>IceMorocco peut utiliser le stockage local du navigateur pour améliorer l’expérience, par exemple conserver temporairement des préférences, des résultats déjà consultés ou des informations de facture saisies par l’utilisateur.</p>
+      <h2>Cookies, mesure et publicité</h2>
+      <p>Le site peut utiliser des cookies ou technologies similaires pour le fonctionnement, la mesure d’audience et la publicité. Si Google AdSense est activé, Google et ses partenaires peuvent utiliser des cookies pour diffuser des annonces, mesurer leur performance et, lorsque permis, personnaliser les annonces selon les visites sur ce site ou d’autres sites.</p>
+      <h2>Choix de l’utilisateur</h2>
+      <p>Les visiteurs peuvent gérer les cookies dans les paramètres de leur navigateur et peuvent consulter les paramètres de publicité Google à l’adresse <a href="https://adssettings.google.com/" rel="nofollow noopener">adssettings.google.com</a>.</p>
+      <h2>Partage des données</h2>
+      <p>IceMorocco ne vend pas volontairement les informations saisies dans ses outils. Certaines requêtes peuvent toutefois être transmises à des services externes afin de fournir la recherche live ou la mesure technique du site.</p>
+      <h2>Contact confidentialité</h2>
+      <p>Pour toute question liée à la confidentialité ou à une demande de correction, contactez <strong>contact@icemar.com</strong>.</p>
+    `,
+  },
+  terms: {
+    title: 'Conditions d’Utilisation - IceMorocco',
+    h1: 'Conditions d’Utilisation',
+    lead: 'Ces conditions encadrent l’utilisation du moteur de recherche ICE Maroc et des outils proposés sur IceMorocco.',
+    description: 'Conditions d’utilisation IceMorocco : règles du service, données indicatives, responsabilité, disponibilité et usage autorisé.',
+    body: `
+      <h2>Acceptation</h2>
+      <p>En utilisant IceMorocco, vous acceptez d’utiliser les informations et les outils sous votre propre responsabilité.</p>
+      <h2>Usage autorisé</h2>
+      <p>Le site est destiné à la recherche d’informations d’entreprise, à la préparation de documents commerciaux et à des calculs indicatifs utiles aux professionnels.</p>
+      <h2>Exactitude des informations</h2>
+      <p>Nous faisons des efforts pour afficher des informations utiles, mais aucune garantie n’est donnée sur l’exhaustivité, l’actualité ou l’exactitude des données affichées.</p>
+      <h2>Responsabilité</h2>
+      <p>IceMorocco ne remplace pas un conseil juridique, fiscal, comptable ou administratif. Toute décision importante doit être validée auprès d’une source officielle ou d’un professionnel qualifié.</p>
+      <h2>Disponibilité</h2>
+      <p>Le service peut évoluer, être interrompu ou modifié à tout moment pour maintenance, amélioration ou contrainte technique.</p>
+    `,
+  },
+  faq: {
+    title: 'FAQ Recherche ICE Maroc - IceMorocco',
+    h1: 'Questions fréquentes',
+    lead: 'Réponses rapides sur la recherche ICE Maroc, la vérification d’entreprise et l’utilisation des données disponibles.',
+    description: 'FAQ IceMorocco : comment rechercher une entreprise par ICE, trouver une société par nom et comprendre les données affichées.',
+    body: `
+      <h2>Comment rechercher une société par ICE ?</h2>
+      <p>Choisissez le mode ICE, saisissez le numéro à 15 chiffres, puis lancez la recherche. Si une fiche correspondante est disponible, les informations associées seront affichées.</p>
+      <h2>Comment trouver l’ICE avec le nom d’une entreprise ?</h2>
+      <p>Choisissez le mode Nom et saisissez la raison sociale ou une partie du nom. Les résultats peuvent afficher l’ICE, la ville, le RC, la forme juridique, l’activité et la date de création lorsque ces données existent.</p>
+      <h2>Pourquoi vérifier une entreprise marocaine ?</h2>
+      <p>La vérification aide à limiter les erreurs de facturation, identifier un client ou fournisseur, préparer un devis et mieux comprendre une société avant une collaboration.</p>
+      <h2>Les données sont-elles officielles ?</h2>
+      <p>Les données sont affichées à titre indicatif. Pour un usage juridique, fiscal ou administratif, vérifiez toujours auprès des organismes officiels compétents.</p>
+    `,
+  },
+};
+
+function renderInfoPage(slug, page) {
+  const canonical = `${SITE_URL}/${slug}`;
+  return renderSeoLayout({
+    title: page.title,
+    description: page.description,
+    canonical,
+    h1: page.h1,
+    lead: page.lead,
+    body: `<section class="seo-panel info-card legal-copy">${page.body}</section>`,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: page.h1,
+      url: canonical,
+      description: page.description,
+    },
+  });
+}
+
 function renderRobots() {
   return `User-agent: *
 Allow: /
@@ -410,6 +518,7 @@ function renderSitemap() {
     sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '0.95'),
     sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
     sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
+    ...Object.keys(STATIC_INFO_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.75')),
     ...SEO_CITIES.map(city => sitemapEntry(`${SITE_URL}/ville/${slugify(city)}`, '0.8')),
     ...Object.keys(SEO_CATEGORIES).map(cat => sitemapEntry(`${SITE_URL}/categorie/${cat}`, '0.8')),
     ...LOCAL_COMPANIES.filter(company => company.name).slice(0, 500).flatMap(company => {
@@ -704,6 +813,12 @@ const requestHandler = async (req, res) => {
   if (pathname === '/sitemap.xml') {
     res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
     return res.end(renderSitemap());
+  }
+
+  const infoPageSlug = pathname.replace(/^\/|\/$/g, '');
+  if (STATIC_INFO_PAGES[infoPageSlug]) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(renderInfoPage(infoPageSlug, STATIC_INFO_PAGES[infoPageSlug]));
   }
 
   if (pathname === '/recherche-ice-maroc' || pathname === '/annuaire-entreprises-marocaines') {

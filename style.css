@@ -255,9 +255,15 @@ button{appearance:none}
 .contact-card strong{display:block;color:var(--ink);overflow-wrap:anywhere}
 .contact-card p{grid-column:1/-1}
 .legal-links{display:flex;flex-wrap:wrap;gap:7px 9px;margin-top:10px;align-items:center}
-.legal-links button{border:0;background:transparent;color:rgba(255,255,255,.52);font-size:.72rem;font-weight:800;cursor:pointer;padding:0}
-.legal-links button:hover{color:#fff}
+.legal-links a{border:0;background:transparent;color:rgba(255,255,255,.52);font-size:.72rem;font-weight:800;cursor:pointer;padding:0;text-decoration:none}
+.legal-links a:hover{color:#fff}
 .legal-links span{color:rgba(255,255,255,.28)}
+.legal-copy a{color:var(--brand);font-weight:950;text-decoration:none}
+.legal-copy a:hover{text-decoration:underline}
+.site-footer{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 18px;padding:24px clamp(16px,4vw,46px);border-top:1px solid rgba(228,221,209,.95);background:rgba(255,253,248,.82);color:var(--muted);font-size:.84rem;font-weight:800}
+.site-footer span{color:var(--ink-3);font-weight:950}
+.site-footer a{color:var(--muted);text-decoration:none}
+.site-footer a:hover{color:var(--brand)}
 
 /* Invoice */
 .inv-container{max-width:980px;margin:0 auto;padding:34px clamp(16px,4vw,44px) 70px}

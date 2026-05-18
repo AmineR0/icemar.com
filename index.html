@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css?v=20260518-hero-clean"/>
+<link rel="stylesheet" href="style.css?v=20260518-ads-ready"/>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -140,13 +140,13 @@
     <div class="sb-foot">
       <div>Service gratuit · données à titre indicatif</div>
       <div class="legal-links">
-        <button onclick="showPage('terms')">Conditions d'Utilisation</button>
+        <a href="/terms">Conditions d'Utilisation</a>
         <span>•</span>
-        <button onclick="showPage('privacy')">Politique de Confidentialité</button>
+        <a href="/privacy">Politique de Confidentialité</a>
         <span>•</span>
-        <button onclick="showPage('contact')">Contact</button>
-        <button onclick="showPage('about')">À Propos</button>
-        <button onclick="showPage('faq')">Questions Fréquentes</button>
+        <a href="/contact">Contact</a>
+        <a href="/about">À Propos</a>
+        <a href="/faq">Questions Fréquentes</a>
       </div>
     </div>
   </aside>
@@ -557,10 +557,10 @@
           <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
         </div>
         <div class="info-card contact-card">
-          <div><span>Email</span><strong>contact@icemorocco.ma</strong></div>
+          <div><span>Email</span><strong>contact@icemar.com</strong></div>
           <div><span>Objet conseillé</span><strong>Erreur donnée · Suggestion · Partenariat</strong></div>
           <div><span>Délai de réponse</span><strong>Selon disponibilité</strong></div>
-          <p>Remplacez cet email par votre adresse officielle avant la mise en ligne publique.</p>
+          <p>Pour une correction de fiche entreprise, indiquez le nom de la société, l'ICE si disponible et la correction demandée.</p>
         </div>
       </section>
     </div>
@@ -604,14 +604,25 @@
           <h3>Stockage local</h3>
           <p>Le site peut utiliser le stockage local du navigateur pour améliorer l'expérience, par exemple conserver des informations de facture ou des résultats déjà consultés.</p>
           <h3>Publicité</h3>
-          <p>Des emplacements publicitaires peuvent être ajoutés ultérieurement. Si des régies publicitaires sont intégrées, elles peuvent utiliser leurs propres technologies de mesure ou de personnalisation.</p>
+          <p>Des emplacements publicitaires peuvent être ajoutés ultérieurement. Si Google AdSense ou une autre régie est intégrée, des cookies ou technologies similaires peuvent être utilisés pour diffuser des annonces, mesurer leur performance et, lorsque permis, personnaliser les annonces selon les visites sur ce site ou sur d'autres sites.</p>
+          <h3>Choix publicitaires</h3>
+          <p>Les visiteurs peuvent gérer les cookies dans les paramètres de leur navigateur et consulter les paramètres de publicité Google sur adssettings.google.com.</p>
           <h3>Partage</h3>
           <p>Nous ne vendons pas volontairement les données saisies dans les outils. Les requêtes de recherche peuvent toutefois être nécessaires pour interroger des sources externes lorsque la recherche live est utilisée.</p>
           <h3>Contact confidentialité</h3>
-          <p>Pour toute demande liée à la confidentialité, contactez l'adresse indiquée sur la page Contact après remplacement par votre email officiel.</p>
+          <p>Pour toute demande liée à la confidentialité, contactez contact@icemar.com.</p>
         </div>
       </section>
     </div>
+
+    <footer class="site-footer" aria-label="Liens utiles">
+      <span>IceMorocco · données à titre indicatif</span>
+      <a href="/about">À propos</a>
+      <a href="/faq">FAQ</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Politique de Confidentialité</a>
+      <a href="/terms">Conditions d'Utilisation</a>
+    </footer>
 
   </main>
 </div><!-- /shell -->
@@ -635,6 +646,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260518-scroll-soft"></script>
+<script src="app.js?v=20260518-ads-ready"></script>
 </body>
 </html>
