@@ -16,7 +16,7 @@ const { URLSearchParams } = require('url');
 
 const PORT = 3000;
 const STATIC_DIR = __dirname;
-const SITE_URL = (process.env.SITE_URL || 'https://icemar.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://icemorocco.com').replace(/\/$/, '');
 const GOOGLE_SITE_VERIFICATION = '-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
@@ -418,7 +418,7 @@ const STATIC_INFO_PAGES = {
     description: 'Contact IceMorocco pour signaler une erreur de donnée entreprise, demander une correction, proposer une amélioration ou une collaboration.',
     body: `
       <h2>Nous contacter</h2>
-      <p>Pour toute demande liée au site, envoyez un message à <strong>contact@icemar.com</strong>.</p>
+      <p>Pour toute demande liée au site, envoyez un message à <strong>contact@icemorocco.com</strong>.</p>
       <h2>Demandes fréquentes</h2>
       <p>Vous pouvez nous écrire pour signaler une information incorrecte, demander une correction, proposer une fonctionnalité, signaler un problème technique ou discuter d’une collaboration professionnelle.</p>
       <h2>Données entreprises</h2>
@@ -442,7 +442,7 @@ const STATIC_INFO_PAGES = {
       <h2>Partage des données</h2>
       <p>IceMorocco ne vend pas volontairement les informations saisies dans ses outils. Certaines requêtes peuvent toutefois être transmises à des services externes afin de fournir la recherche live ou la mesure technique du site.</p>
       <h2>Contact confidentialité</h2>
-      <p>Pour toute question liée à la confidentialité ou à une demande de correction, contactez <strong>contact@icemar.com</strong>.</p>
+      <p>Pour toute question liée à la confidentialité ou à une demande de correction, contactez <strong>contact@icemorocco.com</strong>.</p>
     `,
   },
   terms: {
