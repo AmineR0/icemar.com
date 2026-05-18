@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css?v=20260518-search-fast"/>
+<link rel="stylesheet" href="style.css?v=20260518-hero-clean"/>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -158,9 +158,8 @@
     <div id="page-search" class="page active">
       <div class="empty-state" id="empty-state">
         <section class="ice-landing">
-          <div class="hero-kicker">Recherche entreprise Maroc</div>
           <h1>Recherche ICE Maroc</h1>
-          <p>Recherchez une entreprise marocaine par numéro ICE, nom de société, ville ou activité. IceMorocco aide les professionnels à vérifier rapidement les informations disponibles sur les sociétés au Maroc.</p>
+          <p class="hero-lead">Un moteur sobre pour retrouver rapidement l'ICE, le RC et les informations essentielles d'une société marocaine avant une facture, un devis ou une vérification client.</p>
           <div class="home-ice-card">
             <div class="mode-toggle home-mode-toggle">
               <button class="mt-btn active" id="mt-nom" onclick="setMode('nom')">Nom</button>
@@ -636,6 +635,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260518-search-fast"></script>
+<script src="app.js?v=20260518-hero-clean"></script>
 </body>
 </html>

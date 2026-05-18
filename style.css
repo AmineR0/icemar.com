@@ -86,14 +86,15 @@ button{appearance:none}
 .main{overflow:visible;background:linear-gradient(180deg,rgba(255,253,248,.88),rgba(244,239,229,.78))}
 .page{display:none;min-height:100%}
 .page.active{display:block}
-.empty-state{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px clamp(18px,5vw,72px);position:relative;overflow:hidden}
+.empty-state{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px clamp(18px,5vw,72px);position:relative;overflow:hidden}
 .empty-state:has(+ #results-panel[style*="block"]){min-height:auto;padding-bottom:22px}
 .empty-state::before{content:"";position:absolute;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.18),transparent 68%);top:-220px;right:-120px;pointer-events:none}
 .empty-state::after{content:"";position:absolute;inset:auto auto 8% 7%;width:210px;height:150px;border-radius:36px;background:linear-gradient(135deg,rgba(200,135,43,.16),rgba(20,184,166,.1));transform:rotate(-12deg);pointer-events:none}
 .ice-landing{position:relative;z-index:1;width:min(820px,100%);text-align:center}
-.hero-kicker{margin:0 auto 18px;color:#0b6f66;background:#d9fff7;border:1px solid #a6eee3}
-.empty-state h1,.empty-state h2{margin-inline:auto;max-width:760px;font-family:var(--display);font-size:clamp(2.55rem,6vw,5.9rem);line-height:.88;letter-spacing:-.085em;color:var(--ink);margin-bottom:22px}
+.hero-kicker{display:none}
+.empty-state h1,.empty-state h2{margin-inline:auto;max-width:760px;font-family:var(--display);font-size:clamp(2.55rem,6vw,5.9rem);line-height:.88;letter-spacing:-.085em;color:var(--ink);margin-bottom:20px}
 .empty-state p{margin-inline:auto;max-width:590px;color:var(--muted);font-size:clamp(.98rem,1.7vw,1.14rem);line-height:1.8;margin-bottom:28px}
+.hero-lead{max-width:650px!important;color:#566672!important;font-weight:650}
 .home-ice-card{padding:16px;border:1px solid rgba(228,221,209,.95);border-radius:30px;background:rgba(255,255,255,.86);box-shadow:var(--shadow);text-align:left}
 .home-mode-toggle{border-color:var(--line);background:#f6f0e6;margin-bottom:16px}
 .home-mode-toggle .mt-btn{color:var(--muted)}
