@@ -18,6 +18,7 @@ const PORT = 3000;
 const STATIC_DIR = __dirname;
 const SITE_URL = (process.env.SITE_URL || 'https://icemorocco.com').replace(/\/$/, '');
 const GOOGLE_SITE_VERIFICATION = '-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ';
+const ADSENSE_CLIENT = 'ca-pub-1097439023725884';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
 const FAST_SOURCE_TIMEOUT = 1200;
@@ -283,6 +284,7 @@ function renderSeoLayout({ title, description, canonical, h1, lead, body = '', s
 <meta name="description" content="${safeDescription}"/>
 <meta name="robots" content="index,follow,max-image-preview:large"/>
 <meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}"/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>
 <link rel="canonical" href="${safeCanonical}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:locale" content="fr_MA"/>
