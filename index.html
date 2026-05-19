@@ -314,11 +314,16 @@
 
         <div class="invoice-workbench">
           <div class="invoice-editor no-print">
-            <div class="editor-card">
-              <div class="editor-card-head">
+            <div class="editor-intro">
+              <strong>Créer votre facture</strong>
+              <p>Remplissez l'essentiel à gauche. Le document final se met à jour en direct à droite.</p>
+            </div>
+
+            <details class="editor-card" open>
+              <summary class="editor-card-head">
                 <span>01</span>
                 <h3>Document</h3>
-              </div>
+              </summary>
               <div class="editor-grid two">
                 <label><span>Type</span><select class="pf" id="doc-type" onchange="syncDocType();updateInvoicePreview()">
                   <option value="FACTURE CONFORME">Facture conforme</option>
@@ -339,36 +344,36 @@
                   <option>MAD</option><option>EUR</option><option>USD</option>
                 </select></label>
               </div>
-            </div>
+            </details>
 
-            <div class="editor-card">
-              <div class="editor-card-head">
+            <details class="editor-card" open>
+              <summary class="editor-card-head">
                 <span>02</span>
                 <h3>Votre entreprise</h3>
-              </div>
+              </summary>
               <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany();updateInvoicePreview()"/>
               <input class="pf" id="s-addr" placeholder="Adresse" oninput="updateInvoicePreview()"/>
               <div class="editor-grid two"><input class="pf" id="s-city" placeholder="Ville" oninput="syncCompany();updateInvoicePreview()"/><input class="pf ice-f" id="s-ice" placeholder="ICE" maxlength="15" oninput="updateInvoicePreview()"/></div>
               <div class="editor-grid two optional-fields"><input class="pf" id="s-if" placeholder="IF" oninput="updateInvoicePreview()"/><input class="pf" id="s-rc" placeholder="RC" oninput="updateInvoicePreview()"/></div>
               <div class="editor-grid two optional-fields"><input class="pf" id="s-tel" placeholder="Téléphone" oninput="syncCompany();updateInvoicePreview()"/><input class="pf" id="s-email" placeholder="Email" oninput="syncCompany();updateInvoicePreview()"/></div>
-            </div>
+            </details>
 
-            <div class="editor-card">
-              <div class="editor-card-head">
+            <details class="editor-card" open>
+              <summary class="editor-card-head">
                 <span>03</span>
                 <h3>Client</h3>
-              </div>
+              </summary>
               <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client" oninput="updateInvoicePreview()"/>
               <input class="pf" id="c-addr" placeholder="Adresse du client" oninput="updateInvoicePreview()"/>
               <div class="editor-grid two"><input class="pf" id="c-city" placeholder="Ville" oninput="updateInvoicePreview()"/><input class="pf ice-f" id="c-ice" placeholder="ICE client" maxlength="15" oninput="updateInvoicePreview()"/></div>
               <div class="editor-grid two optional-fields"><input class="pf" id="c-if" placeholder="IF client" oninput="updateInvoicePreview()"/><input class="pf" id="c-tel" placeholder="Téléphone" oninput="updateInvoicePreview()"/></div>
-            </div>
+            </details>
 
-            <div class="editor-card">
-              <div class="editor-card-head">
+            <details class="editor-card" open>
+              <summary class="editor-card-head">
                 <span>04</span>
                 <h3>Lignes de facture</h3>
-              </div>
+              </summary>
               <div class="items-editor-wrap">
                 <table class="items-tbl editor-items">
                   <thead><tr>
@@ -378,13 +383,13 @@
                 </table>
               </div>
               <button class="add-row" onclick="addRow()">+ Ajouter une ligne</button>
-            </div>
+            </details>
 
-            <div class="editor-card">
-              <div class="editor-card-head">
+            <details class="editor-card">
+              <summary class="editor-card-head">
                 <span>05</span>
                 <h3>Paiement & notes</h3>
-              </div>
+              </summary>
               <div class="editor-grid two">
                 <label><span>Mode</span><select class="pf" id="pay-method" onchange="updateInvoicePreview()">
                   <option>Virement bancaire</option>
@@ -397,7 +402,7 @@
               </div>
               <input class="pf" id="pay-rib" placeholder="RIB / IBAN" oninput="updateInvoicePreview()"/>
               <textarea class="pf" id="notes" rows="4" placeholder="Ex: Paiement à 30 jours. RIB: ..." oninput="updateInvoicePreview()"></textarea>
-            </div>
+            </details>
           </div>
 
         <!-- PAPER -->
