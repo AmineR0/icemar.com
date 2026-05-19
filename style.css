@@ -266,8 +266,8 @@ button{appearance:none}
 .site-footer a:hover{color:var(--brand)}
 
 /* Invoice */
-.inv-container{max-width:1280px;margin:0 auto;padding:34px clamp(16px,4vw,44px) 70px}
-.inv-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.inv-container{max-width:1480px;margin:0 auto;padding:30px clamp(18px,3vw,34px) 70px}
+.inv-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
 .inv-h2{font-family:var(--display);font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.06em;color:var(--ink)}
 .inv-p{margin-top:5px;color:var(--muted);font-weight:700}
 .inv-tb-btns{display:flex;gap:10px;flex-wrap:wrap}
@@ -277,27 +277,27 @@ button{appearance:none}
 .outline{background:#fff;border:1px solid var(--brand);color:var(--brand)}
 .solid{border:0;background:var(--ink);color:#fff;box-shadow:0 14px 30px rgba(15,31,46,.16)}
 .inv-notice{padding:13px 16px;border-radius:18px;background:var(--gold-soft);border:1px solid #f2d398;color:#835113;font-weight:800;margin-bottom:20px}
-.invoice-workbench{display:grid;grid-template-columns:minmax(320px,380px) minmax(0,1fr);gap:24px;align-items:start}
+.invoice-workbench{display:grid;grid-template-columns:minmax(300px,350px) minmax(720px,1fr);gap:28px;align-items:start}
 .invoice-editor{position:sticky;top:92px;display:grid;gap:10px}
-.editor-intro{padding:16px 18px;border:1px solid rgba(228,221,209,.95);border-radius:20px;background:linear-gradient(135deg,#fff,#f7f0e5);box-shadow:var(--shadow-sm)}
+.editor-intro{padding:14px 16px;border:1px solid rgba(228,221,209,.95);border-radius:18px;background:linear-gradient(135deg,#fff,#f7f0e5);box-shadow:0 10px 24px rgba(34,44,54,.06)}
 .editor-intro strong{display:block;color:var(--ink);font-family:var(--display);font-size:1.22rem;letter-spacing:-.04em;margin-bottom:4px}
 .editor-intro p{color:var(--muted);font-size:.9rem;font-weight:750;line-height:1.55}
 .editor-card{padding:0;border:1px solid rgba(228,221,209,.95);border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(34,44,54,.06);overflow:hidden}
-.editor-card-head{display:flex;align-items:center;gap:10px;margin:0;padding:14px 15px;cursor:pointer;list-style:none}
+.editor-card-head{display:flex;align-items:center;gap:10px;margin:0;padding:12px 14px;cursor:pointer;list-style:none}
 .editor-card-head::-webkit-details-marker{display:none}
 .editor-card-head span{width:30px;height:30px;border-radius:999px;display:grid;place-items:center;background:#e3fff9;color:var(--brand);font-family:var(--display);font-size:.76rem;font-weight:900}
 .editor-card-head h3{font-family:var(--display);font-size:1.1rem;letter-spacing:-.04em;color:var(--ink)}
 .editor-card-head::after{content:"+";margin-left:auto;width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:#f4efe5;color:var(--muted);font-weight:950}
 .editor-card[open]>.editor-card-head::after{content:"-";background:#e3fff9;color:var(--brand)}
 .editor-card[open]{box-shadow:var(--shadow-sm)}
-.editor-card>.editor-grid,.editor-card>input,.editor-card>.items-editor-wrap,.editor-card>.add-row,.editor-card>textarea{margin-left:15px;margin-right:15px}
+.editor-card>.editor-grid,.editor-card>input,.editor-card>.items-editor-wrap,.editor-card>.add-row,.editor-card>textarea{margin-left:14px;margin-right:14px}
 .editor-card>.editor-grid:last-child,.editor-card>input:last-child,.editor-card>textarea:last-child{margin-bottom:12px}
 .editor-grid{display:grid;gap:8px}
 .editor-grid.two{grid-template-columns:1fr 1fr}
 .editor-card label span{display:block;margin-bottom:5px;color:var(--soft);font-size:.62rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
 .editor-card .optional-fields{display:none}
 .items-editor-wrap{overflow:auto;margin-bottom:10px}
-.editor-items{min-width:520px;margin-bottom:0}
+.editor-items{min-width:500px;margin-bottom:0}
 .editor-items th{font-size:.58rem}
 .editor-items td{padding:4px}
 .invoice-side{position:sticky;top:22px;display:grid;gap:12px}
@@ -306,17 +306,18 @@ button{appearance:none}
 .side-card p{color:var(--muted);font-weight:750;line-height:1.65}
 .side-steps{gap:8px}
 .side-steps span{display:block;padding:10px 12px;border-radius:14px;background:#fbf7ef;color:var(--ink-3);font-size:.84rem;font-weight:900;margin-bottom:8px}
-.paper{position:sticky;top:92px;background:var(--paper);border:1px solid #ddd3c2;border-radius:18px;padding:clamp(18px,4vw,30px);box-shadow:var(--shadow)}
-.paper-header{display:grid;grid-template-columns:1fr auto;gap:24px;margin-bottom:18px;padding-bottom:18px;border-bottom:2px solid var(--ink)}
+.paper{position:sticky;top:92px;background:var(--paper);border:1px solid #ddd3c2;border-radius:18px;padding:clamp(24px,3.2vw,42px);box-shadow:var(--shadow)}
+.paper-header{display:grid;grid-template-columns:1fr auto;gap:30px;margin-bottom:22px;padding-bottom:20px;border-bottom:1.5px solid var(--ink)}
 .ph-left{display:flex;align-items:center;gap:15px}
 .ph-logo-box{width:auto;min-width:74px;height:42px;padding:0 16px;border-radius:999px;display:grid;place-items:center;background:#f4efe5;border:1px solid var(--line);color:var(--brand);font-family:var(--display);font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .ph-company{font-family:var(--display);font-size:1.25rem;font-weight:700;letter-spacing:-.04em;color:var(--ink)}
 .ph-meta-line{margin-top:3px;color:var(--muted);font-size:.85rem;font-weight:700}
-.ph-invoice-box{min-width:210px;border-radius:10px;padding:14px 18px;text-align:right;background:linear-gradient(135deg,var(--brand),#0d4f4a);box-shadow:0 16px 34px rgba(15,118,110,.18)}
+.ph-right{text-align:right;align-self:start}
+.ph-doc-title{font-family:var(--display);font-size:clamp(1.75rem,3.2vw,3rem);font-weight:700;line-height:.92;letter-spacing:-.075em;color:var(--ink);text-transform:uppercase}
+.ph-doc-number{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 12px;border-radius:999px;background:#f4efe5;border:1px solid var(--line);color:var(--muted);font-size:.8rem;font-weight:950}
+.ph-doc-number strong{font-family:var(--display);font-size:1rem;color:var(--brand);letter-spacing:-.02em}
 .doc-type-select{width:100%;border:1px solid rgba(255,255,255,.24);border-radius:999px;background:rgba(255,255,255,.12);color:#fff;padding:8px 10px;margin-bottom:10px;font-weight:950;outline:none}
 .doc-type-select option{color:var(--ink)}
-.ph-inv-label{font-size:.68rem;font-weight:950;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65)}
-.ph-inv-num{font-family:var(--display);font-size:1.45rem;font-weight:700;color:#fff}
 .ph-dates{display:grid;gap:7px;margin-top:12px}
 .ph-date-row{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:8px}
 .ph-date-row label{color:var(--muted);font-size:.78rem;font-weight:900}
@@ -436,16 +437,16 @@ button{appearance:none}
   .paper{box-shadow:none!important;border:0!important;border-radius:0!important;padding:0!important;background:#fff!important;font-size:10px!important;line-height:1.25!important}
   .pf{min-height:0!important;border:0!important;background:transparent!important;padding:1px 2px!important;box-shadow:none!important;font-size:10px!important;line-height:1.2!important;margin-bottom:0!important}
   .invoice-workbench{display:block}
-  .ph-invoice-box,.trow.ttc{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ph-doc-number,.trow.ttc{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .paper-parties,.paper-header{grid-template-columns:1fr 1fr}
   .paper-header{gap:14px!important;margin-bottom:8px!important;padding-bottom:8px!important;border-bottom-width:1px!important}
   .ph-left{gap:8px!important}
   .ph-logo-box{min-width:44px!important;height:22px!important;padding:0 8px!important;font-size:7px!important}
   .ph-company{font-size:14px!important}
   .ph-meta-line{font-size:9px!important;margin-top:1px!important}
-  .ph-invoice-box{min-width:150px!important;padding:8px 10px!important;border-radius:7px!important}
-  .ph-inv-label{font-size:7px!important;letter-spacing:.12em!important}
-  .ph-inv-num{font-size:16px!important}
+  .ph-doc-title{font-size:26px!important}
+  .ph-doc-number{margin-top:6px!important;padding:4px 8px!important;font-size:8px!important}
+  .ph-doc-number strong{font-size:10px!important}
   .invoice-settings{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:4px!important;margin-bottom:8px!important;padding:6px!important;border-radius:6px!important}
   .invoice-settings label span{margin-bottom:1px!important;font-size:6.5px!important}
   .paper-parties{gap:8px!important;margin-bottom:8px!important}
@@ -570,9 +571,10 @@ button{appearance:none}
   .ph-logo-box{min-width:64px;height:36px;padding:0 12px;border-radius:999px;font-size:.7rem}
   .ph-company{font-size:1.08rem;line-height:1.2}
   .ph-meta-line{font-size:.76rem;line-height:1.45}
-  .ph-invoice-box{text-align:left;min-width:0;padding:12px}
+  .ph-right{text-align:left}
+  .ph-doc-title{font-size:2rem}
+  .ph-doc-number{margin-top:8px}
   .doc-type-select{margin-bottom:8px}
-  .ph-inv-num{font-size:1.2rem}
   .preview-meta-grid{grid-template-columns:1fr 1fr;gap:8px;padding:10px;margin-bottom:12px}
   .invoice-settings{grid-template-columns:1fr;gap:8px;padding:10px;margin-bottom:12px}
   .invoice-settings label:first-child,.invoice-settings label:nth-child(4){grid-column:auto}

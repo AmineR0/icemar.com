@@ -1086,7 +1086,7 @@ function syncCompany(){
 }
 function syncNum(){
   const v=document.getElementById('inv-num')?.value||'';
-  const el=document.getElementById('ph-inv-num'); if(el)el.textContent='#'+v;
+  const el=document.getElementById('ph-inv-num'); if(el)el.textContent=v||'2024-001';
 }
 function syncDocType(){
   const value=document.getElementById('doc-type')?.value||'FACTURE CONFORME';
