@@ -1080,16 +1080,15 @@ function syncCompany(){
   const c=document.getElementById('ph-company'); if(c)c.textContent=n||'Nom de votre société';
   const city=document.getElementById('s-city')?.value;
   const tel=document.getElementById('s-tel')?.value;
-  const email=document.getElementById('s-email')?.value;
   const m=document.getElementById('ph-meta-line');
-  if(m)m.textContent=[city,tel,email].filter(Boolean).join(' · ');
+  if(m)m.textContent=[city,tel].filter(Boolean).join(' · ');
 }
 function syncNum(){
   const v=document.getElementById('inv-num')?.value||'';
   const el=document.getElementById('ph-inv-num'); if(el)el.textContent=v||'2024-001';
 }
 function syncDocType(){
-  const value=document.getElementById('doc-type')?.value||'FACTURE CONFORME';
+  const value=document.getElementById('doc-type')?.value||'FACTURE';
   sv2('ph-doc-type',value);
   const label=value.charAt(0)+value.slice(1).toLowerCase();
   sv2('paper-doc-type',label);
@@ -1120,7 +1119,7 @@ function updateInvoicePreview(){
     fieldValue('s-if','')?`IF ${fieldValue('s-if','')}`:'',
     fieldValue('s-rc','')?`RC ${fieldValue('s-rc','')}`:'',
   ],'Ville · ICE · IF · RC'));
-  sv2('p-s-contact',joinFields([fieldValue('s-tel',''),fieldValue('s-email','')],'Téléphone · Email'));
+  sv2('p-s-contact',fieldValue('s-tel','Téléphone'));
   sv2('p-c-name',fieldValue('c-name','Nom / Raison sociale du client'));
   sv2('p-c-addr',fieldValue('c-addr','Adresse du client'));
   sv2('p-c-line',joinFields([
