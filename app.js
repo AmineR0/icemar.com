@@ -6,8 +6,8 @@ let renderedResults=new Map();
 let searchInFlight=false;
 let searchRunId=0;
 let liveSearchController=null;
-const LIVE_CACHE_KEY='icm_live_company_cache_v3';
-const LEGACY_LIVE_CACHE_KEYS=['icm_live_company_cache_v1','icm_live_company_cache_v2'];
+const LIVE_CACHE_KEY='icm_live_company_cache_v4';
+const LEGACY_LIVE_CACHE_KEYS=['icm_live_company_cache_v1','icm_live_company_cache_v2','icm_live_company_cache_v3'];
 const SEARCH_STATE_KEY='icm_search_state_v1';
 const LIVE_CACHE_MAX_AGE=1000*60*60*24*7;
 const LIVE_HEALTH_TIMEOUT=2500;
@@ -473,6 +473,15 @@ function isRelevantApproxResult(c,raw,words,nameTokens){
   return (matchedNameTokens+fuzzyNameTokens)>=2||(matchedAllTokens+fuzzyAllTokens)>=Math.ceil(nameTokens.length*.65);
 }
 
+function keepUsefulSearchResult(c={},raw='',allResults=[]){
+  if(String(c.ice||'').replace(/\D/g,''))return true;
+  const queryKey=normalizeCompanyKey(raw);
+  const nameKey=normalizeCompanyKey(c.name);
+  if(queryKey&&nameKey&&queryKey===nameKey)return true;
+  const withIceCount=allResults.filter(item=>String(item.ice||'').replace(/\D/g,'')).length;
+  return withIceCount<5;
+}
+
 function countFuzzyTokenMatches(textKey='',tokens=[]){
   if(!textKey||!tokens.length)return 0;
   const textTokens=textKey.split(/\s+/).filter(Boolean);
@@ -778,6 +787,8 @@ function useLiveClient(name,addr,ville,email,ice,tel=''){
 }
 
 function renderResults(res,q){
+  const visibleResults=res.filter(c=>keepUsefulSearchResult(c,q,res));
+  res=visibleResults.length?visibleResults:res;
   renderedResults=new Map(res.filter(c=>c&&c.id!==undefined).map(c=>[Number(c.id),c]));
   document.getElementById('empty-state').style.display='flex';
   document.getElementById('res-title').textContent='Résultats de la recherche :';

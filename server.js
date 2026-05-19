@@ -186,6 +186,15 @@ function isCloseCompanyMatch(company = {}, query = '') {
   return nameMatches >= 2 || allMatches >= Math.ceil(tokens.length * 0.65);
 }
 
+function keepUsefulSearchResult(company = {}, query = '', allResults = []) {
+  if (normalizeIce(company.ice)) return true;
+  const queryKey = normalizeCompanyName(query);
+  const nameKey = normalizeCompanyName(company.name);
+  if (queryKey && nameKey && queryKey === nameKey) return true;
+  const withIceCount = allResults.filter(item => normalizeIce(item.ice)).length;
+  return withIceCount < 5;
+}
+
 function sameCompany(a = {}, b = {}) {
   const aIce = normalizeIce(a.ice);
   const bIce = normalizeIce(b.ice);
@@ -760,6 +769,25 @@ function searchDiscoveredByName(query) {
   return dedupeCompanies(sources.filter(company => isCloseCompanyMatch(company, query)));
 }
 
+async function enrichMissingIceFromIcemaroc(companies = []) {
+  const missing = companies
+    .filter(company => company && company.name && !normalizeIce(company.ice))
+    .slice(0, 6);
+  if (!missing.length) return companies;
+
+  const enrichments = await Promise.all(missing.map(async company => {
+    const matches = await withTimeout(searchIcemarocSource(company.name).catch(() => []), 1200, []);
+    const exact = dedupeCompanies(matches).find(match => sameCompany(company, match) && normalizeIce(match.ice));
+    return exact ? mergeCompanyRecords(exact, company) : company;
+  }));
+
+  const byName = new Map(enrichments.map(company => [normalizeCompanyName(company.name), company]));
+  return dedupeCompanies(companies.map(company => {
+    if (!company || normalizeIce(company.ice)) return company;
+    return byName.get(normalizeCompanyName(company.name)) || company;
+  }));
+}
+
 function parseSearchResults(html) {
   const results = [];
   const seen = new Set();
@@ -826,6 +854,32 @@ function formatCompanyDate(value = '') {
     return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
   }
   return raw;
+}
+
+async function searchIcemarocSource(query) {
+  try {
+    const apiUrl = `https://www.icemaroc.com/api/search.php?query=${encodeURIComponent(query)}`;
+    const text = await fetchUrl(apiUrl, { headers: { 'Referer': 'https://www.icemaroc.com/' } });
+    const data = JSON.parse(text);
+    if (!Array.isArray(data)) return [];
+
+    return data.map(item => ({
+      name: decodeHtml(item.raison_sociale || ''),
+      type: decodeHtml(item.forme || ''),
+      ice: item.ice || '',
+      rc: item.num_rc ? `${item.num_rc} (${decodeHtml(item.ville_rc || '')})` : '',
+      date: formatCompanyDate(item.dateCreation || ''),
+      cap: formatCapital(item.capital),
+      act: decodeHtml(item.activite || ''),
+      statut: (item.statut || '').toUpperCase() === 'EN ACTIVITE' ? 'Actif' : 'Dissous',
+      ville: decodeHtml(item.ville_rc || ''),
+      url: '',
+      slug: '',
+    })).filter(company => company.name);
+  } catch (err) {
+    console.error('IceMaroc error:', err.message);
+    return [];
+  }
 }
 
 function buildCharikaUrl(company = {}) {
@@ -1138,33 +1192,6 @@ const requestHandler = async (req, res) => {
   }
 
   // ── API: Search companies on charika.ma ──
-// --- IceMaroc Search ---
-async function searchIcemaroc(query) {
-  try {
-    const url = `https://www.icemaroc.com/api/search.php?query=${encodeURIComponent(query)}`;
-    const text = await fetchUrl(url, { headers: { 'Referer': 'https://www.icemaroc.com/' } });
-    const data = JSON.parse(text);
-    if (!Array.isArray(data)) return [];
-    
-    return data.map(item => ({
-      name: decodeHtml(item.raison_sociale || ''),
-      type: decodeHtml(item.forme || ''),
-      ice: item.ice || '',
-      rc: item.num_rc ? `${item.num_rc} (${decodeHtml(item.ville_rc || '')})` : '',
-      date: formatCompanyDate(item.dateCreation || ''),
-      cap: formatCapital(item.capital),
-      act: decodeHtml(item.activite || ''),
-      statut: (item.statut || '').toUpperCase() === 'EN ACTIVITE' ? 'Actif' : 'Dissous',
-      ville: decodeHtml(item.ville_rc || ''),
-      url: '',
-      slug: ''
-    }));
-  } catch (err) {
-    console.error('IceMaroc error:', err);
-    return [];
-  }
-}
-
   // Handle incoming HTTP requests
   if (url.pathname === '/api/search') {
     const q = url.searchParams.get('q');
@@ -1178,7 +1205,7 @@ async function searchIcemaroc(query) {
       console.log(`🔍 Searching APIs (${mode}): "${q}"`);
       const charikaPromise = searchCharikaAutocomplete(q).catch(() => []);
       const iceMarocResults = await withTimeout(
-        searchIcemaroc(q).catch(() => []),
+        searchIcemarocSource(q).catch(() => []),
         FAST_SOURCE_TIMEOUT,
         []
       );
@@ -1198,7 +1225,7 @@ async function searchIcemaroc(query) {
         for (const token of fallbackQueries) {
           const [tokenCharikaResults, tokenIceMarocResults] = await Promise.all([
             withTimeout(searchCharikaAutocomplete(token).catch(() => []), 1600, []),
-            withTimeout(searchIcemaroc(token).catch(() => []), 1600, []),
+            withTimeout(searchIcemarocSource(token).catch(() => []), 1600, []),
           ]);
           const tokenResults = [...tokenCharikaResults, ...tokenIceMarocResults];
           if (tokenResults.length) {
@@ -1207,6 +1234,7 @@ async function searchIcemaroc(query) {
         }
       }
 
+      results = await enrichMissingIceFromIcemaroc(results);
       rememberCompanies(results);
 
       if (mode === 'ice') {
@@ -1222,9 +1250,11 @@ async function searchIcemaroc(query) {
         });
       } else {
         results = dedupeCompanies([...results, ...searchDiscoveredByName(q)]);
+        results = await enrichMissingIceFromIcemaroc(results);
         const closeResults = results.filter(company => isCloseCompanyMatch(company, q));
         if (closeResults.length) results = closeResults;
         results.sort((a, b) => companySearchScore(b, q) - companySearchScore(a, q));
+        results = results.filter(company => keepUsefulSearchResult(company, q, results));
       }
 
       console.log(`   → ${results.length} autocomplete results`);
