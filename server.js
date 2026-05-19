@@ -122,6 +122,70 @@ function normalizeCompanyName(value = '') {
     .trim();
 }
 
+function searchTokens(value = '') {
+  return normalizeCompanyName(value)
+    .split(/\s+/)
+    .filter(token => token.length > 1 && !['ste', 'societe', 'sarl', 'sa', 'au', 'snc', 'maroc', 'ma'].includes(token));
+}
+
+function editDistance(a = '', b = '') {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      cur[j] = Math.min(cur[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+    }
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+function isCloseToken(queryToken = '', targetToken = '') {
+  if (!queryToken || !targetToken) return false;
+  if (targetToken.includes(queryToken) || queryToken.includes(targetToken)) return true;
+  if (queryToken.length < 4 || targetToken.length < 4) return false;
+  const maxDistance = queryToken.length >= 8 ? 3 : queryToken.length >= 6 ? 3 : queryToken.length >= 5 ? 2 : 1;
+  return editDistance(queryToken, targetToken) <= maxDistance;
+}
+
+function countFuzzyTokenMatches(text = '', tokens = []) {
+  const textTokens = normalizeCompanyName(text).split(/\s+/).filter(Boolean);
+  if (!textTokens.length || !tokens.length) return 0;
+  return tokens.filter(token => textTokens.some(part => isCloseToken(token, part))).length;
+}
+
+function companySearchScore(company = {}, query = '') {
+  const queryKey = normalizeCompanyName(query);
+  const nameKey = normalizeCompanyName(company.name);
+  const tokens = searchTokens(query);
+  const hay = normalizeCompanyName([company.name, company.ville, company.act, company.type, company.rc, company.addr].join(' '));
+  const nameFuzzyMatches = countFuzzyTokenMatches(company.name, tokens);
+  let score = 0;
+  if (queryKey && nameKey === queryKey) score += 40;
+  if (queryKey && nameKey.startsWith(queryKey)) score += 20;
+  if (queryKey && nameKey.includes(queryKey)) score += 16;
+  score += tokens.filter(token => hay.includes(token)).length * 4;
+  score += nameFuzzyMatches * 5;
+  if (tokens.length && nameFuzzyMatches >= tokens.length) score += 32;
+  else if (tokens.length > 2 && nameFuzzyMatches >= Math.ceil(tokens.length * 0.65)) score += 16;
+  if (normalizeIce(company.ice).length === 15) score += 10;
+  score += Math.min(companyCompleteness(company), 8);
+  return score;
+}
+
+function isCloseCompanyMatch(company = {}, query = '') {
+  const tokens = searchTokens(query);
+  if (!tokens.length) return true;
+  const nameMatches = countFuzzyTokenMatches(company.name, tokens);
+  const allMatches = countFuzzyTokenMatches([company.name, company.ville, company.act, company.type, company.rc, company.addr].join(' '), tokens);
+  if (tokens.length <= 2) return nameMatches >= 1 || allMatches >= tokens.length;
+  return nameMatches >= 2 || allMatches >= Math.ceil(tokens.length * 0.65);
+}
+
 function sameCompany(a = {}, b = {}) {
   const aIce = normalizeIce(a.ice);
   const bIce = normalizeIce(b.ice);
@@ -137,7 +201,7 @@ function sameCompany(a = {}, b = {}) {
 
   const aCity = normalizeCompanyName(a.ville);
   const bCity = normalizeCompanyName(b.ville);
-  return !aCity || !bCity || aCity === bCity;
+  return !aCity || !bCity || aCity === bCity || aCity.includes(bCity) || bCity.includes(aCity);
 }
 
 function mergeCompanyRecords(primary = {}, secondary = {}) {
@@ -233,13 +297,15 @@ function iceSeoUrl(company = {}) {
 }
 
 function findCompanyBySlug(slug = '') {
-  return LOCAL_COMPANIES.find(company => companySlug(company) === slug)
-    || LOCAL_COMPANIES.find(company => companySlug(company).startsWith(slug) || slug.startsWith(companySlug(company)));
+  const sources = dedupeCompanies([...LOCAL_COMPANIES, ...discoveredCompanies.values()]);
+  return sources.find(company => companySlug(company) === slug)
+    || sources.find(company => companySlug(company).startsWith(slug) || slug.startsWith(companySlug(company)));
 }
 
 function findCompanyByIce(ice = '') {
   const needle = normalizeIce(ice);
-  return LOCAL_COMPANIES.find(company => normalizeIce(company.ice) === needle);
+  const sources = dedupeCompanies([...LOCAL_COMPANIES, ...discoveredCompanies.values()]);
+  return sources.find(company => normalizeIce(company.ice) === needle);
 }
 
 function inferCategory(company = {}) {
@@ -689,6 +755,11 @@ function searchDiscoveredByIce(query) {
   });
 }
 
+function searchDiscoveredByName(query) {
+  const sources = [...discoveredCompanies.values(), ...LOCAL_COMPANIES];
+  return dedupeCompanies(sources.filter(company => isCloseCompanyMatch(company, query)));
+}
+
 function parseSearchResults(html) {
   const results = [];
   const seen = new Set();
@@ -1005,6 +1076,8 @@ const requestHandler = async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(html);
     }
+    res.writeHead(302, { Location: `/?q=${encodeURIComponent(slug.replace(/-/g, ' '))}&mode=nom` });
+    return res.end();
   }
 
   if (pathname.startsWith('/ice/')) {
@@ -1015,6 +1088,8 @@ const requestHandler = async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(html);
     }
+    res.writeHead(302, { Location: `/?q=${encodeURIComponent(ice)}&mode=ice` });
+    return res.end();
   }
 
   if (pathname.startsWith('/ville/')) {
@@ -1115,6 +1190,23 @@ async function searchIcemaroc(query) {
 
       let results = dedupeCompanies([...charikaResults, ...iceMarocResults]);
 
+      if (mode !== 'ice' && results.length < 3) {
+        const fallbackQueries = searchTokens(q)
+          .sort((a, b) => b.length - a.length)
+          .filter(token => token.length >= 4 && token !== normalizeCompanyName(q))
+          .slice(0, 3);
+        for (const token of fallbackQueries) {
+          const [tokenCharikaResults, tokenIceMarocResults] = await Promise.all([
+            withTimeout(searchCharikaAutocomplete(token).catch(() => []), 1600, []),
+            withTimeout(searchIcemaroc(token).catch(() => []), 1600, []),
+          ]);
+          const tokenResults = [...tokenCharikaResults, ...tokenIceMarocResults];
+          if (tokenResults.length) {
+            results = dedupeCompanies([...results, ...tokenResults]);
+          }
+        }
+      }
+
       rememberCompanies(results);
 
       if (mode === 'ice') {
@@ -1129,12 +1221,10 @@ async function searchIcemaroc(query) {
           return true;
         });
       } else {
-        const lowered = q.toLowerCase();
-        results.sort((a, b) => {
-          const aScore = Number(a.name.toLowerCase().startsWith(lowered)) * 3 + Number((a.act || '').toLowerCase().includes(lowered));
-          const bScore = Number(b.name.toLowerCase().startsWith(lowered)) * 3 + Number((b.act || '').toLowerCase().includes(lowered));
-          return bScore - aScore;
-        });
+        results = dedupeCompanies([...results, ...searchDiscoveredByName(q)]);
+        const closeResults = results.filter(company => isCloseCompanyMatch(company, q));
+        if (closeResults.length) results = closeResults;
+        results.sort((a, b) => companySearchScore(b, q) - companySearchScore(a, q));
       }
 
       console.log(`   → ${results.length} autocomplete results`);

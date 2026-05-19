@@ -2,6 +2,7 @@
 let searchMode='nom';
 let isLiveAvailable=false; // true when server.js is running
 let lastLiveResults=new Map();
+let renderedResults=new Map();
 let searchInFlight=false;
 let searchRunId=0;
 let liveSearchController=null;
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   syncDocType();
   initBusinessTools();
   initPopularCompanyLists();
+  initResultDetailLinks();
   restoreRoute();
   checkLiveSearch().then(()=>{
     const q=document.getElementById('q')?.value.trim();
@@ -309,6 +311,9 @@ async function go(opts={}){
           if(strictLive.length){
             liveResults=strictLive;
             hasStrictLive=true;
+          }else{
+            const relevantLive=liveResults.filter(c=>isRelevantApproxResult(c,raw,words,nameTokens));
+            if(relevantLive.length)liveResults=relevantLive;
           }
         }
         const baseResults=hasStrictLive ? dedupeResults(strictLocalRes) : localRes;
@@ -407,10 +412,12 @@ function isLocalNameCandidate(c,raw,words,nameTokens){
   if(nameTokens.length>1){
     const matchedNameTokens=nameTokens.filter(t=>nameKey.includes(t)).length;
     if(matchedNameTokens>=Math.min(2,nameTokens.length))return true;
+    const fuzzyNameTokens=countFuzzyTokenMatches(nameKey,nameTokens);
+    if(fuzzyNameTokens>=Math.min(2,nameTokens.length))return true;
   }
   if(words.length===1&&rawKey.length>=3){
     const extraKey=normalizeCompanyKey([c.ville,c.act,c.type].join(' '));
-    return extraKey.includes(rawKey);
+    return extraKey.includes(rawKey)||countFuzzyTokenMatches(nameKey,[rawKey])>0;
   }
   return false;
 }
@@ -432,8 +439,18 @@ function dataCompleteness(c){
 
 function scoreResult(c,raw,words){
   const name=(c.name||'').toLowerCase();
+  const rawKey=normalizeCompanyKey(raw);
+  const nameKey=normalizeCompanyKey(c.name);
+  const queryTokens=searchTokens(raw);
   const hay=[c.name,c.ville,c.act,c.type,c.rc,c.if_,c.cap,c.addr].join(' ').toLowerCase();
+  const fuzzyMatches=countFuzzyTokenMatches(nameKey,queryTokens);
   let score=words.filter(w=>hay.includes(w)).length;
+  score+=fuzzyMatches*4;
+  if(queryTokens.length&&fuzzyMatches>=queryTokens.length)score+=32;
+  else if(queryTokens.length>2&&fuzzyMatches>=Math.ceil(queryTokens.length*.65))score+=16;
+  if(nameKey===rawKey)score+=24;
+  if(rawKey&&nameKey.includes(rawKey))score+=10;
+  if(rawKey&&nameKey.startsWith(rawKey))score+=8;
   if(name===raw)score+=20;
   if(name.includes(raw))score+=8;
   if(name.startsWith(raw))score+=6;
@@ -447,9 +464,44 @@ function isRelevantApproxResult(c,raw,words,nameTokens){
   const hayKey=normalizeCompanyKey([c.name,c.ville,c.act,c.type,c.rc,c.if_,c.cap,c.addr].join(' '));
   const matchedNameTokens=nameTokens.filter(t=>nameKey.includes(t)).length;
   const matchedAllTokens=nameTokens.filter(t=>hayKey.includes(t)).length;
+  const fuzzyNameTokens=countFuzzyTokenMatches(nameKey,nameTokens);
+  const fuzzyAllTokens=countFuzzyTokenMatches(hayKey,nameTokens);
   if(nameKey.includes(normalizeCompanyKey(raw)))return true;
-  if(nameTokens.length<=2)return matchedNameTokens>=1&&matchedAllTokens>=nameTokens.length;
-  return matchedNameTokens>=2||matchedAllTokens>=Math.ceil(nameTokens.length*.75);
+  if(nameTokens.length<=2){
+    return (matchedNameTokens+fuzzyNameTokens)>=1&&(matchedAllTokens+fuzzyAllTokens)>=nameTokens.length;
+  }
+  return (matchedNameTokens+fuzzyNameTokens)>=2||(matchedAllTokens+fuzzyAllTokens)>=Math.ceil(nameTokens.length*.65);
+}
+
+function countFuzzyTokenMatches(textKey='',tokens=[]){
+  if(!textKey||!tokens.length)return 0;
+  const textTokens=textKey.split(/\s+/).filter(Boolean);
+  return tokens.filter(token=>textTokens.some(part=>isCloseToken(token,part))).length;
+}
+
+function isCloseToken(queryToken='',targetToken=''){
+  if(!queryToken||!targetToken)return false;
+  if(targetToken.includes(queryToken)||queryToken.includes(targetToken))return true;
+  if(queryToken.length<4||targetToken.length<4)return false;
+  const distance=editDistance(queryToken,targetToken);
+  const maxDistance=queryToken.length>=8?3:queryToken.length>=6?3:queryToken.length>=5?2:1;
+  return distance<=maxDistance;
+}
+
+function editDistance(a='',b=''){
+  if(a===b)return 0;
+  if(!a.length)return b.length;
+  if(!b.length)return a.length;
+  let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){
+    const cur=[i];
+    for(let j=1;j<=b.length;j++){
+      const cost=a[i-1]===b[j-1]?0:1;
+      cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+cost);
+    }
+    prev=cur;
+  }
+  return prev[b.length];
 }
 
 function isSameCompany(a,b){
@@ -464,7 +516,7 @@ function isSameCompany(a,b){
   if (nameMatch) {
     const vA = normalizeCompanyKey(a.ville || '');
     const vB = normalizeCompanyKey(b.ville || '');
-    if (vA && vB && vA !== vB) return false;
+    if (vA && vB && vA !== vB && !vA.includes(vB) && !vB.includes(vA)) return false;
     return true;
   }
   return false;
@@ -694,6 +746,27 @@ function showLiveModal(c){
   document.getElementById('modal').style.display='flex';
 }
 
+function openResultDetails(id){
+  const numericId=Number(id);
+  const rendered=renderedResults.get(numericId)||lastLiveResults.get(numericId);
+  if(rendered&&rendered._live){
+    if(isLiveAvailable)return fetchCompanyDetails(rendered,numericId);
+    return showLiveModal(rendered);
+  }
+  return fetchLocalSourceDetails(numericId);
+}
+
+function initResultDetailLinks(){
+  const list=document.getElementById('res-list');
+  if(!list)return;
+  list.addEventListener('click',event=>{
+    const link=event.target.closest('[data-result-id]');
+    if(!link||!list.contains(link))return;
+    event.preventDefault();
+    openResultDetails(link.dataset.resultId);
+  });
+}
+
 function useLiveClient(name,addr,ville,email,ice,tel=''){
   closeModal(); showPage('invoice');
   setTimeout(()=>{
@@ -705,6 +778,7 @@ function useLiveClient(name,addr,ville,email,ice,tel=''){
 }
 
 function renderResults(res,q){
+  renderedResults=new Map(res.filter(c=>c&&c.id!==undefined).map(c=>[Number(c.id),c]));
   document.getElementById('empty-state').style.display='flex';
   document.getElementById('res-title').textContent='Résultats de la recherche :';
   const panel=document.getElementById('results-panel');
@@ -740,7 +814,7 @@ function renderResults(res,q){
     <div class="co-card ${isLive?'co-card-live':''}" style="padding: 16px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:12px;">
         <div style="flex: 1 1 min-content;">
-          <a href="${companyPath}" style="display:inline-block;font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word; text-decoration:none;">${c.name}</a>
+          <a href="${companyPath}" data-result-id="${c.id}" style="display:inline-block;font-weight:700; font-size:18px; color:var(--text-main); margin-bottom:4px; word-break:break-word; text-decoration:none;">${c.name}</a>
           ${c.statut ? `<span class="co-badge ${c.statut==='Actif'?'b-actif':'b-dissous'}">${c.statut==='Actif'?'EN ACTIVITÉ':'DISSOUS'}</span>` : ''}
         </div>
       </div>
