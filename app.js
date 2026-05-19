@@ -699,6 +699,7 @@ function useLiveClient(name,addr,ville,email,ice,tel=''){
   setTimeout(()=>{
     sv('c-name',name); sv('c-addr',addr); sv('c-city',ville); sv('c-ice',ice);
     if(tel)sv('c-tel',tel);
+    updateInvoicePreview();
     toast('Client rempli automatiquement');
   },200);
 }
@@ -1029,6 +1030,7 @@ function useClient(id){
   setTimeout(()=>{
     sv('c-name',c.name); sv('c-addr',c.addr); sv('c-city',c.ville);
     sv('c-if',c.if_); sv('c-ice',c.ice);
+    updateInvoicePreview();
     toast('Client rempli automatiquement');
   },200);
 }
@@ -1052,16 +1054,23 @@ function calc(){
   const cur=document.getElementById('cur').value||'MAD';
   const tva=parseFloat(document.getElementById('tva').value)||0;
   let ht=0;
+  const previewRows=[];
   document.querySelectorAll('#tbody tr').forEach(tr=>{
+    const inputs=tr.querySelectorAll('input');
+    const unit=tr.querySelector('select')?.value||'U';
+    const desc=inputs[0]?.value||'Ligne de facture';
     const n=tr.querySelectorAll('input[type=number]');
     if(n.length<2)return;
     const v=(parseFloat(n[0].value)||0)*(parseFloat(n[1].value)||0);
     ht+=v; const c=tr.querySelector('.td-t'); if(c)c.textContent=fmt(v);
+    previewRows.push({desc,unit,qty:parseFloat(n[0].value)||0,price:parseFloat(n[1].value)||0,total:v});
   });
   const tv=ht*tva/100,ttc=ht+tv;
   sv2('t-ht',`${fmt(ht)} ${cur}`);sv2('t-tva',`${fmt(tv)} ${cur}`);sv2('t-ttc',`${fmt(ttc)} ${cur}`);
   sv2('tva-lbl',`TVA (${tva}%)`);
   sv2('t-words',n2w(Math.round(ttc))+' '+(cur==='MAD'?'dirhams':cur.toLowerCase()));
+  renderInvoicePreviewRows(previewRows,cur);
+  updateInvoicePreview();
 }
 function fmt(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function syncCompany(){
@@ -1085,19 +1094,76 @@ function syncDocType(){
   const label=value.charAt(0)+value.slice(1).toLowerCase();
   sv2('paper-doc-type',label);
 }
+function formatDateDisplay(value){
+  if(!value)return '—';
+  const parts=String(value).split('-');
+  if(parts.length===3)return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return value;
+}
+function fieldValue(id,fallback='—'){
+  return document.getElementById(id)?.value?.trim()||fallback;
+}
+function joinFields(parts,fallback='—'){
+  const clean=parts.filter(Boolean);
+  return clean.length?clean.join(' · '):fallback;
+}
+function updateInvoicePreview(){
+  sv2('p-inv-date',formatDateDisplay(fieldValue('inv-date','')));
+  sv2('p-inv-due',formatDateDisplay(fieldValue('inv-due','')));
+  sv2('p-inv-ref',fieldValue('inv-ref','—'));
+  sv2('p-cur',fieldValue('cur','MAD'));
+  sv2('p-s-name',fieldValue('s-name','Nom / Raison sociale'));
+  sv2('p-s-addr',fieldValue('s-addr','Adresse'));
+  sv2('p-s-line',joinFields([
+    fieldValue('s-city',''),
+    fieldValue('s-ice','')?`ICE ${fieldValue('s-ice','')}`:'',
+    fieldValue('s-if','')?`IF ${fieldValue('s-if','')}`:'',
+    fieldValue('s-rc','')?`RC ${fieldValue('s-rc','')}`:'',
+  ],'Ville · ICE · IF · RC'));
+  sv2('p-s-contact',joinFields([fieldValue('s-tel',''),fieldValue('s-email','')],'Téléphone · Email'));
+  sv2('p-c-name',fieldValue('c-name','Nom / Raison sociale du client'));
+  sv2('p-c-addr',fieldValue('c-addr','Adresse du client'));
+  sv2('p-c-line',joinFields([
+    fieldValue('c-city',''),
+    fieldValue('c-ice','')?`ICE ${fieldValue('c-ice','')}`:'',
+    fieldValue('c-if','')?`IF ${fieldValue('c-if','')}`:'',
+  ],'Ville · ICE · IF'));
+  sv2('p-c-contact',fieldValue('c-tel','Téléphone'));
+  sv2('p-pay-method',fieldValue('pay-method','Virement bancaire'));
+  sv2('p-pay-bank',fieldValue('pay-bank','—'));
+  sv2('p-pay-rib',fieldValue('pay-rib','—'));
+  sv2('p-notes',fieldValue('notes','Aucune note.'));
+}
+function renderInvoicePreviewRows(rows,cur){
+  const body=document.getElementById('preview-tbody');
+  if(!body)return;
+  const safeRows=rows.length?rows:[{desc:'Description du service ou produit',unit:'U',qty:1,price:0,total:0}];
+  body.innerHTML=safeRows.map(row=>`
+    <tr>
+      <td>${escapeHtml(row.desc)}</td>
+      <td>${escapeHtml(row.unit)}</td>
+      <td>${fmt(row.qty)}</td>
+      <td>${fmt(row.price)} ${cur}</td>
+      <td class="td-t">${fmt(row.total)} ${cur}</td>
+    </tr>
+  `).join('');
+}
+function escapeHtml(value=''){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
 const VF=['s-name','s-addr','s-city','s-tel','s-email','s-if','s-rc','s-ice','pay-method','pay-bank','pay-rib'];
 function saveVendor(){const d={};VF.forEach(i=>{d[i]=document.getElementById(i)?.value||'';});localStorage.setItem('icm4',JSON.stringify(d));toast('Sauvegardé');}
-function loadVendor(){try{const d=JSON.parse(localStorage.getItem('icm4')||'{}');VF.forEach(i=>{const e=document.getElementById(i);if(e&&d[i])e.value=d[i];});syncCompany();}catch(e){}}
+function loadVendor(){try{const d=JSON.parse(localStorage.getItem('icm4')||'{}');VF.forEach(i=>{const e=document.getElementById(i);if(e&&d[i])e.value=d[i];});syncCompany();updateInvoicePreview();}catch(e){}}
 function clearInv(){
   if(!confirm('Effacer la facture ?'))return;
-  document.querySelectorAll('#paper input,#paper select,#paper textarea').forEach(e=>{if(e.tagName==='SELECT')e.selectedIndex=0;else e.value='';});
+  document.querySelectorAll('#page-invoice input,#page-invoice select,#page-invoice textarea').forEach(e=>{if(e.tagName==='SELECT')e.selectedIndex=0;else e.value='';});
   document.getElementById('tbody').innerHTML='';lc=0;addRow();
   const today=new Date();
   const due=new Date(); due.setDate(due.getDate()+30);
   sv('inv-date',today.toISOString().split('T')[0]);
   sv('inv-due',due.toISOString().split('T')[0]);
   sv('inv-num',`${today.getFullYear()}-001`);
-  calc();syncCompany();syncNum();syncDocType();
+  calc();syncCompany();syncNum();syncDocType();updateInvoicePreview();
 }
 function fitInvoiceForPrint(){
   const paper=document.getElementById('paper');

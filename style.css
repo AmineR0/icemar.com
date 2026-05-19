@@ -266,7 +266,7 @@ button{appearance:none}
 .site-footer a:hover{color:var(--brand)}
 
 /* Invoice */
-.inv-container{max-width:980px;margin:0 auto;padding:34px clamp(16px,4vw,44px) 70px}
+.inv-container{max-width:1280px;margin:0 auto;padding:34px clamp(16px,4vw,44px) 70px}
 .inv-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:16px}
 .inv-h2{font-family:var(--display);font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.06em;color:var(--ink)}
 .inv-p{margin-top:5px;color:var(--muted);font-weight:700}
@@ -277,14 +277,26 @@ button{appearance:none}
 .outline{background:#fff;border:1px solid var(--brand);color:var(--brand)}
 .solid{border:0;background:var(--ink);color:#fff;box-shadow:0 14px 30px rgba(15,31,46,.16)}
 .inv-notice{padding:13px 16px;border-radius:18px;background:var(--gold-soft);border:1px solid #f2d398;color:#835113;font-weight:800;margin-bottom:20px}
-.invoice-workbench{display:block}
+.invoice-workbench{display:grid;grid-template-columns:minmax(340px,440px) minmax(0,1fr);gap:22px;align-items:start}
+.invoice-editor{position:sticky;top:92px;display:grid;gap:14px;max-height:calc(100vh - 112px);overflow:auto;padding-right:4px}
+.editor-card{padding:16px;border:1px solid rgba(228,221,209,.95);border-radius:20px;background:rgba(255,255,255,.9);box-shadow:var(--shadow-sm)}
+.editor-card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.editor-card-head span{width:30px;height:30px;border-radius:999px;display:grid;place-items:center;background:#e3fff9;color:var(--brand);font-family:var(--display);font-size:.76rem;font-weight:900}
+.editor-card-head h3{font-family:var(--display);font-size:1.1rem;letter-spacing:-.04em;color:var(--ink)}
+.editor-grid{display:grid;gap:8px}
+.editor-grid.two{grid-template-columns:1fr 1fr}
+.editor-card label span{display:block;margin-bottom:5px;color:var(--soft);font-size:.62rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
+.items-editor-wrap{overflow:auto;margin-bottom:10px}
+.editor-items{min-width:620px;margin-bottom:0}
+.editor-items th{font-size:.58rem}
+.editor-items td{padding:4px}
 .invoice-side{position:sticky;top:22px;display:grid;gap:12px}
 .side-card{padding:18px;border:1px solid rgba(228,221,209,.95);border-radius:24px;background:rgba(255,255,255,.82);box-shadow:var(--shadow-sm)}
 .side-card h3{font-family:var(--display);font-size:1.35rem;letter-spacing:-.05em;margin:10px 0 6px;color:var(--ink)}
 .side-card p{color:var(--muted);font-weight:750;line-height:1.65}
 .side-steps{gap:8px}
 .side-steps span{display:block;padding:10px 12px;border-radius:14px;background:#fbf7ef;color:var(--ink-3);font-size:.84rem;font-weight:900;margin-bottom:8px}
-.paper{background:var(--paper);border:1px solid #ddd3c2;border-radius:18px;padding:clamp(18px,4vw,34px);box-shadow:var(--shadow)}
+.paper{position:sticky;top:92px;background:var(--paper);border:1px solid #ddd3c2;border-radius:18px;padding:clamp(18px,4vw,34px);box-shadow:var(--shadow)}
 .paper-header{display:grid;grid-template-columns:1fr auto;gap:24px;margin-bottom:18px;padding-bottom:18px;border-bottom:2px solid var(--ink)}
 .ph-left{display:flex;align-items:center;gap:15px}
 .ph-logo-box{width:auto;min-width:74px;height:42px;padding:0 16px;border-radius:999px;display:grid;place-items:center;background:#f4efe5;border:1px solid var(--line);color:var(--brand);font-family:var(--display);font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
@@ -308,10 +320,15 @@ button{appearance:none}
 .invoice-settings .pf{margin-bottom:0;min-height:36px;border-radius:8px;font-size:.84rem}
 .doc-subject{margin-bottom:22px;padding:14px;border:1px solid var(--line);border-radius:20px;background:#fff}
 .doc-subject label{display:block;margin-bottom:7px;color:var(--soft);font-size:.68rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
+.preview-meta-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:18px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.preview-meta-grid span,.preview-payment span{display:block;margin-bottom:5px;color:var(--soft);font-size:.62rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
+.preview-meta-grid strong,.preview-payment strong{display:block;color:var(--ink);font-size:.86rem;overflow-wrap:anywhere}
 .paper-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
 .party{padding:14px;border-radius:12px;background:#fff;border:1px solid var(--line);box-shadow:none}
 .party-label{display:inline-flex;margin-bottom:10px;padding:5px 9px;border-radius:999px;background:#e3fff9;color:var(--brand);font-size:.64rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
 .client-lbl{background:#ecfdf3;color:var(--green)}
+.party strong{display:block;margin-bottom:7px;color:var(--ink);font-weight:950;overflow-wrap:anywhere}
+.party p{margin-bottom:5px;color:var(--muted);font-size:.86rem;font-weight:750;line-height:1.55;overflow-wrap:anywhere}
 .pf-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .items-tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:12px;overflow:hidden;border-radius:10px;border:1px solid var(--line)}
 .items-tbl th{background:#efe7da;color:#667176;font-size:.66rem;font-weight:950;text-transform:uppercase;letter-spacing:.06em;padding:10px 8px;text-align:left}
@@ -329,6 +346,8 @@ button{appearance:none}
 .payment-title{width:max-content;margin-bottom:10px;padding:6px 10px;border-radius:999px;background:#e3fff9;color:var(--brand);font-size:.68rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
 .payment-grid{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px}
 .payment-grid .pf{margin-bottom:0}
+.preview-payment{grid-template-columns:1fr 1fr 1.4fr}
+.preview-notes{min-height:82px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--muted);font-size:.88rem;font-weight:750;line-height:1.65;white-space:pre-wrap}
 .paper-foot-row{display:grid;grid-template-columns:1fr 310px;gap:16px;align-items:start;margin-bottom:22px}
 .pf-notes label{display:block;margin-bottom:7px;color:var(--muted);font-size:.72rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
 .totals-box{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
@@ -451,8 +470,10 @@ button{appearance:none}
   .es-features{grid-template-columns:repeat(2,minmax(0,1fr))}
   .paper-foot-row{grid-template-columns:1fr}
   .invoice-workbench{grid-template-columns:1fr}
+  .invoice-editor,.paper{position:static;max-height:none;overflow:visible}
   .invoice-side{position:static;grid-template-columns:1fr 1fr}
   .payment-grid{grid-template-columns:1fr}
+  .preview-payment{grid-template-columns:1fr}
   .tool-grid.two,.tool-grid.three{grid-template-columns:1fr}
   .tool-head{display:grid}
   .tool-note{width:max-content}
@@ -530,6 +551,8 @@ button{appearance:none}
   .inv-tb-btns{display:grid;grid-template-columns:1fr;gap:8px}
   .tb-btn{width:100%;min-width:0;padding:11px 10px;font-size:.84rem;white-space:normal}
   .invoice-side{display:none}
+  .editor-grid.two{grid-template-columns:1fr}
+  .editor-card{padding:14px;border-radius:18px}
   .paper{border-radius:18px;padding:14px;overflow:hidden}
   .paper-header,.paper-parties{grid-template-columns:1fr;gap:12px}
   .paper-header{margin-bottom:14px;padding-bottom:14px}
@@ -540,6 +563,7 @@ button{appearance:none}
   .ph-invoice-box{text-align:left;min-width:0;padding:12px}
   .doc-type-select{margin-bottom:8px}
   .ph-inv-num{font-size:1.2rem}
+  .preview-meta-grid{grid-template-columns:1fr 1fr;gap:8px;padding:10px;margin-bottom:12px}
   .invoice-settings{grid-template-columns:1fr;gap:8px;padding:10px;margin-bottom:12px}
   .invoice-settings label:first-child,.invoice-settings label:nth-child(4){grid-column:auto}
   .invoice-settings label span{font-size:.58rem}

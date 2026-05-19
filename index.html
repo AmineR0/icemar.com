@@ -313,6 +313,92 @@
         </div>
 
         <div class="invoice-workbench">
+          <div class="invoice-editor no-print">
+            <div class="editor-card">
+              <div class="editor-card-head">
+                <span>01</span>
+                <h3>Document</h3>
+              </div>
+              <div class="editor-grid two">
+                <label><span>Type</span><select class="pf" id="doc-type" onchange="syncDocType();updateInvoicePreview()">
+                  <option value="FACTURE CONFORME">Facture conforme</option>
+                  <option value="DEVIS">Devis</option>
+                  <option value="REÇU">Reçu</option>
+                  <option value="AVOIR">Avoir</option>
+                </select></label>
+                <label><span>N° facture</span><input class="pf" id="inv-num" placeholder="2026-001" oninput="syncNum();updateInvoicePreview()"/></label>
+                <label><span>Date</span><input class="pf" type="date" id="inv-date" oninput="updateInvoicePreview()"/></label>
+                <label><span>Échéance</span><input class="pf" type="date" id="inv-due" oninput="updateInvoicePreview()"/></label>
+                <label><span>Référence</span><input class="pf" id="inv-ref" placeholder="Bon, contrat..." oninput="updateInvoicePreview()"/></label>
+                <label><span>TVA</span><select class="pf" id="tva" onchange="calc()">
+                  <option value="0">0%</option><option value="7">7%</option>
+                  <option value="10">10%</option><option value="14">14%</option>
+                  <option value="20" selected>20%</option>
+                </select></label>
+                <label><span>Devise</span><select class="pf" id="cur" onchange="calc()">
+                  <option>MAD</option><option>EUR</option><option>USD</option>
+                </select></label>
+              </div>
+            </div>
+
+            <div class="editor-card">
+              <div class="editor-card-head">
+                <span>02</span>
+                <h3>Votre entreprise</h3>
+              </div>
+              <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany();updateInvoicePreview()"/>
+              <input class="pf" id="s-addr" placeholder="Adresse" oninput="updateInvoicePreview()"/>
+              <div class="editor-grid two"><input class="pf" id="s-city" placeholder="Ville" oninput="syncCompany();updateInvoicePreview()"/><input class="pf ice-f" id="s-ice" placeholder="ICE" maxlength="15" oninput="updateInvoicePreview()"/></div>
+              <div class="editor-grid two optional-fields"><input class="pf" id="s-if" placeholder="IF" oninput="updateInvoicePreview()"/><input class="pf" id="s-rc" placeholder="RC" oninput="updateInvoicePreview()"/></div>
+              <div class="editor-grid two optional-fields"><input class="pf" id="s-tel" placeholder="Téléphone" oninput="syncCompany();updateInvoicePreview()"/><input class="pf" id="s-email" placeholder="Email" oninput="syncCompany();updateInvoicePreview()"/></div>
+            </div>
+
+            <div class="editor-card">
+              <div class="editor-card-head">
+                <span>03</span>
+                <h3>Client</h3>
+              </div>
+              <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client" oninput="updateInvoicePreview()"/>
+              <input class="pf" id="c-addr" placeholder="Adresse du client" oninput="updateInvoicePreview()"/>
+              <div class="editor-grid two"><input class="pf" id="c-city" placeholder="Ville" oninput="updateInvoicePreview()"/><input class="pf ice-f" id="c-ice" placeholder="ICE client" maxlength="15" oninput="updateInvoicePreview()"/></div>
+              <div class="editor-grid two optional-fields"><input class="pf" id="c-if" placeholder="IF client" oninput="updateInvoicePreview()"/><input class="pf" id="c-tel" placeholder="Téléphone" oninput="updateInvoicePreview()"/></div>
+            </div>
+
+            <div class="editor-card">
+              <div class="editor-card-head">
+                <span>04</span>
+                <h3>Lignes de facture</h3>
+              </div>
+              <div class="items-editor-wrap">
+                <table class="items-tbl editor-items">
+                  <thead><tr>
+                    <th>Désignation</th><th>Unité</th><th>Qté</th><th>Prix HT</th><th>Total</th><th></th>
+                  </tr></thead>
+                  <tbody id="tbody"></tbody>
+                </table>
+              </div>
+              <button class="add-row" onclick="addRow()">+ Ajouter une ligne</button>
+            </div>
+
+            <div class="editor-card">
+              <div class="editor-card-head">
+                <span>05</span>
+                <h3>Paiement & notes</h3>
+              </div>
+              <div class="editor-grid two">
+                <label><span>Mode</span><select class="pf" id="pay-method" onchange="updateInvoicePreview()">
+                  <option>Virement bancaire</option>
+                  <option>Chèque</option>
+                  <option>Espèces</option>
+                  <option>Carte bancaire</option>
+                  <option>Autre</option>
+                </select></label>
+                <label><span>Banque</span><input class="pf" id="pay-bank" placeholder="Banque" oninput="updateInvoicePreview()"/></label>
+              </div>
+              <input class="pf" id="pay-rib" placeholder="RIB / IBAN" oninput="updateInvoicePreview()"/>
+              <textarea class="pf" id="notes" rows="4" placeholder="Ex: Paiement à 30 jours. RIB: ..." oninput="updateInvoicePreview()"></textarea>
+            </div>
+          </div>
 
         <!-- PAPER -->
         <div class="paper" id="paper">
@@ -326,80 +412,58 @@
             </div>
             <div class="ph-right">
               <div class="ph-invoice-box">
-                <select class="doc-type-select no-print" id="doc-type" onchange="syncDocType()">
-                  <option value="FACTURE CONFORME">Facture conforme</option>
-                  <option value="DEVIS">Devis</option>
-                  <option value="REÇU">Reçu</option>
-                  <option value="AVOIR">Avoir</option>
-                </select>
                 <div class="ph-inv-label" id="ph-doc-type">FACTURE CONFORME</div>
                 <div class="ph-inv-num" id="ph-inv-num">#2024-001</div>
               </div>
             </div>
           </div>
 
-          <div class="invoice-settings">
-            <label><span>N° facture</span><input class="pf" id="inv-num" placeholder="2024-001" oninput="syncNum()"/></label>
-            <label><span>Date</span><input class="pf" type="date" id="inv-date"/></label>
-            <label><span>Échéance</span><input class="pf" type="date" id="inv-due"/></label>
-            <label><span>Référence</span><input class="pf" id="inv-ref" placeholder="Bon, contrat..."/></label>
-            <label><span>TVA</span><select class="pf" id="tva" onchange="calc()">
-              <option value="0">0%</option><option value="7">7%</option>
-              <option value="10">10%</option><option value="14">14%</option>
-              <option value="20" selected>20%</option>
-            </select></label>
-            <label><span>Devise</span><select class="pf" id="cur" onchange="calc()">
-              <option>MAD</option><option>EUR</option><option>USD</option>
-            </select></label>
+          <div class="preview-meta-grid">
+            <div><span>Date</span><strong id="p-inv-date">—</strong></div>
+            <div><span>Échéance</span><strong id="p-inv-due">—</strong></div>
+            <div><span>Référence</span><strong id="p-inv-ref">—</strong></div>
+            <div><span>Devise</span><strong id="p-cur">MAD</strong></div>
           </div>
 
           <div class="paper-parties">
             <div class="party">
               <div class="party-label">Votre société</div>
-              <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany()"/>
-              <input class="pf" id="s-addr" placeholder="Adresse"/>
-              <div class="pf-2"><input class="pf" id="s-city" placeholder="Ville"/><input class="pf ice-f" id="s-ice" placeholder="ICE" maxlength="15"/></div>
-              <div class="pf-2 optional-fields"><input class="pf" id="s-if" placeholder="IF"/><input class="pf" id="s-rc" placeholder="RC"/></div>
-              <div class="pf-2 optional-fields"><input class="pf" id="s-tel" placeholder="Téléphone"/><input class="pf" id="s-email" placeholder="Email"/></div>
+              <strong id="p-s-name">Nom / Raison sociale</strong>
+              <p id="p-s-addr">Adresse</p>
+              <p id="p-s-line">Ville · ICE · IF · RC</p>
+              <p id="p-s-contact">Téléphone · Email</p>
             </div>
             <div class="party">
               <div class="party-label client-lbl">Client</div>
-              <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client"/>
-              <input class="pf" id="c-addr" placeholder="Adresse du client"/>
-              <div class="pf-2"><input class="pf" id="c-city" placeholder="Ville"/><input class="pf ice-f" id="c-ice" placeholder="ICE client" maxlength="15"/></div>
-              <div class="pf-2 optional-fields"><input class="pf" id="c-if" placeholder="IF client"/><input class="pf" id="c-tel" placeholder="Téléphone"/></div>
+              <strong id="p-c-name">Nom / Raison sociale du client</strong>
+              <p id="p-c-addr">Adresse du client</p>
+              <p id="p-c-line">Ville · ICE · IF</p>
+              <p id="p-c-contact">Téléphone</p>
             </div>
           </div>
 
-          <table class="items-tbl" id="itbl">
+          <table class="items-tbl preview-items" id="itbl">
             <thead><tr>
               <th class="col-d">Désignation</th><th class="col-u">Unité</th>
               <th class="col-q">Qté</th><th class="col-p">Prix HT</th>
-              <th class="col-t">Total HT</th><th class="col-x no-print"></th>
+              <th class="col-t">Total HT</th>
             </tr></thead>
-            <tbody id="tbody"></tbody>
+            <tbody id="preview-tbody"></tbody>
           </table>
-          <button class="add-row no-print" onclick="addRow()">+ Ajouter une ligne</button>
 
           <div class="payment-block">
             <div class="payment-title">Paiement</div>
-            <div class="payment-grid">
-              <select class="pf" id="pay-method">
-                <option>Virement bancaire</option>
-                <option>Chèque</option>
-                <option>Espèces</option>
-                <option>Carte bancaire</option>
-                <option>Autre</option>
-              </select>
-              <input class="pf" id="pay-bank" placeholder="Banque"/>
-              <input class="pf" id="pay-rib" placeholder="RIB / IBAN"/>
+            <div class="payment-grid preview-payment">
+              <div><span>Mode</span><strong id="p-pay-method">Virement bancaire</strong></div>
+              <div><span>Banque</span><strong id="p-pay-bank">—</strong></div>
+              <div><span>RIB / IBAN</span><strong id="p-pay-rib">—</strong></div>
             </div>
           </div>
 
           <div class="paper-foot-row">
             <div class="pf-notes">
               <label>Notes / Conditions</label>
-              <textarea class="pf" id="notes" rows="4" placeholder="Ex: Paiement à 30 jours. RIB: …"></textarea>
+              <div class="preview-notes" id="p-notes">Aucune note.</div>
             </div>
             <div class="totals-box">
               <div class="trow"><span>Sous-total HT</span><strong id="t-ht">0,00 MAD</strong></div>
