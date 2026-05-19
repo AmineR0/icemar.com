@@ -601,6 +601,42 @@ function renderToolPage(slug, page) {
   });
 }
 
+function replaceMetaContent(html, name, content) {
+  const safeContent = escapeHtml(content);
+  const re = new RegExp(`<meta name="${name}" content="[^"]*"\\/>`);
+  return html.replace(re, `<meta name="${name}" content="${safeContent}"/>`);
+}
+
+function replaceOgContent(html, property, content) {
+  const safeContent = escapeHtml(content);
+  const re = new RegExp(`<meta property="${property}" content="[^"]*"\\/>`);
+  return html.replace(re, `<meta property="${property}" content="${safeContent}"/>`);
+}
+
+function renderToolAppPage(slug, page) {
+  const canonical = `${SITE_URL}/${slug}`;
+  let html = fs.readFileSync(path.join(STATIC_DIR, 'index.html'), 'utf8');
+  html = html
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(page.title)}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*"\/>/, `<link rel="canonical" href="${escapeHtml(canonical)}"/>`)
+    .replace(/<body class="[^"]*">/, `<body class="is-${escapeHtml(page.appHash)}-page">`);
+  html = replaceMetaContent(html, 'description', page.description);
+  html = replaceOgContent(html, 'og:title', page.title);
+  html = replaceOgContent(html, 'og:description', page.description);
+  html = replaceOgContent(html, 'og:url', canonical);
+  html = replaceMetaContent(html, 'twitter:title', page.title.replace(' | IceMorocco', ''));
+  html = replaceMetaContent(html, 'twitter:description', page.description);
+  return html.replace('</head>', `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: page.h1,
+    url: canonical,
+    description: page.description,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+  }).replace(/</g, '\\u003c')}</script>\n</head>`);
+}
+
 function renderRobots() {
   return `User-agent: *
 Allow: /
@@ -925,7 +961,7 @@ const requestHandler = async (req, res) => {
 
   if (STATIC_TOOL_PAGES[infoPageSlug]) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(renderToolPage(infoPageSlug, STATIC_TOOL_PAGES[infoPageSlug]));
+    return res.end(renderToolAppPage(infoPageSlug, STATIC_TOOL_PAGES[infoPageSlug]));
   }
 
   if (pathname === '/recherche-ice-maroc' || pathname === '/annuaire-entreprises-marocaines') {
