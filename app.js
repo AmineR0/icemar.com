@@ -126,6 +126,18 @@ function restoreRoute(){
     showPage(hash,{updateUrl:false});
     return;
   }
+  const toolSlugPages={
+    '/verificateur-ice':'ice-check',
+    '/simulation-salaire':'salary',
+    '/generateur-facture':'invoice',
+    '/chiffres-en-lettres':'words',
+    '/outils-societe':'tools',
+  };
+  const pathPage=toolSlugPages[url.pathname];
+  if(pathPage){
+    showPage(pathPage,{updateUrl:false});
+    return;
+  }
   applySearchMode(mode,{clear:false});
   const restoredQuery=q||'';
   if(restoredQuery){

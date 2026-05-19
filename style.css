@@ -46,11 +46,11 @@ button{appearance:none}
 .brand-text{font-family:var(--display);font-size:1.25rem;font-weight:700;letter-spacing:-.04em;color:#fff}
 .mobile-menu-btn{display:none}
 .mobile-menu{display:none;position:absolute;top:70px;right:clamp(18px,4vw,34px);z-index:2;width:min(320px,calc(100vw - 36px));gap:8px;margin:0;padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(15,31,46,.96);box-shadow:0 20px 50px rgba(0,0,0,.22);backdrop-filter:blur(14px)}
-.mobile-menu button{border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;text-align:left;padding:12px 14px;font-weight:900;cursor:pointer}
-.mobile-menu button:hover{background:#f9f4e9;color:var(--ink)}
+.mobile-menu a{border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;text-align:left;padding:12px 14px;font-weight:900;cursor:pointer;text-decoration:none}
+.mobile-menu a:hover{background:#f9f4e9;color:var(--ink)}
 .search-ui,.sb-foot{display:none}
 .sb-nav{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin:0;padding:5px;background:rgba(255,255,255,.06);border:1px solid var(--line-dark);border-radius:999px;backdrop-filter:blur(16px)}
-.sbn{display:flex;align-items:center;gap:7px;border:0;background:transparent;color:rgba(255,255,255,.7);font-size:.78rem;font-weight:850;padding:9px 11px;border-radius:999px;cursor:pointer;text-align:left;white-space:nowrap;transition:background .18s,color .18s,transform .18s}
+.sbn{display:flex;align-items:center;gap:7px;border:0;background:transparent;color:rgba(255,255,255,.7);font-size:.78rem;font-weight:850;padding:9px 11px;border-radius:999px;cursor:pointer;text-align:left;white-space:nowrap;transition:background .18s,color .18s,transform .18s;text-decoration:none}
 .sbn svg{display:none}
 .sbn:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateY(-1px)}
 .sbn.active{background:#f9f4e9;color:var(--ink);box-shadow:0 12px 28px rgba(0,0,0,.12)}
@@ -474,7 +474,7 @@ button{appearance:none}
   .mobile-menu-btn span{display:block;width:18px;height:2px;border-radius:999px;background:#fff;grid-column:1}
   .mobile-menu-btn strong{grid-column:2;grid-row:1 / span 3;font-size:.78rem}
   .mobile-menu{margin-top:14px;border-radius:18px}
-  .mobile-menu button{border-radius:13px}
+  .mobile-menu a{border-radius:13px}
   .search-ui,.sb-foot{display:none}
   .sb-nav{display:none}
   .sb-title{font-size:1.8rem}

@@ -483,6 +483,79 @@ const STATIC_INFO_PAGES = {
   },
 };
 
+const STATIC_TOOL_PAGES = {
+  'verificateur-ice': {
+    title: 'Vérificateur ICE Maroc - Contrôler un numéro ICE | IceMorocco',
+    h1: 'Vérificateur ICE Maroc',
+    lead: 'Contrôlez rapidement le format d’un numéro ICE marocain et lancez une recherche entreprise depuis IceMorocco.',
+    description: 'Vérificateur ICE Maroc gratuit pour contrôler un numéro ICE à 15 chiffres et retrouver une entreprise marocaine par ICE ou nom.',
+    appHash: 'ice-check',
+    cta: 'Ouvrir le vérificateur ICE',
+    body: `
+      <h2>Contrôler un numéro ICE marocain</h2>
+      <p>Le vérificateur ICE aide à vérifier le format d’un numéro ICE avant une facture, un devis ou une recherche administrative. Un ICE marocain contient généralement 15 chiffres.</p>
+      <h2>Recherche associée</h2>
+      <p>Après le contrôle du format, vous pouvez lancer une recherche dans IceMorocco afin de consulter les informations disponibles sur la société : raison sociale, ville, RC, forme juridique, activité et date de création lorsque ces données existent.</p>
+    `,
+  },
+  'simulation-salaire': {
+    title: 'Simulation Salaire Maroc - Calcul net estimatif | IceMorocco',
+    h1: 'Simulation Salaire Maroc',
+    lead: 'Estimez rapidement un salaire net à partir du brut avec des paramètres sociaux et fiscaux indicatifs.',
+    description: 'Simulation salaire Maroc pour estimer le net, les retenues et le coût employeur à partir du salaire brut mensuel.',
+    appHash: 'salary',
+    cta: 'Ouvrir la simulation salaire',
+    body: `
+      <h2>Estimer un salaire net au Maroc</h2>
+      <p>La simulation salaire permet d’obtenir une estimation rapide du net mensuel, des retenues et du coût employeur. Elle sert d’aide pratique pour comparer un brut, préparer une offre ou faire une première lecture RH.</p>
+      <h2>Calcul indicatif</h2>
+      <p>Les résultats restent indicatifs et doivent être validés par un comptable, un service RH ou un professionnel qualifié, surtout lorsque les règles fiscales ou sociales évoluent.</p>
+    `,
+  },
+  'generateur-facture': {
+    title: 'Générateur Facture Maroc - Facture conforme simple | IceMorocco',
+    h1: 'Générateur Facture Maroc',
+    lead: 'Créez une facture claire et professionnelle pour vos clients avec les informations essentielles de l’entreprise.',
+    description: 'Générateur facture Maroc gratuit pour créer une facture professionnelle avec client, articles, TVA, total et montant en lettres.',
+    appHash: 'invoice',
+    cta: 'Ouvrir le générateur facture',
+    body: `
+      <h2>Créer une facture professionnelle</h2>
+      <p>Le générateur de facture IceMorocco aide les entrepreneurs, freelances et petites entreprises à préparer une facture lisible avec client, articles, quantités, TVA, totaux et montant en lettres.</p>
+      <h2>Utilisation simple</h2>
+      <p>L’outil est conçu pour rester rapide : saisissez votre entreprise, votre client, les lignes de facturation et imprimez un document propre. Les informations doivent être vérifiées avant émission officielle.</p>
+    `,
+  },
+  'chiffres-en-lettres': {
+    title: 'Chiffres en Lettres Maroc - Convertir un montant | IceMorocco',
+    h1: 'Chiffres en Lettres',
+    lead: 'Convertissez rapidement un montant en lettres pour facture, reçu, devis ou document commercial.',
+    description: 'Outil chiffres en lettres pour convertir un montant en dirhams ou autre devise et l’utiliser dans une facture ou un document.',
+    appHash: 'words',
+    cta: 'Ouvrir chiffres en lettres',
+    body: `
+      <h2>Convertir un montant en lettres</h2>
+      <p>L’outil chiffres en lettres transforme un montant numérique en texte afin de l’intégrer facilement dans une facture, un reçu, un devis ou une attestation.</p>
+      <h2>Pour les documents commerciaux</h2>
+      <p>La conversion aide à éviter les erreurs de rédaction et à produire des documents plus clairs pour les clients, fournisseurs et partenaires.</p>
+    `,
+  },
+  'outils-societe': {
+    title: 'Outils Société Maroc - Calculs et documents utiles | IceMorocco',
+    h1: 'Outils Société Maroc',
+    lead: 'Un espace pratique pour regrouper les outils utiles aux entreprises marocaines au quotidien.',
+    description: 'Outils société Maroc pour entrepreneurs : recherche ICE, facture, salaire, chiffres en lettres et calculs professionnels utiles.',
+    appHash: 'tools',
+    cta: 'Ouvrir les outils société',
+    body: `
+      <h2>Outils pratiques pour entreprise</h2>
+      <p>IceMorocco rassemble des outils simples pour gagner du temps : recherche ICE Maroc, vérification entreprise, génération de facture, simulation salaire et conversion des montants en lettres.</p>
+      <h2>Un espace centralisé</h2>
+      <p>L’objectif est d’offrir une plateforme claire pour les professionnels qui veulent vérifier une société, préparer un document commercial ou effectuer un calcul rapide.</p>
+    `,
+  },
+};
+
 function renderInfoPage(slug, page) {
   const canonical = `${SITE_URL}/${slug}`;
   return renderSeoLayout({
@@ -498,6 +571,32 @@ function renderInfoPage(slug, page) {
       name: page.h1,
       url: canonical,
       description: page.description,
+    },
+  });
+}
+
+function renderToolPage(slug, page) {
+  const canonical = `${SITE_URL}/${slug}`;
+  const body = `<section class="seo-panel info-card legal-copy">${page.body}<p><a class="seo-cta" href="/#${escapeHtml(page.appHash)}">${escapeHtml(page.cta)}</a></p></section>
+    <section class="seo-panel"><h2>Autres outils utiles</h2><div class="seo-links">${Object.entries(STATIC_TOOL_PAGES)
+      .filter(([key]) => key !== slug)
+      .map(([key, item]) => `<a href="/${key}">${escapeHtml(item.h1)}</a>`)
+      .join('')}<a href="/">Recherche ICE Maroc</a></div></section>`;
+  return renderSeoLayout({
+    title: page.title,
+    description: page.description,
+    canonical,
+    h1: page.h1,
+    lead: page.lead,
+    body,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: page.h1,
+      url: canonical,
+      description: page.description,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
     },
   });
 }
@@ -521,6 +620,7 @@ function renderSitemap() {
     sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
     sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
     ...Object.keys(STATIC_INFO_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.75')),
+    ...Object.keys(STATIC_TOOL_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.86')),
     ...SEO_CITIES.map(city => sitemapEntry(`${SITE_URL}/ville/${slugify(city)}`, '0.8')),
     ...Object.keys(SEO_CATEGORIES).map(cat => sitemapEntry(`${SITE_URL}/categorie/${cat}`, '0.8')),
     ...LOCAL_COMPANIES.filter(company => company.name).slice(0, 500).flatMap(company => {
@@ -821,6 +921,11 @@ const requestHandler = async (req, res) => {
   if (STATIC_INFO_PAGES[infoPageSlug]) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     return res.end(renderInfoPage(infoPageSlug, STATIC_INFO_PAGES[infoPageSlug]));
+  }
+
+  if (STATIC_TOOL_PAGES[infoPageSlug]) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(renderToolPage(infoPageSlug, STATIC_TOOL_PAGES[infoPageSlug]));
   }
 
   if (pathname === '/recherche-ice-maroc' || pathname === '/annuaire-entreprises-marocaines') {
