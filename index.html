@@ -301,7 +301,7 @@
         <div class="inv-toolbar no-print">
           <div>
             <span class="tool-eyebrow">Facturation</span>
-            <h2 class="inv-h2">Facture Conforme</h2>
+            <h2 class="inv-h2">Facture</h2>
             <p class="inv-p">Remplissez, vérifiez et imprimez une facture propre en quelques minutes.</p>
           </div>
           <div class="inv-tb-btns">
@@ -354,8 +354,9 @@
               <input class="pf bold" id="s-name" placeholder="Nom / Raison sociale" oninput="syncCompany();updateInvoicePreview()"/>
               <input class="pf" id="s-addr" placeholder="Adresse" oninput="updateInvoicePreview()"/>
               <div class="editor-grid two"><input class="pf" id="s-city" placeholder="Ville" oninput="syncCompany();updateInvoicePreview()"/><input class="pf ice-f" id="s-ice" placeholder="ICE" maxlength="15" oninput="updateInvoicePreview()"/></div>
+              <input class="pf" id="s-tel" placeholder="Téléphone" oninput="syncCompany();updateInvoicePreview()"/>
               <div class="editor-grid two optional-fields"><input class="pf" id="s-if" placeholder="IF" oninput="updateInvoicePreview()"/><input class="pf" id="s-rc" placeholder="RC" oninput="updateInvoicePreview()"/></div>
-              <div class="editor-grid two optional-fields"><input class="pf" id="s-tel" placeholder="Téléphone" oninput="syncCompany();updateInvoicePreview()"/><input class="pf" id="s-email" placeholder="Email" oninput="syncCompany();updateInvoicePreview()"/></div>
+              <input class="pf optional-fields" id="s-email" placeholder="Email" oninput="syncCompany();updateInvoicePreview()"/>
             </details>
 
             <details class="editor-card" open>
@@ -366,7 +367,8 @@
               <input class="pf bold" id="c-name" placeholder="Nom / Raison sociale du client" oninput="updateInvoicePreview()"/>
               <input class="pf" id="c-addr" placeholder="Adresse du client" oninput="updateInvoicePreview()"/>
               <div class="editor-grid two"><input class="pf" id="c-city" placeholder="Ville" oninput="updateInvoicePreview()"/><input class="pf ice-f" id="c-ice" placeholder="ICE client" maxlength="15" oninput="updateInvoicePreview()"/></div>
-              <div class="editor-grid two optional-fields"><input class="pf" id="c-if" placeholder="IF client" oninput="updateInvoicePreview()"/><input class="pf" id="c-tel" placeholder="Téléphone" oninput="updateInvoicePreview()"/></div>
+              <input class="pf" id="c-tel" placeholder="Téléphone client" oninput="updateInvoicePreview()"/>
+              <input class="pf optional-fields" id="c-if" placeholder="IF client" oninput="updateInvoicePreview()"/>
             </details>
 
             <details class="editor-card" open>
