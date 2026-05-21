@@ -91,9 +91,9 @@
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h7"/><path d="m16 16 2 2 4-5"/></svg>
           <span class="sbn-label">Vérificateur ICE</span>
         </a>
-        <a class="sbn" id="sbn-salary" href="/simulation-salaire" onclick="event.preventDefault();showPage('salary')">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span class="sbn-label">Simulation Salaire</span>
+        <a class="sbn" id="sbn-stamp" href="/cachet-entreprise" onclick="event.preventDefault();showPage('stamp')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 11h10"/><path d="M9 11V5a3 3 0 0 1 6 0v6"/><path d="M5 11h14l-1 7H6z"/><path d="M4 21h16"/></svg>
+          <span class="sbn-label">Cachet Entreprise</span>
         </a>
         <a class="sbn" id="sbn-invoice" href="/generateur-facture" onclick="event.preventDefault();showPage('invoice')">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
@@ -112,7 +112,7 @@
       <div class="mobile-menu" id="mobile-menu" style="display:none">
         <a href="/" onclick="event.preventDefault();showPage('search')">Recherche</a>
         <a href="/verificateur-ice" onclick="event.preventDefault();showPage('ice-check')">Vérificateur ICE</a>
-        <a href="/simulation-salaire" onclick="event.preventDefault();showPage('salary')">Simulation Salaire</a>
+        <a href="/cachet-entreprise" onclick="event.preventDefault();showPage('stamp')">Cachet Entreprise</a>
         <a href="/generateur-facture" onclick="event.preventDefault();showPage('invoice')">Générateur Facture</a>
         <a href="/chiffres-en-lettres" onclick="event.preventDefault();showPage('words')">Chiffres en Lettres</a>
         <a href="/outils-societe" onclick="event.preventDefault();showPage('tools')">Outils Société</a>
@@ -262,33 +262,59 @@
       </section>
     </div>
 
-    <!-- SALARY SIMULATOR PAGE -->
-    <div id="page-salary" class="page">
+    <!-- COMPANY STAMP PAGE -->
+    <div id="page-stamp" class="page">
       <section class="tool-page">
-        <div class="tool-head">
+        <div class="tool-head no-print">
           <div>
-            <h2>Simulation Salaire</h2>
-            <p>Estimez rapidement un salaire net, les retenues salariales et le coût employeur avec des paramètres modifiables.</p>
+            <h2>Cachet Entreprise</h2>
+            <p>Créez une simulation professionnelle de cachet société, rond ou rectangulaire, avec aperçu en direct et impression propre.</p>
           </div>
           <div class="tool-head-actions">
             <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
-            <div class="tool-note">Simulation indicative</div>
+            <button class="back-home" onclick="window.print()">Imprimer le cachet</button>
           </div>
         </div>
-        <div class="tool-grid two">
-          <div class="tool-card form-stack">
-            <label class="tool-label" for="salary-gross">Salaire brut mensuel</label>
-            <input id="salary-gross" class="tool-input" type="number" min="0" value="8000" oninput="calcSalarySim()"/>
+        <div class="stamp-studio">
+          <div class="tool-card form-stack no-print">
+            <label class="tool-label" for="office-stamp-name">Nom de société</label>
+            <input id="office-stamp-name" class="tool-input" value="MOL LHANOT SARL" oninput="updateOfficeStamp()" placeholder="Nom de votre société"/>
+            <label class="tool-label" for="office-stamp-address">Adresse</label>
+            <input id="office-stamp-address" class="tool-input" value="HAY RAHA N° 01 - MARRAKECH" oninput="updateOfficeStamp()" placeholder="Adresse courte"/>
             <div class="compact-grid">
-              <label><span>Personnes à charge</span><input id="salary-dependents" class="tool-input" type="number" min="0" max="6" value="0" oninput="calcSalarySim()"/></label>
-              <label><span>Frais pro</span><input id="salary-expense-rate" class="tool-input" type="number" min="0" max="35" value="25" oninput="calcSalarySim()"/></label>
-              <label><span>CNSS salarié plafonnée</span><input id="salary-cnss-rate" class="tool-input" type="number" min="0" step="0.01" value="4.48" oninput="calcSalarySim()"/></label>
-              <label><span>AMO salarié</span><input id="salary-amo-rate" class="tool-input" type="number" min="0" step="0.01" value="2.26" oninput="calcSalarySim()"/></label>
-              <label><span>Charges employeur</span><input id="salary-employer-rate" class="tool-input" type="number" min="0" step="0.01" value="21.09" oninput="calcSalarySim()"/></label>
-              <label><span>Plafond CNSS</span><input id="salary-cnss-cap" class="tool-input" type="number" min="0" value="6000" oninput="calcSalarySim()"/></label>
+              <label><span>ICE</span><input id="office-stamp-ice" class="tool-input" value="000230303030306" oninput="updateOfficeStamp()" placeholder="ICE"/></label>
+              <label><span>RC</span><input id="office-stamp-rc" class="tool-input" value="CMS-06-16.61" oninput="updateOfficeStamp()" placeholder="RC"/></label>
+              <label><span>Ville</span><input id="office-stamp-city" class="tool-input" value="Marrakech" oninput="updateOfficeStamp()" placeholder="Ville"/></label>
+              <label><span>Format</span><select id="office-stamp-shape" class="tool-input" onchange="updateOfficeStamp()"><option value="rect">Rectangulaire</option><option value="round">Rond</option></select></label>
+              <label><span>Couleur</span><select id="office-stamp-color" class="tool-input" onchange="updateOfficeStamp()"><option value="blue">Bleu</option><option value="black">Noir</option></select></label>
+              <label><span>Dimension</span><select id="office-stamp-size" class="tool-input" onchange="updateOfficeStamp()"><option value="38x14">38 x 14 mm</option><option value="30">Rond 30 mm</option><option value="40">Rond 40 mm</option></select></label>
+            </div>
+            <p class="tool-hint">Aperçu indicatif pour préparer votre cachet. Vérifiez les mentions finales avec votre imprimeur ou votre prestataire.</p>
+          </div>
+          <div class="tool-card stamp-live-card">
+            <div class="stamp-product no-print" aria-hidden="true">
+              <div class="stamp-machine">
+                <div></div><span></span>
+              </div>
+              <div>
+                <strong>Cachet de Bureau</strong>
+                <span id="office-stamp-product">COLOP PRINTER C20</span>
+                <small id="office-stamp-dim">Dim : 38 x 14 mm</small>
+              </div>
+            </div>
+            <div id="stamp-print-sheet" class="stamp-print-sheet">
+              <div class="office-stamp-preview stamp-rect stamp-blue" id="office-stamp-preview">
+                <strong id="office-stamp-p-name">MOL LHANOT SARL</strong>
+                <span id="office-stamp-p-address">HAY RAHA N° 01 - MARRAKECH</span>
+                <em id="office-stamp-p-ice">ICE 000230303030306</em>
+                <small id="office-stamp-p-meta">RC CMS-06-16.61 · Marrakech</small>
+              </div>
+            </div>
+            <div class="stamp-actions no-print">
+              <button class="tool-primary" onclick="window.print()">Imprimer / PDF</button>
+              <button class="tool-secondary" onclick="copyStampText()">Copier les informations</button>
             </div>
           </div>
-          <div class="tool-card result-card salary-result" id="salary-result"></div>
         </div>
       </section>
     </div>
@@ -638,7 +664,7 @@
           <details open><summary>Est-ce que les données sont officielles ?</summary><p>Les données sont affichées à titre indicatif. Pour un usage juridique, fiscal ou administratif, vérifiez toujours auprès des sources officielles compétentes.</p></details>
           <details><summary>Pourquoi une entreprise ne s'affiche pas par ICE ?</summary><p>Certaines sources ne permettent pas toujours la recherche directe par ICE. Dans ce cas, essayez une recherche par nom de société.</p></details>
           <details><summary>Puis-je utiliser les informations dans une facture ?</summary><p>Oui, la plateforme aide à remplir vos documents, mais vous restez responsable de vérifier l'exactitude des informations avant émission.</p></details>
-          <details><summary>La simulation salaire est-elle exacte ?</summary><p>Elle est indicative. Les taux et règles peuvent changer, et le calcul final doit être validé par un comptable ou un professionnel RH.</p></details>
+          <details><summary>Le cachet entreprise est-il officiel ?</summary><p>Le cachet généré est une maquette indicative à imprimer ou à transmettre à un prestataire. Vérifiez toujours les mentions avant fabrication.</p></details>
           <details><summary>Le service est-il gratuit ?</summary><p>La plateforme est conçue pour être gratuite. Des emplacements publicitaires peuvent être ajoutés plus tard pour financer le service.</p></details>
         </div>
       </section>
@@ -744,6 +770,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260521-business-tools"></script>
+<script src="app.js?v=20260521-cachet-entreprise"></script>
 </body>
 </html>

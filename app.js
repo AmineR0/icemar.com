@@ -120,7 +120,7 @@ function updateRoute(page){
 function restoreRoute(){
   const url=new URL(window.location.href);
   const hash=url.hash.replace('#','');
-  const knownPages=['search','ice-check','salary','invoice','words','tools','about','faq','contact','terms','privacy'];
+  const knownPages=['search','ice-check','stamp','invoice','words','tools','about','faq','contact','terms','privacy'];
   const q=url.searchParams.get('q');
   const saved=readSearchState();
   const mode=url.searchParams.get('mode')||saved.mode||'nom';
@@ -130,7 +130,8 @@ function restoreRoute(){
   }
   const toolSlugPages={
     '/verificateur-ice':'ice-check',
-    '/simulation-salaire':'salary',
+    '/cachet-entreprise':'stamp',
+    '/simulation-salaire':'stamp',
     '/generateur-facture':'invoice',
     '/chiffres-en-lettres':'words',
     '/outils-societe':'tools',
@@ -928,13 +929,13 @@ function initBusinessTools(){
   const today=new Date().toISOString().split('T')[0];
   sv('due-start',today);
   verifyIceInput();
-  calcSalarySim();
   convertWordsTool();
   calcTvaTool();
   calcMarginTool();
   calcDueDateTool();
   updateCreationChecklist();
   updateCompanyStamp();
+  updateOfficeStamp();
 }
 
 function verifyIceInput(){
@@ -989,59 +990,6 @@ function money(v){
 function readNum(id, fallback=0){
   const value=parseFloat(document.getElementById(id)?.value);
   return Number.isFinite(value)?value:fallback;
-}
-
-function calcIrAnnual(taxable){
-  const brackets=[
-    [40000,0],
-    [60000,.10],
-    [80000,.20],
-    [100000,.30],
-    [180000,.34],
-    [Infinity,.37],
-  ];
-  let prev=0;
-  let tax=0;
-  for(const [limit,rate] of brackets){
-    if(taxable<=prev)break;
-    const slice=Math.min(taxable,limit)-prev;
-    tax+=slice*rate;
-    prev=limit;
-  }
-  return Math.max(0,tax);
-}
-
-function calcSalarySim(){
-  const box=document.getElementById('salary-result');
-  if(!box)return;
-  const gross=Math.max(0,readNum('salary-gross'));
-  const dependents=Math.min(6,Math.max(0,readNum('salary-dependents')));
-  const expenseRate=Math.max(0,readNum('salary-expense-rate'))/100;
-  const cnssRate=Math.max(0,readNum('salary-cnss-rate'))/100;
-  const amoRate=Math.max(0,readNum('salary-amo-rate'))/100;
-  const employerRate=Math.max(0,readNum('salary-employer-rate'))/100;
-  const cnssCap=Math.max(0,readNum('salary-cnss-cap',6000));
-  const cnss=Math.min(gross,cnssCap)*cnssRate;
-  const amo=gross*amoRate;
-  const annualGross=gross*12;
-  const annualSocial=(cnss+amo)*12;
-  const professionalExpenses=annualGross*expenseRate;
-  const annualTaxable=Math.max(0,annualGross-annualSocial-professionalExpenses);
-  const familyDeduction=dependents*30*12;
-  const irMonthly=Math.max(0,(calcIrAnnual(annualTaxable)-familyDeduction)/12);
-  const net=gross-cnss-amo-irMonthly;
-  const employerCost=gross+(gross*employerRate);
-  box.innerHTML=`
-    <div class="result-label">Résumé mensuel</div>
-    <div class="salary-main"><span>Net estimé</span><strong>${money(net)}</strong></div>
-    <div class="calc-lines">
-      <div><span>Brut</span><strong>${money(gross)}</strong></div>
-      <div><span>CNSS salarié</span><strong>${money(cnss)}</strong></div>
-      <div><span>AMO salarié</span><strong>${money(amo)}</strong></div>
-      <div><span>IR estimé</span><strong>${money(irMonthly)}</strong></div>
-      <div><span>Coût employeur estimé</span><strong>${money(employerCost)}</strong></div>
-    </div>
-    <p>Les taux sont modifiables. Vérifiez toujours le calcul final avec votre comptable ou les barèmes officiels.</p>`;
 }
 
 function convertWordsTool(){
@@ -1118,6 +1066,36 @@ function updateCompanyStamp(){
     <span>ICE ${ice}</span>
     <small>${rc} - ${city}</small>
   `;
+}
+
+function updateOfficeStamp(){
+  const name=(document.getElementById('office-stamp-name')?.value||'MOL LHANOT SARL').trim();
+  const address=(document.getElementById('office-stamp-address')?.value||'HAY RAHA N° 01 - MARRAKECH').trim();
+  const ice=(document.getElementById('office-stamp-ice')?.value||'000230303030306').trim();
+  const rc=(document.getElementById('office-stamp-rc')?.value||'CMS-06-16.61').trim();
+  const city=(document.getElementById('office-stamp-city')?.value||'Marrakech').trim();
+  const shape=document.getElementById('office-stamp-shape')?.value||'rect';
+  const color=document.getElementById('office-stamp-color')?.value||'blue';
+  const size=document.getElementById('office-stamp-size')?.value||'38x14';
+  const preview=document.getElementById('office-stamp-preview');
+  if(!preview)return;
+  preview.className=`office-stamp-preview stamp-${shape} stamp-${color}`;
+  sv2('office-stamp-p-name',name);
+  sv2('office-stamp-p-address',address);
+  sv2('office-stamp-p-ice',`ICE ${ice}`);
+  sv2('office-stamp-p-meta',`RC ${rc} · ${city}`);
+  sv2('office-stamp-product',shape==='round'?'COLOP PRINTER R30':'COLOP PRINTER C20');
+  sv2('office-stamp-dim',`Dim : ${size==='38x14'?'38 x 14 mm':`R ${size} mm`}`);
+}
+
+function copyStampText(){
+  const text=[
+    document.getElementById('office-stamp-p-name')?.textContent,
+    document.getElementById('office-stamp-p-address')?.textContent,
+    document.getElementById('office-stamp-p-ice')?.textContent,
+    document.getElementById('office-stamp-p-meta')?.textContent,
+  ].filter(Boolean).join('\n');
+  navigator.clipboard?.writeText(text).then(()=>toast('Informations du cachet copiées')).catch(()=>toast(text));
 }
 
 // Modal

@@ -478,12 +478,12 @@ const STATIC_INFO_PAGES = {
     title: 'À propos - IceMorocco',
     h1: 'À propos d’IceMorocco',
     lead: 'IceMorocco aide les professionnels au Maroc à rechercher une société par ICE ou par nom, puis à préparer leurs documents commerciaux plus rapidement.',
-    description: 'À propos d’IceMorocco, plateforme marocaine de recherche ICE, annuaire entreprises et outils professionnels pour facture, salaire et chiffres en lettres.',
+    description: 'À propos d’IceMorocco, plateforme marocaine de recherche ICE, annuaire entreprises et outils professionnels pour facture, cachet entreprise et chiffres en lettres.',
     body: `
       <h2>Notre mission</h2>
       <p>IceMorocco rassemble un moteur de recherche ICE Maroc et des outils pratiques pour les entrepreneurs, freelances, comptables et petites entreprises. Le service vise à rendre la vérification d’une société plus simple avant un devis, une facture, un partenariat ou une démarche administrative.</p>
       <h2>Ce que le site propose</h2>
-      <p>La plateforme permet de rechercher une entreprise par nom ou numéro ICE, consulter les informations disponibles, vérifier le format d’un ICE, générer une facture conforme, convertir des montants en lettres et utiliser des calculateurs utiles pour la gestion quotidienne.</p>
+      <p>La plateforme permet de rechercher une entreprise par nom ou numéro ICE, consulter les informations disponibles, vérifier le format d’un ICE, générer une facture conforme, créer une maquette de cachet entreprise, convertir des montants en lettres et utiliser des calculateurs utiles pour la gestion quotidienne.</p>
       <h2>Important</h2>
       <p>IceMorocco n’est pas un site gouvernemental et ne remplace pas les organismes officiels. Les informations sont fournies à titre indicatif et doivent être vérifiées auprès des administrations ou professionnels compétents avant toute décision importante.</p>
     `,
@@ -573,18 +573,18 @@ const STATIC_TOOL_PAGES = {
       <p>Après le contrôle du format, vous pouvez lancer une recherche dans IceMorocco afin de consulter les informations disponibles sur la société : raison sociale, ville, RC, forme juridique, activité et date de création lorsque ces données existent.</p>
     `,
   },
-  'simulation-salaire': {
-    title: 'Simulation Salaire Maroc - Calcul net estimatif | IceMorocco',
-    h1: 'Simulation Salaire Maroc',
-    lead: 'Estimez rapidement un salaire net à partir du brut avec des paramètres sociaux et fiscaux indicatifs.',
-    description: 'Simulation salaire Maroc pour estimer le net, les retenues et le coût employeur à partir du salaire brut mensuel.',
-    appHash: 'salary',
-    cta: 'Ouvrir la simulation salaire',
+  'cachet-entreprise': {
+    title: 'Cachet Entreprise Maroc - Simulation et impression | IceMorocco',
+    h1: 'Cachet Entreprise Maroc',
+    lead: 'Créez une simulation professionnelle de cachet société rond ou rectangulaire, prête à imprimer.',
+    description: 'Cachet entreprise Maroc avec aperçu en direct, mentions ICE, RC, ville, adresse et impression propre pour société marocaine.',
+    appHash: 'stamp',
+    cta: 'Ouvrir le cachet entreprise',
     body: `
-      <h2>Estimer un salaire net au Maroc</h2>
-      <p>La simulation salaire permet d’obtenir une estimation rapide du net mensuel, des retenues et du coût employeur. Elle sert d’aide pratique pour comparer un brut, préparer une offre ou faire une première lecture RH.</p>
-      <h2>Calcul indicatif</h2>
-      <p>Les résultats restent indicatifs et doivent être validés par un comptable, un service RH ou un professionnel qualifié, surtout lorsque les règles fiscales ou sociales évoluent.</p>
+      <h2>Créer une maquette de cachet société</h2>
+      <p>L’outil Cachet Entreprise permet de préparer rapidement un aperçu rond ou rectangulaire avec nom de société, ICE, RC, ville et adresse courte.</p>
+      <h2>Aperçu imprimable</h2>
+      <p>Le rendu peut être imprimé ou exporté en PDF afin de le transmettre à un imprimeur ou de valider les informations avant fabrication.</p>
     `,
   },
   'generateur-facture': {
@@ -1076,6 +1076,11 @@ const requestHandler = async (req, res) => {
   if (pathname === '/sitemap.xml') {
     res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
     return res.end(renderSitemap());
+  }
+
+  if (pathname === '/simulation-salaire') {
+    res.writeHead(301, { Location: '/cachet-entreprise' });
+    return res.end();
   }
 
   const infoPageSlug = pathname.replace(/^\/|\/$/g, '');

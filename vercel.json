@@ -20,6 +20,7 @@
     { "source": "/privacy", "destination": "/server.js" },
     { "source": "/terms", "destination": "/server.js" },
     { "source": "/verificateur-ice", "destination": "/server.js" },
+    { "source": "/cachet-entreprise", "destination": "/server.js" },
     { "source": "/simulation-salaire", "destination": "/server.js" },
     { "source": "/generateur-facture", "destination": "/server.js" },
     { "source": "/chiffres-en-lettres", "destination": "/server.js" },

@@ -223,9 +223,6 @@ button{appearance:none}
 .result-card p{margin-top:12px;color:var(--muted);font-weight:750;line-height:1.65}
 .compact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}
 .compact-grid label span{display:block;margin-bottom:6px;color:var(--muted);font-size:.72rem;font-weight:950}
-.salary-main{padding:18px;border-radius:22px;background:linear-gradient(135deg,var(--ink),var(--ink-3));color:#fff;margin-bottom:14px}
-.salary-main span{display:block;color:rgba(255,255,255,.6);font-weight:950;text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;margin-bottom:8px}
-.salary-main strong{display:block;color:#fff}
 .calc-lines{display:grid;gap:8px}
 .calc-lines div{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--muted);font-weight:850}
 .calc-lines strong{font-family:var(--font);font-size:.95rem;letter-spacing:0;color:var(--ink);white-space:nowrap}
@@ -246,6 +243,28 @@ button{appearance:none}
 .checklist-list{display:grid;gap:8px}
 .checklist-list label{display:flex;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink-3);font-size:.86rem;font-weight:850;line-height:1.35}
 .checklist-list input{width:17px;height:17px;accent-color:var(--brand);flex:0 0 auto;margin-top:1px}
+.stamp-studio{display:grid;grid-template-columns:minmax(300px,420px) minmax(420px,1fr);gap:18px;align-items:start}
+.stamp-live-card{display:grid;gap:24px;min-height:520px;align-content:start}
+.stamp-product{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center}
+.stamp-product strong{display:block;color:#d81919;font-family:var(--display);font-size:1.55rem;letter-spacing:-.04em}
+.stamp-product span{display:block;margin-top:4px;color:#111;font-weight:950;letter-spacing:.06em}
+.stamp-product small{display:block;margin-top:12px;color:#111;font-size:.74rem;font-weight:800}
+.stamp-machine{position:relative;width:120px;height:142px;border-radius:24px 24px 16px 16px;background:linear-gradient(145deg,#0f1114,#32353a);box-shadow:0 18px 30px rgba(0,0,0,.18)}
+.stamp-machine::before{content:"";position:absolute;left:15px;right:15px;top:58px;height:40px;border-radius:6px;background:#f6f3ee;border:4px solid #1b1d21}
+.stamp-machine::after{content:"";position:absolute;left:25px;right:25px;bottom:-22px;height:48px;border:5px solid rgba(30,34,38,.28);border-top:0;border-radius:0 0 18px 18px}
+.stamp-machine div{position:absolute;left:24px;right:24px;top:28px;height:2px;background:rgba(255,255,255,.22);box-shadow:0 10px rgba(255,255,255,.18),0 20px rgba(255,255,255,.14)}
+.stamp-machine span{position:absolute;left:31px;right:31px;bottom:25px;height:20px;border-radius:4px;background:#fff}
+.stamp-print-sheet{display:grid;place-items:center;min-height:290px;padding:34px;border:1px dashed #cfdbe4;border-radius:24px;background:#fff}
+.office-stamp-preview{display:grid;place-items:center;text-align:center;text-transform:uppercase;line-height:1.12;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.office-stamp-preview strong{font-family:var(--font);font-size:1rem;font-weight:950;letter-spacing:.04em}
+.office-stamp-preview span{font-size:.58rem;font-weight:850}
+.office-stamp-preview em{font-size:.64rem;font-style:normal;font-weight:950}
+.office-stamp-preview small{font-size:.55rem;font-weight:850}
+.stamp-rect{width:295px;min-height:108px;padding:12px 16px;border:3px solid currentColor}
+.stamp-round{width:210px;height:210px;padding:28px;border:3px solid currentColor;border-radius:50%;box-shadow:inset 0 0 0 7px #fff,inset 0 0 0 9px currentColor}
+.stamp-blue{color:#1279d3}
+.stamp-black{color:#111}
+.stamp-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 
 /* Informational pages */
 .info-page{min-height:100vh;padding:clamp(24px,5vw,60px);background:radial-gradient(circle at 86% 10%,rgba(20,184,166,.14),transparent 30%)}
@@ -441,6 +460,10 @@ button{appearance:none}
   @page{size:A4;margin:8mm}
   body,html{overflow:visible!important;height:auto!important;background:#fff;font-size:10px!important}
   body *{visibility:hidden!important}
+  body.is-stamp-page #stamp-print-sheet,body.is-stamp-page #stamp-print-sheet *{visibility:visible!important}
+  body.is-stamp-page #stamp-print-sheet{position:absolute!important;left:0!important;top:0!important;width:100%!important;min-height:0!important;border:0!important;padding:20mm!important;background:#fff!important}
+  body.is-stamp-page #page-stamp{display:block!important}
+  body.is-stamp-page #paper,body.is-stamp-page #paper *{visibility:hidden!important}
   #paper,#paper *{visibility:visible!important}
   #paper{position:absolute!important;left:0!important;top:0!important;width:calc(100% / var(--print-scale,1))!important;transform:scale(var(--print-scale,1))!important;transform-origin:top left!important}
   .no-print,.sidebar,.inv-toolbar,.inv-notice,.invoice-side,.add-row,.del-r,.ad-slot{display:none!important}
@@ -481,6 +504,11 @@ button{appearance:none}
   .paper-sign-row{gap:10px!important;padding-top:8px!important}
   .sign-box{min-width:150px!important;padding:14px 18px!important;border-radius:7px!important}
   .paper-brand{font-size:8px!important}
+  body.is-stamp-page #page-invoice,body.is-stamp-page #paper,body.is-stamp-page #paper *{display:none!important;visibility:hidden!important}
+  body.is-stamp-page #page-stamp{display:block!important}
+  body.is-stamp-page #stamp-print-sheet,body.is-stamp-page #stamp-print-sheet *{visibility:visible!important}
+  body.is-stamp-page #stamp-print-sheet{position:absolute!important;left:0!important;top:0!important;width:100%!important;min-height:0!important;border:0!important;border-radius:0!important;padding:20mm!important;background:#fff!important}
+  body.is-stamp-page .office-stamp-preview{margin:0 auto!important}
 }
 
 /* Responsive */
@@ -557,6 +585,14 @@ button{appearance:none}
   .tool-grid.three{grid-template-columns:1fr}
   .wide-tool{grid-column:auto}
   .stamp-grid{grid-template-columns:1fr}
+  .stamp-studio{grid-template-columns:1fr}
+  .stamp-product{grid-template-columns:92px 1fr;gap:12px}
+  .stamp-machine{width:82px;height:100px;border-radius:18px 18px 12px 12px}
+  .stamp-machine::before{left:11px;right:11px;top:41px;height:29px;border-width:3px}
+  .stamp-machine::after{left:17px;right:17px;bottom:-15px;height:33px;border-width:4px}
+  .stamp-print-sheet{padding:20px;min-height:230px}
+  .stamp-rect{width:100%;max-width:295px}
+  .stamp-round{width:190px;height:190px}
   .info-page{padding:28px 14px 44px}
   .info-head h2{font-size:clamp(2rem,12vw,3.35rem)}
   .contact-card{grid-template-columns:1fr}
