@@ -1072,8 +1072,10 @@ function updateOfficeStamp(){
   const name=(document.getElementById('office-stamp-name')?.value||'MOL LHANOT SARL').trim();
   const address=(document.getElementById('office-stamp-address')?.value||'HAY RAHA N° 01 - MARRAKECH').trim();
   const ice=(document.getElementById('office-stamp-ice')?.value||'000230303030306').trim();
+  const ifNumber=(document.getElementById('office-stamp-if')?.value||'06510616').trim();
   const rc=(document.getElementById('office-stamp-rc')?.value||'CMS-06-16.61').trim();
   const city=(document.getElementById('office-stamp-city')?.value||'Marrakech').trim();
+  const phone=(document.getElementById('office-stamp-phone')?.value||'06 61 61 61 61').trim();
   const shape=document.getElementById('office-stamp-shape')?.value||'rect';
   const color=document.getElementById('office-stamp-color')?.value||'blue';
   const size=document.getElementById('office-stamp-size')?.value||'38x14';
@@ -1082,8 +1084,8 @@ function updateOfficeStamp(){
   preview.className=`office-stamp-preview stamp-${shape} stamp-${color}`;
   sv2('office-stamp-p-name',name);
   sv2('office-stamp-p-address',address);
-  sv2('office-stamp-p-ice',`ICE ${ice}`);
-  sv2('office-stamp-p-meta',`RC ${rc} · ${city}`);
+  sv2('office-stamp-p-ice',`ICE ${ice} · IF ${ifNumber}`);
+  sv2('office-stamp-p-meta',`RC ${rc} · ${city.toUpperCase()} · TÉL ${phone}`);
   sv2('office-stamp-product',shape==='round'?'COLOP PRINTER R30':'COLOP PRINTER C20');
   sv2('office-stamp-dim',`Dim : ${size==='38x14'?'38 x 14 mm':`R ${size} mm`}`);
 }

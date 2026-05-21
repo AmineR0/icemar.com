@@ -268,7 +268,7 @@
         <div class="tool-head no-print">
           <div>
             <h2>Cachet Entreprise</h2>
-            <p>Créez une simulation professionnelle de cachet société, rond ou rectangulaire, avec aperçu en direct et impression propre.</p>
+            <p>Préparez un cachet société propre et lisible avec les mentions essentielles : raison sociale, adresse, ICE, IF, RC, ville et téléphone.</p>
           </div>
           <div class="tool-head-actions">
             <button class="back-home" onclick="returnToSearch()">Retour recherche</button>
@@ -283,13 +283,15 @@
             <input id="office-stamp-address" class="tool-input" value="HAY RAHA N° 01 - MARRAKECH" oninput="updateOfficeStamp()" placeholder="Adresse courte"/>
             <div class="compact-grid">
               <label><span>ICE</span><input id="office-stamp-ice" class="tool-input" value="000230303030306" oninput="updateOfficeStamp()" placeholder="ICE"/></label>
+              <label><span>IF</span><input id="office-stamp-if" class="tool-input" value="06510616" oninput="updateOfficeStamp()" placeholder="Identifiant fiscal"/></label>
               <label><span>RC</span><input id="office-stamp-rc" class="tool-input" value="CMS-06-16.61" oninput="updateOfficeStamp()" placeholder="RC"/></label>
               <label><span>Ville</span><input id="office-stamp-city" class="tool-input" value="Marrakech" oninput="updateOfficeStamp()" placeholder="Ville"/></label>
+              <label><span>Téléphone</span><input id="office-stamp-phone" class="tool-input" type="tel" value="06 61 61 61 61" oninput="updateOfficeStamp()" placeholder="Téléphone"/></label>
               <label><span>Format</span><select id="office-stamp-shape" class="tool-input" onchange="updateOfficeStamp()"><option value="rect">Rectangulaire</option><option value="round">Rond</option></select></label>
               <label><span>Couleur</span><select id="office-stamp-color" class="tool-input" onchange="updateOfficeStamp()"><option value="blue">Bleu</option><option value="black">Noir</option></select></label>
               <label><span>Dimension</span><select id="office-stamp-size" class="tool-input" onchange="updateOfficeStamp()"><option value="38x14">38 x 14 mm</option><option value="30">Rond 30 mm</option><option value="40">Rond 40 mm</option></select></label>
             </div>
-            <p class="tool-hint">Aperçu indicatif pour préparer votre cachet. Vérifiez les mentions finales avec votre imprimeur ou votre prestataire.</p>
+            <p class="tool-hint">Aperçu indicatif pour préparer votre cachet. Vérifiez toujours les mentions finales avec votre imprimeur ou votre prestataire.</p>
           </div>
           <div class="tool-card stamp-live-card">
             <div class="stamp-product no-print" aria-hidden="true">
@@ -306,8 +308,8 @@
               <div class="office-stamp-preview stamp-rect stamp-blue" id="office-stamp-preview">
                 <strong id="office-stamp-p-name">MOL LHANOT SARL</strong>
                 <span id="office-stamp-p-address">HAY RAHA N° 01 - MARRAKECH</span>
-                <em id="office-stamp-p-ice">ICE 000230303030306</em>
-                <small id="office-stamp-p-meta">RC CMS-06-16.61 · Marrakech</small>
+                <em id="office-stamp-p-ice">ICE 000230303030306 · IF 06510616</em>
+                <small id="office-stamp-p-meta">RC CMS-06-16.61 · MARRAKECH · TÉL 06 61 61 61 61</small>
               </div>
             </div>
             <div class="stamp-actions no-print">
