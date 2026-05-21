@@ -618,13 +618,13 @@ const STATIC_TOOL_PAGES = {
   'outils-societe': {
     title: 'Outils Société Maroc - Calculs et documents utiles | IceMorocco',
     h1: 'Outils Société Maroc',
-    lead: 'Un espace pratique pour regrouper les outils utiles aux entreprises marocaines au quotidien.',
-    description: 'Outils société Maroc pour entrepreneurs : recherche ICE, facture, salaire, chiffres en lettres et calculs professionnels utiles.',
+    lead: 'Un espace pratique pour les calculs et documents utilisés par les entreprises marocaines au quotidien.',
+    description: 'Outils société Maroc pour entrepreneurs : calcul TVA, marge commerciale, échéance, cachet entreprise, check-list création société et outils professionnels utiles.',
     appHash: 'tools',
     cta: 'Ouvrir les outils société',
     body: `
       <h2>Outils pratiques pour entreprise</h2>
-      <p>IceMorocco rassemble des outils simples pour gagner du temps : recherche ICE Maroc, vérification entreprise, génération de facture, simulation salaire et conversion des montants en lettres.</p>
+      <p>IceMorocco rassemble des outils simples pour gagner du temps : calcul TVA Maroc, calcul marge commerciale, date d’échéance, cachet entreprise, check-list création société, recherche ICE Maroc, génération de facture et conversion des montants en lettres.</p>
       <h2>Un espace centralisé</h2>
       <p>L’objectif est d’offrir une plateforme claire pour les professionnels qui veulent vérifier une société, préparer un document commercial ou effectuer un calcul rapide.</p>
     `,

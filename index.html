@@ -532,8 +532,12 @@
         <div class="tool-grid three">
           <div class="tool-card mini-tool">
             <div class="mini-code">TVA</div>
-            <h3>Calcul TVA</h3>
-            <input id="tva-base" class="tool-input" type="number" value="1000" oninput="calcTvaTool()"/>
+            <h3>Calcul TVA Maroc</h3>
+            <select id="tva-mode-tool" class="tool-input" onchange="calcTvaTool()">
+              <option value="ht">Montant HT vers TTC</option>
+              <option value="ttc">Montant TTC vers HT</option>
+            </select>
+            <input id="tva-base" class="tool-input" type="number" value="1000" oninput="calcTvaTool()" placeholder="Montant"/>
             <select id="tva-rate-tool" class="tool-input" onchange="calcTvaTool()">
               <option value="20">20%</option><option value="14">14%</option><option value="10">10%</option><option value="7">7%</option><option value="0">0%</option>
             </select>
@@ -541,32 +545,61 @@
           </div>
           <div class="tool-card mini-tool">
             <div class="mini-code">MRG</div>
-            <h3>Marge commerciale</h3>
-            <input id="margin-cost" class="tool-input" type="number" value="700" oninput="calcMarginTool()" placeholder="Coût"/>
-            <input id="margin-sale" class="tool-input" type="number" value="1000" oninput="calcMarginTool()" placeholder="Prix de vente"/>
+            <h3>Calcul marge commerciale</h3>
+            <input id="margin-cost" class="tool-input" type="number" value="700" oninput="calcMarginTool()" placeholder="Prix d'achat HT"/>
+            <input id="margin-sale" class="tool-input" type="number" value="1000" oninput="calcMarginTool()" placeholder="Prix de vente HT"/>
             <div class="mini-result" id="margin-tool-result"></div>
           </div>
           <div class="tool-card mini-tool">
             <div class="mini-code">ECH</div>
-            <h3>Date d'échéance</h3>
+            <h3>Calcul échéance</h3>
             <input id="due-start" class="tool-input" type="date" onchange="calcDueDateTool()"/>
-            <input id="due-days" class="tool-input" type="number" value="30" oninput="calcDueDateTool()"/>
+            <select id="due-days" class="tool-input" onchange="calcDueDateTool()">
+              <option value="15">15 jours</option>
+              <option value="30" selected>30 jours</option>
+              <option value="45">45 jours</option>
+              <option value="60">60 jours</option>
+              <option value="90">90 jours</option>
+            </select>
             <div class="mini-result" id="due-tool-result"></div>
           </div>
-          <div class="tool-card mini-tool">
-            <div class="mini-code">DOC</div>
-            <h3>Checklist client</h3>
-            <p>ICE, RC, IF, adresse officielle, téléphone, email, bon de commande, conditions de paiement.</p>
+          <div class="tool-card mini-tool wide-tool">
+            <div class="mini-code">CRE</div>
+            <h3>Check-list création société Maroc</h3>
+            <select id="company-form-check" class="tool-input" onchange="updateCreationChecklist()">
+              <option value="sarl-au">SARL AU</option>
+              <option value="sarl">SARL</option>
+              <option value="auto">Auto-entrepreneur</option>
+            </select>
+            <div class="checklist-progress"><span id="creation-progress-bar"></span></div>
+            <div class="checklist-list">
+              <label><input type="checkbox" onchange="updateCreationChecklist()"> Certificat négatif / nom commercial</label>
+              <label><input type="checkbox" onchange="updateCreationChecklist()"> Statuts signés et légalisés</label>
+              <label><input type="checkbox" onchange="updateCreationChecklist()"> Siège social ou domiciliation</label>
+              <label><input type="checkbox" onchange="updateCreationChecklist()"> Dépôt RC et identifiant fiscal</label>
+              <label><input type="checkbox" onchange="updateCreationChecklist()"> ICE, taxe professionnelle et compte bancaire</label>
+            </div>
+            <div class="mini-result" id="creation-check-result"></div>
+          </div>
+          <div class="tool-card mini-tool wide-tool">
+            <div class="mini-code">CHT</div>
+            <h3>Cachet entreprise</h3>
+            <input id="stamp-name" class="tool-input" oninput="updateCompanyStamp()" placeholder="Nom de société"/>
+            <div class="stamp-grid">
+              <input id="stamp-city" class="tool-input" oninput="updateCompanyStamp()" placeholder="Ville"/>
+              <input id="stamp-ice" class="tool-input" oninput="updateCompanyStamp()" placeholder="ICE"/>
+            </div>
+            <input id="stamp-rc" class="tool-input" oninput="updateCompanyStamp()" placeholder="RC / IF"/>
+            <div class="stamp-preview" id="stamp-preview">
+              <strong>ICE MOROCCO SARL</strong>
+              <span>ICE 000000000000000</span>
+              <small>RC / IF - Casablanca</small>
+            </div>
           </div>
           <div class="tool-card mini-tool">
-            <div class="mini-code">REL</div>
-            <h3>Relance paiement</h3>
-            <p>Préparez une relance claire avec numéro de facture, date d'échéance, montant TTC et mode de paiement.</p>
-          </div>
-          <div class="tool-card mini-tool">
-            <div class="mini-code">DEV</div>
-            <h3>Devis et facture</h3>
-            <p>Utilisez le générateur de facture comme base pour structurer vos documents de vente.</p>
+            <div class="mini-code">ADS</div>
+            <h3>Outils utiles</h3>
+            <p>Ces calculateurs restent indicatifs et simples à utiliser. Vérifiez toujours les chiffres fiscaux, juridiques ou comptables avec un professionnel.</p>
           </div>
         </div>
       </section>
@@ -711,6 +744,6 @@ if(typeof SCRAPED_DB!=='undefined'&&Array.isArray(SCRAPED_DB)){
   SCRAPED_DB.forEach((c,i)=>{c.id=maxId+i+1;DB.push(c);});
 }
 </script>
-<script src="app.js?v=20260519-search-fix-5"></script>
+<script src="app.js?v=20260521-business-tools"></script>
 </body>
 </html>

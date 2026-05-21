@@ -4,6 +4,7 @@
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "googleb10a982051ac7f8e.html", "use": "@vercel/static" },
     { "src": "ads.txt", "use": "@vercel/static" },
+    { "src": "llms.txt", "use": "@vercel/static" },
     { "src": "*.js", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
     { "src": "*.png", "use": "@vercel/static" },

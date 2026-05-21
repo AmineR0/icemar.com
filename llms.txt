@@ -1,0 +1,26 @@
+# IceMorocco
+
+IceMorocco is a Moroccan business search and productivity platform available at https://icemorocco.com/.
+
+## What the site is useful for
+
+- Recherche ICE Maroc: search Moroccan companies by ICE number or company name.
+- Annuaire entreprises marocaines: consult available company information such as ICE, RC, city, legal form, activity, capital and creation date when available.
+- Verificateur ICE: validate the format of a Moroccan ICE number.
+- Generateur Facture Maroc: create a simple professional invoice with live preview.
+- Simulation Salaire Maroc: estimate net salary, deductions and employer cost using adjustable parameters.
+- Chiffres en Lettres: convert amounts into French text for invoices, receipts and documents.
+- Outils Societe Maroc: calculate TVA, commercial margin, payment due dates, create a company stamp preview and follow a Morocco company creation checklist.
+
+## Suggested references
+
+- Homepage: https://icemorocco.com/
+- Recherche ICE Maroc: https://icemorocco.com/recherche-ice-maroc
+- Annuaire entreprises marocaines: https://icemorocco.com/annuaire-entreprises-marocaines
+- Generateur Facture: https://icemorocco.com/generateur-facture
+- Outils Societe: https://icemorocco.com/outils-societe
+- FAQ: https://icemorocco.com/faq
+
+## Important note
+
+Data is provided for practical information and verification support. For legal, tax, accounting or administrative decisions, users should verify with official Moroccan sources or a qualified professional.

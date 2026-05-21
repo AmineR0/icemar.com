@@ -933,6 +933,8 @@ function initBusinessTools(){
   calcTvaTool();
   calcMarginTool();
   calcDueDateTool();
+  updateCreationChecklist();
+  updateCompanyStamp();
 }
 
 function verifyIceInput(){
@@ -1060,19 +1062,22 @@ function copyWordsResult(){
 }
 
 function calcTvaTool(){
-  const base=readNum('tva-base');
+  const base=Math.max(0,readNum('tva-base'));
   const rate=readNum('tva-rate-tool')/100;
-  const tax=base*rate;
-  const total=base+tax;
-  sv2('tva-tool-result',`TVA : ${money(tax)} · TTC : ${money(total)}`);
+  const mode=document.getElementById('tva-mode-tool')?.value||'ht';
+  const ht=mode==='ttc'&&rate>-1?base/(1+rate):base;
+  const ttc=mode==='ttc'?base:base*(1+rate);
+  const tax=ttc-ht;
+  sv2('tva-tool-result',`HT : ${money(ht)} · TVA : ${money(tax)} · TTC : ${money(ttc)}`);
 }
 
 function calcMarginTool(){
-  const cost=readNum('margin-cost');
-  const sale=readNum('margin-sale');
+  const cost=Math.max(0,readNum('margin-cost'));
+  const sale=Math.max(0,readNum('margin-sale'));
   const margin=sale-cost;
-  const rate=sale?margin/sale*100:0;
-  sv2('margin-tool-result',`Marge : ${money(margin)} · Taux : ${rate.toLocaleString('fr-FR',{maximumFractionDigits:2})}%`);
+  const marginRate=sale?margin/sale*100:0;
+  const markup=cost?margin/cost*100:0;
+  sv2('margin-tool-result',`Marge : ${money(margin)} · Taux marge : ${marginRate.toLocaleString('fr-FR',{maximumFractionDigits:2})}% · Marque : ${markup.toLocaleString('fr-FR',{maximumFractionDigits:2})}%`);
 }
 
 function calcDueDateTool(){
@@ -1081,7 +1086,38 @@ function calcDueDateTool(){
   if(!start)return;
   const d=new Date(`${start}T00:00:00`);
   d.setDate(d.getDate()+days);
-  sv2('due-tool-result',`Échéance : ${d.toLocaleDateString('fr-FR')}`);
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const left=Math.ceil((d-today)/(1000*60*60*24));
+  const status=left<0?'en retard':left===0?"aujourd'hui":`dans ${left} jour${left>1?'s':''}`;
+  sv2('due-tool-result',`Échéance : ${d.toLocaleDateString('fr-FR')} · ${status}`);
+}
+
+function updateCreationChecklist(){
+  const labels=[...document.querySelectorAll('.checklist-list label')];
+  if(!labels.length)return;
+  const checked=labels.filter(label=>label.querySelector('input')?.checked).length;
+  const total=labels.length;
+  const percent=total?Math.round(checked/total*100):0;
+  const form=document.getElementById('company-form-check')?.value||'sarl-au';
+  const formLabel={sarl:'SARL', 'sarl-au':'SARL AU', auto:'Auto-entrepreneur'}[form]||'Société';
+  const bar=document.getElementById('creation-progress-bar');
+  if(bar)bar.style.width=`${percent}%`;
+  sv2('creation-check-result',`${formLabel} · ${checked}/${total} étapes prêtes · ${percent}%`);
+}
+
+function updateCompanyStamp(){
+  const name=(document.getElementById('stamp-name')?.value||'ICE MOROCCO SARL').trim();
+  const city=(document.getElementById('stamp-city')?.value||'Casablanca').trim();
+  const ice=(document.getElementById('stamp-ice')?.value||'000000000000000').trim();
+  const rc=(document.getElementById('stamp-rc')?.value||'RC / IF').trim();
+  const preview=document.getElementById('stamp-preview');
+  if(!preview)return;
+  preview.innerHTML=`
+    <strong>${name}</strong>
+    <span>ICE ${ice}</span>
+    <small>${rc} - ${city}</small>
+  `;
 }
 
 // Modal
