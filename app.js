@@ -933,8 +933,6 @@ function initBusinessTools(){
   calcTvaTool();
   calcMarginTool();
   calcDueDateTool();
-  updateCreationChecklist();
-  updateCompanyStamp();
   updateOfficeStamp();
 }
 
@@ -1039,33 +1037,6 @@ function calcDueDateTool(){
   const left=Math.ceil((d-today)/(1000*60*60*24));
   const status=left<0?'en retard':left===0?"aujourd'hui":`dans ${left} jour${left>1?'s':''}`;
   sv2('due-tool-result',`Échéance : ${d.toLocaleDateString('fr-FR')} · ${status}`);
-}
-
-function updateCreationChecklist(){
-  const labels=[...document.querySelectorAll('.checklist-list label')];
-  if(!labels.length)return;
-  const checked=labels.filter(label=>label.querySelector('input')?.checked).length;
-  const total=labels.length;
-  const percent=total?Math.round(checked/total*100):0;
-  const form=document.getElementById('company-form-check')?.value||'sarl-au';
-  const formLabel={sarl:'SARL', 'sarl-au':'SARL AU', auto:'Auto-entrepreneur'}[form]||'Société';
-  const bar=document.getElementById('creation-progress-bar');
-  if(bar)bar.style.width=`${percent}%`;
-  sv2('creation-check-result',`${formLabel} · ${checked}/${total} étapes prêtes · ${percent}%`);
-}
-
-function updateCompanyStamp(){
-  const name=(document.getElementById('stamp-name')?.value||'ICE MOROCCO SARL').trim();
-  const city=(document.getElementById('stamp-city')?.value||'Casablanca').trim();
-  const ice=(document.getElementById('stamp-ice')?.value||'000000000000000').trim();
-  const rc=(document.getElementById('stamp-rc')?.value||'RC / IF').trim();
-  const preview=document.getElementById('stamp-preview');
-  if(!preview)return;
-  preview.innerHTML=`
-    <strong>${name}</strong>
-    <span>ICE ${ice}</span>
-    <small>${rc} - ${city}</small>
-  `;
 }
 
 function updateOfficeStamp(){

@@ -233,16 +233,6 @@ button{appearance:none}
 .mini-tool p{color:var(--muted);line-height:1.7;font-weight:750}
 .mini-result{margin-top:auto;padding:12px;border-radius:16px;background:#10283a;color:#fff;font-weight:900;line-height:1.5}
 .wide-tool{grid-column:span 2}
-.stamp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stamp-preview{display:grid;place-items:center;gap:6px;min-height:148px;margin-top:auto;padding:20px;border:3px double var(--ink);border-radius:999px;color:var(--ink);background:radial-gradient(circle,rgba(255,255,255,.92),rgba(246,240,230,.8));text-align:center;text-transform:uppercase}
-.stamp-preview strong{max-width:100%;font-family:var(--display);font-size:1.25rem;letter-spacing:.02em;overflow-wrap:anywhere}
-.stamp-preview span{font-weight:950;letter-spacing:.08em}
-.stamp-preview small{font-weight:900;color:var(--muted);letter-spacing:.04em}
-.checklist-progress{height:10px;border-radius:999px;background:#efe7d8;overflow:hidden}
-.checklist-progress span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--brand),var(--gold));transition:width .2s ease}
-.checklist-list{display:grid;gap:8px}
-.checklist-list label{display:flex;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink-3);font-size:.86rem;font-weight:850;line-height:1.35}
-.checklist-list input{width:17px;height:17px;accent-color:var(--brand);flex:0 0 auto;margin-top:1px}
 .stamp-studio{display:grid;grid-template-columns:minmax(300px,420px) minmax(420px,1fr);gap:18px;align-items:start}
 .stamp-live-card{display:grid;gap:24px;min-height:520px;align-content:start}
 .stamp-product{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center}
@@ -590,7 +580,6 @@ button{appearance:none}
   .tool-head-actions{align-items:flex-start}
   .tool-grid.three{grid-template-columns:1fr}
   .wide-tool{grid-column:auto}
-  .stamp-grid{grid-template-columns:1fr}
   .stamp-studio{grid-template-columns:1fr}
   .stamp-product{grid-template-columns:92px 1fr;gap:12px}
   .stamp-machine{width:82px;height:100px;border-radius:18px 18px 12px 12px}
