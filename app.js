@@ -12,6 +12,19 @@ const SEARCH_STATE_KEY='icm_search_state_v1';
 const LIVE_CACHE_MAX_AGE=1000*60*60*24*7;
 const LIVE_HEALTH_TIMEOUT=2500;
 const LIVE_SEARCH_TIMEOUT=7000;
+const GA_MEASUREMENT_ID='G-F94S5SZ22Z';
+let lastAnalyticsPath='';
+
+function trackPageView(){
+  if(typeof window.gtag!=='function')return;
+  const pagePath=`${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if(pagePath===lastAnalyticsPath)return;
+  lastAnalyticsPath=pagePath;
+  window.gtag('config',GA_MEASUREMENT_ID,{
+    page_path:pagePath,
+    page_title:document.title,
+  });
+}
 
 // Check if live search server is available
 async function checkLiveSearch(){
@@ -115,6 +128,7 @@ function updateRoute(page){
     url.hash=page;
   }
   history.replaceState(null,'',url);
+  trackPageView();
 }
 
 function restoreRoute(){
