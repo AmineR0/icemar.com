@@ -6,8 +6,8 @@ let renderedResults=new Map();
 let searchInFlight=false;
 let searchRunId=0;
 let liveSearchController=null;
-const LIVE_CACHE_KEY='icm_live_company_cache_v4';
-const LEGACY_LIVE_CACHE_KEYS=['icm_live_company_cache_v1','icm_live_company_cache_v2','icm_live_company_cache_v3'];
+const LIVE_CACHE_KEY='icm_live_company_cache_v5';
+const LEGACY_LIVE_CACHE_KEYS=['icm_live_company_cache_v1','icm_live_company_cache_v2','icm_live_company_cache_v3','icm_live_company_cache_v4'];
 const SEARCH_STATE_KEY='icm_search_state_v1';
 const LIVE_CACHE_MAX_AGE=1000*60*60*24*7;
 const LIVE_HEALTH_TIMEOUT=2500;
@@ -395,6 +395,24 @@ function formatCompanyDate(value=''){
   return raw;
 }
 
+function dateSortValue(value=''){
+  const formatted=formatCompanyDate(value);
+  if(!formatted)return Number.POSITIVE_INFINITY;
+  let m=formatted.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m)return Number(`${m[3]}${m[2].padStart(2,'0')}${m[1].padStart(2,'0')}`);
+  m=formatted.match(/^(\d{1,2})\/(\d{4})$/);
+  if(m)return Number(`${m[2]}${m[1].padStart(2,'0')}01`);
+  m=formatted.match(/^(\d{4})$/);
+  if(m)return Number(`${m[1]}0101`);
+  return Number.POSITIVE_INFINITY;
+}
+
+function pickCreationDate(...values){
+  const dates=values.map(formatCompanyDate).filter(Boolean);
+  if(!dates.length)return '';
+  return dates.sort((a,b)=>dateSortValue(a)-dateSortValue(b))[0];
+}
+
 function searchTokens(q=''){
   return normalizeCompanyKey(q)
     .split(/\s+/)
@@ -536,6 +554,7 @@ function mergeCompanyData(primary,secondary){
   const merged={...secondary,...primary};
   ['type','ice','if_','rc','pat','cap','addr','ville','act','date','statut','tel','fax','email','website','_slug','_url','_source','_cachedAt']
     .forEach(k=>{merged[k]=primary[k]||secondary[k]||'';});
+  merged.date=pickCreationDate(primary.date,secondary.date);
   return merged;
 }
 

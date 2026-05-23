@@ -219,7 +219,7 @@ function mergeCompanyRecords(primary = {}, secondary = {}) {
     .forEach(key => {
       merged[key] = primary[key] || secondary[key] || '';
     });
-  merged.date = formatCompanyDate(merged.date);
+  merged.date = pickCreationDate(primary.date, secondary.date);
   return merged;
 }
 
@@ -856,6 +856,24 @@ function formatCompanyDate(value = '') {
   return raw;
 }
 
+function dateSortValue(value = '') {
+  const formatted = formatCompanyDate(value);
+  if (!formatted) return Number.POSITIVE_INFINITY;
+  let m = formatted.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return Number(`${m[3]}${m[2].padStart(2, '0')}${m[1].padStart(2, '0')}`);
+  m = formatted.match(/^(\d{1,2})\/(\d{4})$/);
+  if (m) return Number(`${m[2]}${m[1].padStart(2, '0')}01`);
+  m = formatted.match(/^(\d{4})$/);
+  if (m) return Number(`${m[1]}0101`);
+  return Number.POSITIVE_INFINITY;
+}
+
+function pickCreationDate(...values) {
+  const dates = values.map(formatCompanyDate).filter(Boolean);
+  if (!dates.length) return '';
+  return dates.sort((a, b) => dateSortValue(a) - dateSortValue(b))[0];
+}
+
 async function searchIcemarocSource(query) {
   try {
     const apiUrl = `https://www.icemaroc.com/api/search.php?query=${encodeURIComponent(query)}`;
@@ -928,7 +946,7 @@ async function searchCharikaAutocomplete(query) {
       ice: company.ice || '',
       if_: company.identifiantFiscal || company.if || '',
       pat: company.patente || company.taxeProfessionnelle || '',
-      date: formatCompanyDate(company.dateCreation || company.anneeCreation || ''),
+      date: formatCompanyDate(company.dateImmatriculation || company.dateCreation || company.anneeCreation || ''),
       rc: company.rc ? `${company.rc}${company.nomTribunal ? ` (${decodeHtml(company.nomTribunal)})` : ''}` : '',
       addr: address,
       ville: city,
