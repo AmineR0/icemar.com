@@ -1262,20 +1262,22 @@ const requestHandler = async (req, res) => {
 
       if (mode === 'ice') {
         const ice = normalizeIce(q);
-        const exactLiveResults = results.filter(company => normalizeIce(company.ice) === ice);
-        const cachedResults = searchDiscoveredByIce(q);
-        const seen = new Set();
-        results = dedupeCompanies([...exactLiveResults, ...cachedResults]).filter(company => {
-          const key = companyCacheKey(company);
-          if (!key || seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
+        results = results.filter(company => normalizeIce(company.ice) === ice);
       } else {
-        results = dedupeCompanies([...results, ...searchDiscoveredByName(q)]);
         results = await enrichMissingIceFromIcemaroc(results);
-        const closeResults = results.filter(company => isCloseCompanyMatch(company, q));
-        if (closeResults.length) results = closeResults;
+        const queryTokens = searchTokens(q);
+        const strictNameResults = queryTokens.length > 1
+          ? results.filter(company => {
+            const name = normalizeCompanyName(company.name);
+            return queryTokens.every(token => name.includes(token));
+          })
+          : [];
+        if (strictNameResults.length) {
+          results = strictNameResults;
+        } else {
+          const closeResults = results.filter(company => isCloseCompanyMatch(company, q));
+          if (closeResults.length) results = closeResults;
+        }
         results.sort((a, b) => companySearchScore(b, q) - companySearchScore(a, q));
         results = results.filter(company => keepUsefulSearchResult(company, q, results));
       }

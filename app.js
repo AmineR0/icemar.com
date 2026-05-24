@@ -52,6 +52,7 @@ async function checkLiveSearch(){
 
 // Init
 document.addEventListener('DOMContentLoaded',async()=>{
+  clearSearchCache();
   clearLegacySearchCache();
   document.getElementById('db-count').textContent=DB.length.toLocaleString('fr-FR');
   const t=new Date().toISOString().split('T')[0];
@@ -231,17 +232,12 @@ async function go(opts={}){
   }
   saveSearchState(input.value.trim());
   if(updateUrl)updateRoute('search');
+  if(!background)renderSearchLoading(raw);
   const words=raw.split(/\s+/).filter(Boolean);
   const nameTokens=searchTokens(raw);
   const liveMode=searchMode;
   const canSearchLive=liveMode==='nom' ? raw.length>=2 : raw.length>=6;
-  const cachedResults=getCachedCompanies().map((c,i)=>({
-    ...c,
-    id:85000+i,
-    _live:true,
-    _source:c._source||'cache',
-  }));
-  const searchableDB=[...DB,...cachedResults];
+  const searchableDB=DB;
 
   // 1. Local DB search
   const broadLocalRes=searchableDB.filter(c=>{
@@ -268,7 +264,7 @@ async function go(opts={}){
     renderResults(localRes,raw);
     if(shouldScroll&&localRes.length)scrollToResults();
   }else{
-    hideResultsWhileSearching();
+    if(background)hideResultsWhileSearching();
     if((!isLiveAvailable||!canSearchLive)&&!deferEmpty){
       renderResults([],raw);
     }
@@ -319,7 +315,6 @@ async function go(opts={}){
           _url:c.url,
           _source:'charika',
         }));
-        cacheCompanies(liveResults);
         let hasStrictLive=false;
         if(liveMode==='nom'&&nameTokens.length>1){
           const strictLive=liveResults.filter(c=>nameTokens.every(t=>normalizeCompanyKey(c.name).includes(t)));
@@ -385,6 +380,26 @@ function hideResultsWhileSearching(){
   if(list)list.innerHTML='';
   if(empty)empty.style.display='none';
   document.getElementById('empty-state').style.display='flex';
+}
+
+function renderSearchLoading(q=''){
+  renderedResults=new Map();
+  document.getElementById('empty-state').style.display='flex';
+  const panel=document.getElementById('results-panel');
+  const list=document.getElementById('res-list');
+  const empty=document.getElementById('res-empty');
+  panel.style.display='block';
+  document.getElementById('res-count-badge').textContent='Recherche...';
+  if(list)list.innerHTML='';
+  if(empty){
+    const label=empty.querySelector('div');
+    const title=empty.querySelector('strong');
+    const text=empty.querySelector('p');
+    if(label)label.textContent='Recherche';
+    if(title)title.textContent='Recherche en cours';
+    if(text)text.textContent=q?`Recherche fraîche pour "${q}". Aucun ancien résultat n'est affiché.`:'Recherche fraîche en cours.';
+    empty.style.display='block';
+  }
 }
 
 function formatCompanyDate(value=''){
@@ -628,20 +643,15 @@ function clearLegacySearchCache(){
   }catch{}
 }
 
+function clearSearchCache(){
+  try{
+    [...LEGACY_LIVE_CACHE_KEYS,LIVE_CACHE_KEY].forEach(key=>localStorage.removeItem(key));
+  }catch{}
+}
+
 function cacheCompanies(companies=[]){
-  if(!Array.isArray(companies)||!companies.length)return;
-  const now=Date.now();
-  const freshCompanies=companies
-    .filter(c=>c&&c.name)
-    .map(c=>({...c,_cachedAt:now}));
-  const cached=dedupeResults(getCachedCompanies());
-  const all=dedupeResults([...cached,...freshCompanies]);
-  const byKey=new Map();
-  all.forEach(c=>{
-    const key=companyCacheKey(c);
-    if(key)byKey.set(key,c);
-  });
-  try{localStorage.setItem(LIVE_CACHE_KEY,JSON.stringify([...byKey.values()].slice(-600)));}catch{}
+  // Search results must stay fresh; do not persist companies between searches.
+  void companies;
 }
 
 function cacheCompany(company){
@@ -833,7 +843,11 @@ function renderResults(res,q){
   const empty=document.getElementById('res-empty');
   if(!res.length){
     list.innerHTML='';
+    const emptyLabel=empty.querySelector('div');
+    const emptyTitle=empty.querySelector('strong');
     const emptyText=empty.querySelector('p');
+    if(emptyLabel)emptyLabel.textContent='Aucun résultat';
+    if(emptyTitle)emptyTitle.textContent='Aucune entreprise trouvée';
     if(emptyText){
       emptyText.textContent=searchMode==='ice'
         ?"ICE introuvable dans les données chargées. Essayez d'abord le nom de l'entreprise pour récupérer ses informations complètes."
@@ -922,7 +936,7 @@ function showPopularCompanyList(type='top'){
     },
   };
   const meta=listMeta[type]||listMeta.top;
-  const companies=dedupeResults([...DB,...getCachedCompanies()])
+  const companies=dedupeResults(DB)
     .filter(meta.filter)
     .sort((a,b)=>featuredCompanyScore(b)-featuredCompanyScore(a))
     .slice(0,meta.limit);
