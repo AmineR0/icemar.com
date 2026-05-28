@@ -114,9 +114,14 @@ button{appearance:none}
 .search-status-dot{width:22px;height:22px;border-radius:50%;border:3px solid rgba(20,184,166,.2);border-top-color:var(--brand-2);animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .seo-content{margin:10px auto 54px;padding:0 clamp(14px,4vw,46px);width:min(1000px,100%);text-align:left}
-.seo-intro,.seo-faq{padding:20px;border:1px solid rgba(228,221,209,.9);border-radius:22px;background:rgba(255,255,255,.72);box-shadow:0 14px 34px rgba(34,44,54,.06)}
-.seo-intro h2,.seo-faq h2{margin:0 0 10px;font-size:1.35rem;line-height:1.15;letter-spacing:-.04em}
-.seo-intro p,.seo-faq p{max-width:none;margin:0;color:var(--muted);font-size:.95rem;line-height:1.75}
+.seo-intro,.seo-guide,.seo-faq{padding:20px;border:1px solid rgba(228,221,209,.9);border-radius:22px;background:rgba(255,255,255,.72);box-shadow:0 14px 34px rgba(34,44,54,.06)}
+.seo-intro h2,.seo-guide h2,.seo-faq h2{margin:0 0 10px;font-size:1.35rem;line-height:1.15;letter-spacing:-.04em}
+.seo-intro p,.seo-guide p,.seo-faq p{max-width:none;margin:0;color:var(--muted);font-size:.95rem;line-height:1.75}
+.seo-guide{margin:12px 0}
+.seo-guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.seo-guide article{padding:16px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.seo-guide h3{margin:0 0 8px;font-family:var(--display);font-size:1rem;line-height:1.12;color:var(--ink);letter-spacing:-.03em}
+.seo-guide p{font-size:.88rem}
 .seo-directory{margin:12px 0}
 .seo-directory h2{margin:0 0 10px;font-family:var(--display);font-size:1.25rem;letter-spacing:-.04em;color:var(--ink)}
 .seo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
@@ -559,8 +564,8 @@ button{appearance:none}
   .home-ice-row{grid-template-columns:1fr}
   .home-ice-row input,.home-ice-row button{min-height:56px;border-radius:18px}
   .seo-content{margin-top:18px}
-  .seo-intro,.seo-faq{padding:16px;border-radius:18px}
-  .seo-grid{grid-template-columns:1fr;gap:8px}
+  .seo-intro,.seo-guide,.seo-faq{padding:16px;border-radius:18px}
+  .seo-grid,.seo-guide-grid{grid-template-columns:1fr;gap:8px}
   .seo-feature-card{min-height:auto;padding:15px}
   .seo-static{padding:16px 12px 44px}
   .seo-static-head,.seo-panel{padding:16px;border-radius:18px}
