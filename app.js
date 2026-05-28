@@ -71,9 +71,17 @@ document.addEventListener('DOMContentLoaded',async()=>{
   checkLiveSearch().then(()=>{
     const q=document.getElementById('q')?.value.trim();
     if(q&&document.body.classList.contains('is-search-page')){
-      go({updateUrl:false,scroll:false,background:true});
+      go({updateUrl:false,scroll:false,background:false,deferEmpty:true});
     }
   });
+});
+
+window.addEventListener('pageshow',event=>{
+  if(event.persisted)refreshSearchFromRoute();
+});
+
+window.addEventListener('popstate',()=>{
+  refreshSearchFromRoute();
 });
 
 // Pages
@@ -160,10 +168,25 @@ function restoreRoute(){
   const restoredQuery=q||'';
   if(restoredQuery){
     sv('q',restoredQuery);
-    go({updateUrl:false,scroll:false,background:true,deferEmpty:true});
+    resetSearchResultsState();
+    renderSearchLoading(restoredQuery);
+    go({updateUrl:false,scroll:false,background:false,deferEmpty:true,waitForFreshLive:true});
   }else{
     showPage('search',{updateUrl:false});
+    clearSearch();
   }
+}
+
+function refreshSearchFromRoute(){
+  const url=new URL(window.location.href);
+  const q=url.searchParams.get('q')||'';
+  const mode=url.searchParams.get('mode')||searchMode||'nom';
+  if(!q||url.hash)return;
+  applySearchMode(mode,{clear:false});
+  sv('q',q);
+  resetSearchResultsState();
+  renderSearchLoading(q);
+  go({updateUrl:false,scroll:false,background:false,deferEmpty:true,waitForFreshLive:true});
 }
 
 function readSearchState(){
@@ -237,6 +260,7 @@ async function go(opts={}){
   const nameTokens=searchTokens(raw);
   const liveMode=searchMode;
   const canSearchLive=liveMode==='nom' ? raw.length>=2 : raw.length>=6;
+  const waitForFreshLive=canSearchLive&&(isLiveAvailable||opts.waitForFreshLive===true);
   const searchableDB=DB;
 
   // 1. Local DB search
@@ -260,11 +284,11 @@ async function go(opts={}){
 
   // Show relevant local/cache results immediately. If nothing relevant is
   // available, keep the user on the search form until the live source answers.
-  if(localRes.length){
+  if(localRes.length&&!waitForFreshLive){
     renderResults(localRes,raw);
     if(shouldScroll&&localRes.length)scrollToResults();
   }else{
-    if(background)hideResultsWhileSearching();
+    if(background&&!waitForFreshLive)hideResultsWhileSearching();
     if((!isLiveAvailable||!canSearchLive)&&!deferEmpty){
       renderResults([],raw);
     }
@@ -337,13 +361,19 @@ async function go(opts={}){
           .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
         renderResults(fallback,raw);
         if(shouldScroll&&fallback.length)scrollToResults();
+      }else if(localRes.length){
+        renderResults(localRes,raw);
+        if(shouldScroll&&localRes.length)scrollToResults();
       }else if(!localRes.length){
         renderResults([],raw);
       }
     }catch(e){
       if(e.name!=='AbortError'){
         console.log('Live search unavailable:',e.message);
-        if(runId===searchRunId&&!localRes.length&&approxLocalRes.length>0){
+        if(runId===searchRunId&&localRes.length){
+          renderResults(localRes,raw);
+          if(shouldScroll&&localRes.length)scrollToResults();
+        }else if(runId===searchRunId&&!localRes.length&&approxLocalRes.length>0){
           const fallback=dedupeResults(approxLocalRes)
             .sort((a,b)=>scoreResult(b,raw,words)-scoreResult(a,raw,words));
           renderResults(fallback,raw);
@@ -383,7 +413,7 @@ function hideResultsWhileSearching(){
 }
 
 function renderSearchLoading(q=''){
-  renderedResults=new Map();
+  resetSearchResultsState();
   document.getElementById('empty-state').style.display='flex';
   const panel=document.getElementById('results-panel');
   const list=document.getElementById('res-list');
@@ -399,6 +429,15 @@ function renderSearchLoading(q=''){
     if(title)title.textContent='Recherche en cours';
     if(text)text.textContent=q?`Recherche fraîche pour "${q}". Aucun ancien résultat n'est affiché.`:'Recherche fraîche en cours.';
     empty.style.display='block';
+  }
+}
+
+function resetSearchResultsState(){
+  renderedResults=new Map();
+  lastLiveResults=new Map();
+  if(liveSearchController){
+    liveSearchController.abort();
+    liveSearchController=null;
   }
 }
 
@@ -915,9 +954,13 @@ function renderResults(res,q){
 }
 
 function clearSearch(){
+  resetSearchResultsState();
+  setSearchLoading(false);
   document.getElementById('results-panel').style.display='none';
   document.getElementById('empty-state').style.display='flex';
   document.getElementById('res-list').innerHTML='';
+  const empty=document.getElementById('res-empty');
+  if(empty)empty.style.display='none';
 }
 
 function initPopularCompanyLists(){

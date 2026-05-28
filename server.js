@@ -1359,7 +1359,12 @@ const requestHandler = async (req, res) => {
   try {
     const data = fs.readFileSync(filePath);
     const ext = path.extname(filePath);
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    if (ext === '.html' || path.basename(filePath) === 'app.js') {
+      headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
+      headers.Pragma = 'no-cache';
+    }
+    res.writeHead(200, headers);
     res.end(data);
   } catch {
     res.writeHead(404);
