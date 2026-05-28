@@ -445,7 +445,7 @@ function pickCreationDate(...values){
 function searchTokens(q=''){
   return normalizeCompanyKey(q)
     .split(/\s+/)
-    .filter(t=>t.length>1&&!['ste','societe','sarl','sa','au','maroc','ma'].includes(t));
+    .filter(t=>t.length>1&&!['ste','societe','sarl','sa','au','ltd'].includes(t));
 }
 
 function isLocalNameCandidate(c,raw,words,nameTokens){
@@ -464,8 +464,7 @@ function isLocalNameCandidate(c,raw,words,nameTokens){
     if(fuzzyNameTokens>=Math.min(2,nameTokens.length))return true;
   }
   if(words.length===1&&rawKey.length>=3){
-    const extraKey=normalizeCompanyKey([c.ville,c.act,c.type].join(' '));
-    return extraKey.includes(rawKey)||countFuzzyTokenMatches(nameKey,[rawKey])>0;
+    return countFuzzyTokenMatches(nameKey,[rawKey])>0;
   }
   return false;
 }
@@ -475,7 +474,7 @@ function normalizeCompanyKey(v=''){
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g,'')
-    .replace(/\b(ste|societe|sarl|sa|au|ltd|maroc|ma)\b/g,'')
+    .replace(/\b(ste|societe|sarl|sa|au|ltd)\b/g,'')
     .replace(/[^a-z0-9]+/g,' ')
     .trim();
 }
@@ -521,7 +520,23 @@ function isRelevantApproxResult(c,raw,words,nameTokens){
   return (matchedNameTokens+fuzzyNameTokens)>=2||(matchedAllTokens+fuzzyAllTokens)>=Math.ceil(nameTokens.length*.65);
 }
 
+function matchesSearchIntent(c={},raw=''){
+  const queryKey=normalizeCompanyKey(raw);
+  const nameKey=normalizeCompanyKey(c.name);
+  const tokens=searchTokens(raw);
+  if(!queryKey||!nameKey||!tokens.length)return false;
+  if(nameKey===queryKey||nameKey.includes(queryKey)||nameKey.startsWith(queryKey))return true;
+  const nameMatches=countFuzzyTokenMatches(nameKey,tokens);
+  if(tokens.length===1)return nameMatches>=1;
+  if(tokens.length===2)return nameMatches>=2;
+  return nameMatches>=Math.max(3,Math.ceil(tokens.length*.75));
+}
+
 function keepUsefulSearchResult(c={},raw='',allResults=[]){
+  if(searchMode==='ice'){
+    return Boolean(String(c.ice||'').replace(/\D/g,''));
+  }
+  if(!matchesSearchIntent(c,raw))return false;
   if(String(c.ice||'').replace(/\D/g,''))return true;
   const queryKey=normalizeCompanyKey(raw);
   const nameKey=normalizeCompanyKey(c.name);
@@ -832,7 +847,7 @@ function useLiveClient(name,addr,ville,email,ice,tel=''){
 
 function renderResults(res,q){
   const visibleResults=res.filter(c=>keepUsefulSearchResult(c,q,res));
-  res=visibleResults.length?visibleResults:res;
+  res=searchMode==='nom'?visibleResults:(visibleResults.length?visibleResults:res);
   renderedResults=new Map(res.filter(c=>c&&c.id!==undefined).map(c=>[Number(c.id),c]));
   document.getElementById('empty-state').style.display='flex';
   document.getElementById('res-title').textContent='Résultats de la recherche :';

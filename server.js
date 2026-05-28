@@ -117,7 +117,7 @@ function normalizeCompanyName(value = '') {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\b(ste|societe|sarl|sa|au|snc|maroc|ma)\b/g, '')
+    .replace(/\b(ste|societe|sarl|sa|au|snc|ltd)\b/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 }
@@ -125,7 +125,7 @@ function normalizeCompanyName(value = '') {
 function searchTokens(value = '') {
   return normalizeCompanyName(value)
     .split(/\s+/)
-    .filter(token => token.length > 1 && !['ste', 'societe', 'sarl', 'sa', 'au', 'snc', 'maroc', 'ma'].includes(token));
+    .filter(token => token.length > 1 && !['ste', 'societe', 'sarl', 'sa', 'au', 'snc', 'ltd'].includes(token));
 }
 
 function editDistance(a = '', b = '') {
@@ -186,7 +186,21 @@ function isCloseCompanyMatch(company = {}, query = '') {
   return nameMatches >= 2 || allMatches >= Math.ceil(tokens.length * 0.65);
 }
 
+function matchesSearchIntent(company = {}, query = '') {
+  const queryKey = normalizeCompanyName(query);
+  const nameKey = normalizeCompanyName(company.name);
+  const tokens = searchTokens(query);
+  if (!queryKey || !nameKey || !tokens.length) return false;
+  if (nameKey === queryKey || nameKey.includes(queryKey) || nameKey.startsWith(queryKey)) return true;
+
+  const nameMatches = countFuzzyTokenMatches(company.name, tokens);
+  if (tokens.length === 1) return nameMatches >= 1;
+  if (tokens.length === 2) return nameMatches >= 2;
+  return nameMatches >= Math.max(3, Math.ceil(tokens.length * 0.75));
+}
+
 function keepUsefulSearchResult(company = {}, query = '', allResults = []) {
+  if (!matchesSearchIntent(company, query)) return false;
   if (normalizeIce(company.ice)) return true;
   const queryKey = normalizeCompanyName(query);
   const nameKey = normalizeCompanyName(company.name);
@@ -1250,7 +1264,8 @@ const requestHandler = async (req, res) => {
             withTimeout(searchCharikaAutocomplete(token).catch(() => []), 1600, []),
             withTimeout(searchIcemarocSource(token).catch(() => []), 1600, []),
           ]);
-          const tokenResults = [...tokenCharikaResults, ...tokenIceMarocResults];
+          const tokenResults = [...tokenCharikaResults, ...tokenIceMarocResults]
+            .filter(company => matchesSearchIntent(company, q));
           if (tokenResults.length) {
             results = dedupeCompanies([...results, ...tokenResults]);
           }
@@ -1275,7 +1290,7 @@ const requestHandler = async (req, res) => {
         if (strictNameResults.length) {
           results = strictNameResults;
         } else {
-          const closeResults = results.filter(company => isCloseCompanyMatch(company, q));
+          const closeResults = results.filter(company => matchesSearchIntent(company, q));
           if (closeResults.length) results = closeResults;
         }
         results.sort((a, b) => companySearchScore(b, q) - companySearchScore(a, q));
