@@ -579,6 +579,7 @@ const STATIC_TOOL_PAGES = {
     lead: 'Contrôlez rapidement le format d’un numéro ICE marocain et lancez une recherche entreprise depuis IceMorocco.',
     description: 'Vérificateur ICE Maroc gratuit pour contrôler un numéro ICE à 15 chiffres et retrouver une entreprise marocaine par ICE ou nom.',
     appHash: 'ice-check',
+    appTitlePattern: '<h2>Vérificateur ICE</h2>',
     cta: 'Ouvrir le vérificateur ICE',
     body: `
       <h2>Contrôler un numéro ICE marocain</h2>
@@ -593,6 +594,7 @@ const STATIC_TOOL_PAGES = {
     lead: 'Créez une simulation professionnelle de cachet société rond ou rectangulaire, prête à imprimer.',
     description: 'Cachet entreprise Maroc avec aperçu en direct, mentions ICE, RC, ville, adresse et impression propre pour société marocaine.',
     appHash: 'stamp',
+    appTitlePattern: '<h2>Cachet Entreprise</h2>',
     cta: 'Ouvrir le cachet entreprise',
     body: `
       <h2>Créer une maquette de cachet société</h2>
@@ -607,6 +609,8 @@ const STATIC_TOOL_PAGES = {
     lead: 'Créez une facture claire et professionnelle pour vos clients avec les informations essentielles de l’entreprise.',
     description: 'Générateur facture Maroc gratuit pour créer une facture professionnelle avec client, articles, TVA, total et montant en lettres.',
     appHash: 'invoice',
+    appTitlePattern: '<h2 class="inv-h2">Facture</h2>',
+    appTitleReplacement: '<h1 class="inv-h2">Générateur Facture Maroc</h1>',
     cta: 'Ouvrir le générateur facture',
     body: `
       <h2>Créer une facture professionnelle</h2>
@@ -621,6 +625,7 @@ const STATIC_TOOL_PAGES = {
     lead: 'Convertissez rapidement un montant en lettres pour facture, reçu, devis ou document commercial.',
     description: 'Outil chiffres en lettres pour convertir un montant en dirhams ou autre devise et l’utiliser dans une facture ou un document.',
     appHash: 'words',
+    appTitlePattern: '<h2>Chiffres en Lettres</h2>',
     cta: 'Ouvrir chiffres en lettres',
     body: `
       <h2>Convertir un montant en lettres</h2>
@@ -635,6 +640,7 @@ const STATIC_TOOL_PAGES = {
     lead: 'Un espace pratique pour les calculs et documents utilisés par les entreprises marocaines au quotidien.',
     description: 'Outils société Maroc pour entrepreneurs : calcul TVA, marge commerciale, échéance, cachet entreprise, check-list création société et outils professionnels utiles.',
     appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
     cta: 'Ouvrir les outils société',
     body: `
       <h2>Outils pratiques pour entreprise</h2>
@@ -705,10 +711,17 @@ function replaceOgContent(html, property, content) {
 function renderToolAppPage(slug, page) {
   const canonical = `${SITE_URL}/${slug}`;
   let html = fs.readFileSync(path.join(STATIC_DIR, 'index.html'), 'utf8');
+  const pageId = `page-${page.appHash}`;
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(page.title)}</title>`)
     .replace(/<link rel="canonical" href="[^"]*"\/>/, `<link rel="canonical" href="${escapeHtml(canonical)}"/>`)
-    .replace(/<body class="[^"]*">/, `<body class="is-${escapeHtml(page.appHash)}-page">`);
+    .replace(/<body class="[^"]*">/, `<body class="is-${escapeHtml(page.appHash)}-page">`)
+    .replace('id="page-search" class="page active"', 'id="page-search" class="page"')
+    .replace(`id="${pageId}" class="page"`, `id="${pageId}" class="page active"`)
+    .replace('<h1>Recherche ICE Maroc</h1>', '<div class="search-page-title">Recherche ICE Maroc</div>');
+  if (page.appTitlePattern) {
+    html = html.replace(page.appTitlePattern, page.appTitleReplacement || `<h1>${escapeHtml(page.h1)}</h1>`);
+  }
   html = replaceMetaContent(html, 'description', page.description);
   html = replaceOgContent(html, 'og:title', page.title);
   html = replaceOgContent(html, 'og:description', page.description);
