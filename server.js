@@ -1397,7 +1397,7 @@ const GUIDE_OFFICIAL_LINKS = {
 function renderOfficialLinksBlock(topic) {
   const links = GUIDE_OFFICIAL_LINKS[topic.slug] || [];
   if (!links.length) return '';
-  return `<section class="seo-panel official-links">
+  return `<section class="seo-panel official-links" id="officiel">
     <h2>Site officiel pour faire la demande</h2>
     <p>Utilisez uniquement les portails officiels ou les administrations compétentes pour remplir une demande, payer des frais ou prendre rendez-vous.</p>
     <div class="official-link-grid">
@@ -1429,6 +1429,62 @@ function renderRichGuideBlocks(topic) {
   </section>`;
 }
 
+function guideIntentSentence(topic) {
+  const category = topic.category;
+  if (category === 'voyage') return 'Le plus important est de prouver clairement le motif du voyage, la cohérence des dates, les ressources financières et le retour prévu.';
+  if (category === 'entreprise') return 'Le plus important est de garder un dossier cohérent entre identité, adresse, activité, fiscalité et documents signés.';
+  if (category === 'vehicules') return 'Le plus important est de vérifier que les informations du véhicule, du propriétaire et des documents correspondent exactement.';
+  if (category === 'famille') return 'Le plus important est de préparer des actes récents, lisibles et cohérents avec la situation familiale déclarée.';
+  if (category === 'logement') return 'Le plus important est de contrôler l’identité des parties, les références du bien, les montants et les signatures avant tout engagement.';
+  if (category === 'education') return 'Le plus important est de respecter les délais de dépôt et de garder les justificatifs scolaires sous forme claire et complète.';
+  if (category === 'emploi') return 'Le plus important est de présenter des informations professionnelles exactes, vérifiables et faciles à comparer avec vos documents.';
+  return 'Le plus important est de comprendre votre situation exacte avant de préparer les documents et de déposer la demande.';
+}
+
+function guideMistakes(topic) {
+  const defaults = [
+    'Déposer une copie illisible ou un document expiré.',
+    'Oublier un justificatif demandé selon la situation personnelle.',
+    'Payer ou réserver avant de vérifier le portail officiel.',
+  ];
+  const byCategory = {
+    voyage: ['Présenter des dates qui ne correspondent pas entre formulaire, réservation, assurance et invitation.', 'Déposer un dossier sans preuve suffisante de ressources ou de situation professionnelle.', 'Attendre la dernière semaine avant le voyage pour chercher un rendez-vous.'],
+    entreprise: ['Choisir une activité trop vague ou incohérente avec les documents de création.', 'Signer des documents avec des informations différentes entre statuts, bail, identité et formulaires.', 'Ne pas conserver les reçus, identifiants fiscaux et accusés de dépôt.'],
+    vehicules: ['Signer une cession sans vérifier carte grise, identité et état administratif du véhicule.', 'Reporter le changement de propriétaire après la vente.', 'Perdre le reçu de paiement ou le justificatif de dépôt.'],
+    famille: ['Utiliser un acte ancien alors qu’un document récent est demandé.', 'Signer ou légaliser un document avant de confirmer la procédure exacte.', 'Oublier les documents complémentaires pour mineur, conjoint étranger ou situation spéciale.'],
+    logement: ['Signer un contrat sans vérifier identité, titre ou droit du bailleur.', 'Ne pas détailler caution, charges, durée et état du logement.', 'Payer sans reçu clair ou sans trace du versement.'],
+    education: ['Rater la date limite de dépôt ou de correction du dossier.', 'Utiliser un code, une identité ou une filière mal renseignés.', 'Ne pas garder une preuve de validation ou de dépôt en ligne.'],
+    emploi: ['Envoyer un CV ou une attestation avec des dates incohérentes.', 'Ne pas vérifier les informations CNSS, AMO ou paie avant utilisation.', 'Utiliser une attestation sans signature, cachet ou date claire.'],
+  };
+  return byCategory[topic.category] || defaults;
+}
+
+function renderGuideToc(topic) {
+  const hasOfficial = (GUIDE_OFFICIAL_LINKS[topic.slug] || []).length > 0;
+  const items = [
+    ['resume', 'Résumé rapide'],
+    ...(hasOfficial ? [['officiel', 'Site officiel']] : []),
+    ['preparer', 'Bien préparer le dossier'],
+    ['documents', 'Documents nécessaires'],
+    ['prix', 'Prix et frais'],
+    ['etapes', 'Étapes'],
+    ['erreurs', 'Erreurs à éviter'],
+    ['faq', 'Questions fréquentes'],
+  ];
+  return `<nav class="article-toc" aria-label="Sommaire de l’article">
+    <strong>Dans cet article</strong>
+    <div>${items.map(([id, label]) => `<a href="#${id}">${escapeHtml(label)}</a>`).join('')}</div>
+  </nav>`;
+}
+
+function renderQuickAnswerBlock(topic) {
+  return `<section class="quick-answer" id="resume">
+    <span>Réponse courte</span>
+    <h2>${escapeHtml(topic.title)} : comment préparer la démarche sans perdre du temps ?</h2>
+    <p>${escapeHtml(guideIntentSentence(topic))} Commencez par lire la liste des documents, ouvrez le site officiel indiqué, puis préparez vos originaux, copies et justificatifs avant de prendre rendez-vous ou de déposer la demande.</p>
+  </section>`;
+}
+
 function renderArticleIntro(topic) {
   const category = GUIDE_CATEGORIES[topic.category];
   return `<article class="guide-article">
@@ -1438,20 +1494,44 @@ function renderArticleIntro(topic) {
       <span>Lecture rapide</span>
     </div>
     <p class="article-lead">${escapeHtml(topic.summary)}</p>
-    <p>Cette page est conçue comme un article pratique : elle explique quoi préparer, quels documents vérifier, quels frais anticiper et quelles erreurs éviter avant de commencer la démarche. L’objectif est de vous aider à arriver avec un dossier clair, complet et facile à contrôler.</p>
+    <p>Quand une démarche administrative est mal préparée, le problème n’est pas seulement le temps perdu : c’est souvent un rendez-vous raté, une copie manquante, un paiement à refaire ou un dossier repoussé. Ce guide vous donne une méthode claire pour comprendre la démarche, préparer les bonnes pièces et passer par le bon canal officiel.</p>
     <div class="article-highlights">
       <div><strong>${topic.docs.length} documents</strong><span>Liste de pièces à préparer avant le dépôt.</span></div>
       <div><strong>${topic.steps.length} étapes</strong><span>Parcours simple pour comprendre l’ordre de la démarche.</span></div>
       <div><strong>Frais à vérifier</strong><span>Les montants peuvent changer selon la ville et le service.</span></div>
     </div>
-  </article>`;
+  </article>${renderGuideToc(topic)}${renderQuickAnswerBlock(topic)}`;
 }
 
 function renderBeforeStartBlock(topic) {
-  return `<section class="seo-panel article-section">
+  return `<section class="seo-panel article-section" id="preparer">
     <h2>Avant de commencer</h2>
     <p>Avant de déposer une demande pour ${escapeHtml(topic.keyword)}, prenez quelques minutes pour vérifier votre situation exacte. Une première demande, un renouvellement, une correction, une perte ou un dossier pour mineur ne demandent pas toujours les mêmes pièces.</p>
     <p>Préparez les originaux et les copies, vérifiez les dates de validité, et gardez une version numérique ou une photo des documents importants. Cette simple organisation évite souvent un deuxième déplacement.</p>
+  </section>`;
+}
+
+function renderProfessionalAdviceBlock(topic) {
+  return `<section class="seo-panel article-section" id="erreurs">
+    <h2>Erreurs fréquentes à éviter</h2>
+    <p>La plupart des dossiers refusés ou retardés ne sont pas compliqués : ils sont incomplets, incohérents ou déposés au mauvais endroit. Avant de valider votre démarche, vérifiez surtout ces points.</p>
+    <ul class="warning-list">${guideMistakes(topic).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+  </section>
+  <section class="seo-panel article-section">
+    <h2>Méthode professionnelle pour un dossier propre</h2>
+    <div class="method-grid">
+      <div><strong>1. Vérifier</strong><span>Lisez la page officielle et confirmez le type exact de demande.</span></div>
+      <div><strong>2. Organiser</strong><span>Classez originaux, copies, reçus et formulaires dans le même ordre que la liste.</span></div>
+      <div><strong>3. Contrôler</strong><span>Comparez noms, dates, adresses, numéros et signatures avant le dépôt.</span></div>
+      <div><strong>4. Garder une preuve</strong><span>Conservez récépissé, numéro de suivi, email de confirmation ou reçu de paiement.</span></div>
+    </div>
+  </section>`;
+}
+
+function renderArticleClosingBlock(topic) {
+  return `<section class="seo-panel article-closing">
+    <h2>À retenir</h2>
+    <p>Pour ${escapeHtml(topic.keyword)}, le bon réflexe est simple : lire la procédure, préparer les documents, passer par le site officiel et garder une preuve de chaque étape. Un dossier bien présenté augmente vos chances d’éviter les allers-retours inutiles.</p>
   </section>`;
 }
 
@@ -1548,14 +1628,16 @@ function renderGuideCategoryPage(categorySlug) {
 function renderGuideTopicPage(topic, variant = 'guide') {
   const canonical = `${SITE_URL}${guideTopicUrl(topic, variant)}`;
   const variantLabel = variant === 'guide' ? topic.title : `${variant === 'faq' ? 'FAQ' : variant === 'prix' ? 'Prix' : 'Documents'} - ${topic.title}`;
-  const priceBlock = `<section class="seo-panel"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
-  const docsBlock = `<section class="seo-panel"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
-  const stepsBlock = `<section class="seo-panel"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
+  const priceBlock = `<section class="seo-panel" id="prix"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
+  const docsBlock = `<section class="seo-panel" id="documents"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
+  const stepsBlock = `<section class="seo-panel" id="etapes"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
   const articleIntro = renderArticleIntro(topic);
   const beforeStartBlock = renderBeforeStartBlock(topic);
+  const professionalAdviceBlock = renderProfessionalAdviceBlock(topic);
+  const closingBlock = renderArticleClosingBlock(topic);
   const officialLinksBlock = renderOfficialLinksBlock(topic);
   const richBlocks = renderRichGuideBlocks(topic);
-  const faqBlock = `<section class="seo-panel"><h2>Questions fréquentes</h2>
+  const faqBlock = `<section class="seo-panel" id="faq"><h2>Questions fréquentes</h2>
     <details open><summary>Combien coûte cette démarche ?</summary><p>${escapeHtml(topic.price)}</p></details>
     <details><summary>Quels documents préparer ?</summary><p>${escapeHtml(topic.docs.join(', '))}.</p></details>
     <details><summary>Quels délais prévoir ?</summary><p>Les délais varient selon la ville, l’administration, la période et la complétude du dossier. Préparez une marge et vérifiez le suivi auprès du service concerné.</p></details>
@@ -1563,10 +1645,10 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   </section>`;
   const variantsBlock = `<section class="seo-panel"><h2>Pages liées</h2><div class="seo-links">${guideRelatedLinks(topic)}<a href="/guide/${topic.category}">${escapeHtml(GUIDE_CATEGORIES[topic.category].title)}</a></div></section>`;
   const bodyByVariant = {
-    guide: `${articleIntro}${officialLinksBlock}${beforeStartBlock}${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
-    faq: articleIntro + officialLinksBlock + richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
-    prix: articleIntro + officialLinksBlock + richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
-    documents: articleIntro + officialLinksBlock + richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
+    guide: `${articleIntro}${officialLinksBlock}${beforeStartBlock}${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${professionalAdviceBlock}${faqBlock}${closingBlock}${variantsBlock}`,
+    faq: articleIntro + officialLinksBlock + richBlocks + faqBlock + docsBlock + priceBlock + professionalAdviceBlock + closingBlock + variantsBlock,
+    prix: articleIntro + officialLinksBlock + richBlocks + priceBlock + docsBlock + stepsBlock + professionalAdviceBlock + closingBlock + variantsBlock,
+    documents: articleIntro + officialLinksBlock + richBlocks + docsBlock + stepsBlock + priceBlock + professionalAdviceBlock + closingBlock + variantsBlock,
   };
   return renderSeoLayout({
     title: `${variantLabel} | IceMorocco`,
