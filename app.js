@@ -1038,6 +1038,11 @@ function initBusinessTools(){
   calcTvaTool();
   calcMarginTool();
   calcDueDateTool();
+  calcSalaryTool();
+  calcIrTool();
+  calcAutoEntrepreneurTool();
+  calcLoanTool();
+  calcVignetteTool();
   updateOfficeStamp();
 }
 
@@ -1142,6 +1147,71 @@ function calcDueDateTool(){
   const left=Math.ceil((d-today)/(1000*60*60*24));
   const status=left<0?'en retard':left===0?"aujourd'hui":`dans ${left} jour${left>1?'s':''}`;
   sv2('due-tool-result',`Échéance : ${d.toLocaleDateString('fr-FR')} · ${status}`);
+}
+
+function calcIrMonthly(taxableMonthly){
+  const annual=Math.max(0,taxableMonthly)*12;
+  const brackets=[
+    [30000,0,0],
+    [50000,.10,3000],
+    [60000,.20,8000],
+    [80000,.30,14000],
+    [180000,.34,17200],
+    [Infinity,.38,24400],
+  ];
+  const bracket=brackets.find(([limit])=>annual<=limit)||brackets[brackets.length-1];
+  return Math.max(0,(annual*bracket[1]-bracket[2])/12);
+}
+
+function calcSalaryTool(){
+  const mode=document.getElementById('salary-mode')?.value||'gross';
+  const base=Math.max(0,readNum('salary-base'));
+  const employeeRate=.0674;
+  if(mode==='net'){
+    const gross=base/(1-employeeRate);
+    const social=gross*employeeRate;
+    sv2('salary-tool-result',`Brut estimé : ${money(gross)} · Cotisations estimées : ${money(social)}`);
+    return;
+  }
+  const social=base*employeeRate;
+  const taxable=Math.max(0,base-social);
+  const ir=calcIrMonthly(taxable);
+  const net=Math.max(0,base-social-ir);
+  sv2('salary-tool-result',`Net estimé : ${money(net)} · Cotisations : ${money(social)} · IR : ${money(ir)}`);
+}
+
+function calcIrTool(){
+  const taxable=Math.max(0,readNum('ir-monthly'));
+  const ir=calcIrMonthly(taxable);
+  sv2('ir-tool-result',`IR mensuel estimé : ${money(ir)} · Annuel : ${money(ir*12)}`);
+}
+
+function calcAutoEntrepreneurTool(){
+  const revenue=Math.max(0,readNum('ae-revenue'));
+  const type=document.getElementById('ae-type')?.value||'service';
+  const rate=type==='commerce'?.005:.01;
+  const tax=revenue*rate;
+  sv2('ae-tool-result',`Taxe estimée : ${money(tax)} · Taux : ${(rate*100).toLocaleString('fr-FR')}%`);
+}
+
+function calcLoanTool(){
+  const amount=Math.max(0,readNum('loan-amount'));
+  const annualRate=Math.max(0,readNum('loan-rate'))/100;
+  const years=Math.max(0,readNum('loan-years'));
+  const months=Math.max(1,Math.round(years*12));
+  const monthlyRate=annualRate/12;
+  const payment=monthlyRate?amount*monthlyRate/(1-Math.pow(1+monthlyRate,-months)):amount/months;
+  sv2('loan-tool-result',`Mensualité : ${money(payment)} · Coût total : ${money(payment*months)}`);
+}
+
+function calcVignetteTool(){
+  const hp=Math.max(1,Math.round(readNum('vignette-hp',8)));
+  const fuel=document.getElementById('vignette-fuel')?.value||'essence';
+  const table=fuel==='diesel'
+    ? [[7,700],[10,1500],[14,6000],[Infinity,20000]]
+    : [[7,350],[10,650],[14,3000],[Infinity,8000]];
+  const amount=(table.find(([limit])=>hp<=limit)||table[table.length-1])[1];
+  sv2('vignette-tool-result',`Vignette estimée : ${money(amount)} · ${hp} CV ${fuel}`);
 }
 
 function updateOfficeStamp(){

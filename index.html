@@ -265,6 +265,14 @@
               <strong>Outils Société</strong>
               <span>Calcul TVA, marge commerciale, échéance et outils pratiques.</span>
             </a>
+            <a href="/calculateur-salaire-net-brut">
+              <strong>Salaire Net Brut</strong>
+              <span>Estimer le salaire net, brut, cotisations et IR.</span>
+            </a>
+            <a href="/calculateur-vignette-maroc">
+              <strong>Calculateur Vignette</strong>
+              <span>Estimer la vignette selon puissance fiscale et carburant.</span>
+            </a>
           </div>
         </section>
         <section class="seo-tools" aria-labelledby="seo-admin-title">
@@ -678,6 +686,50 @@
               <option value="90">90 jours</option>
             </select>
             <div class="mini-result" id="due-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">SAL</div>
+            <h3>Salaire net / brut</h3>
+            <select id="salary-mode" class="tool-input" onchange="calcSalaryTool()">
+              <option value="gross">Brut vers net</option>
+              <option value="net">Net vers brut estimé</option>
+            </select>
+            <input id="salary-base" class="tool-input" type="number" value="8000" oninput="calcSalaryTool()" placeholder="Salaire mensuel"/>
+            <div class="mini-result" id="salary-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">IR</div>
+            <h3>Calcul IR estimatif</h3>
+            <input id="ir-monthly" class="tool-input" type="number" value="10000" oninput="calcIrTool()" placeholder="Revenu net imposable mensuel"/>
+            <div class="mini-result" id="ir-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">AE</div>
+            <h3>Auto-Entrepreneur</h3>
+            <select id="ae-type" class="tool-input" onchange="calcAutoEntrepreneurTool()">
+              <option value="service">Service 1%</option>
+              <option value="commerce">Commerce / industrie 0,5%</option>
+            </select>
+            <input id="ae-revenue" class="tool-input" type="number" value="12000" oninput="calcAutoEntrepreneurTool()" placeholder="Chiffre d'affaires"/>
+            <div class="mini-result" id="ae-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">CRD</div>
+            <h3>Calcul prêt</h3>
+            <input id="loan-amount" class="tool-input" type="number" value="100000" oninput="calcLoanTool()" placeholder="Montant"/>
+            <input id="loan-rate" class="tool-input" type="number" value="5" step="0.1" oninput="calcLoanTool()" placeholder="Taux annuel %"/>
+            <input id="loan-years" class="tool-input" type="number" value="5" oninput="calcLoanTool()" placeholder="Durée années"/>
+            <div class="mini-result" id="loan-tool-result"></div>
+          </div>
+          <div class="tool-card mini-tool">
+            <div class="mini-code">VIG</div>
+            <h3>Calcul vignette</h3>
+            <select id="vignette-fuel" class="tool-input" onchange="calcVignetteTool()">
+              <option value="essence">Essence</option>
+              <option value="diesel">Diesel</option>
+            </select>
+            <input id="vignette-hp" class="tool-input" type="number" value="8" oninput="calcVignetteTool()" placeholder="Puissance fiscale CV"/>
+            <div class="mini-result" id="vignette-tool-result"></div>
           </div>
         </div>
       </section>

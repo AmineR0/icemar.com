@@ -649,6 +649,72 @@ const STATIC_TOOL_PAGES = {
       <p>L’objectif est d’offrir une plateforme claire pour les professionnels qui veulent vérifier une société, préparer un document commercial ou effectuer un calcul rapide.</p>
     `,
   },
+  'calculateur-tva': {
+    title: 'Calculateur TVA Maroc - HT TTC et taxe | IceMorocco',
+    h1: 'Calculateur TVA Maroc',
+    lead: 'Calculez rapidement un montant HT, TTC et la TVA selon les taux courants.',
+    description: 'Calculateur TVA Maroc gratuit pour convertir un montant HT en TTC ou TTC en HT avec taux 20%, 14%, 10%, 7% ou 0%.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur TVA Maroc</h1>',
+    cta: 'Ouvrir le calculateur TVA',
+    body: `<h2>Calcul TVA HT TTC</h2><p>Utilisez le calculateur TVA pour estimer rapidement le montant hors taxe, la taxe et le total TTC. Les résultats sont indicatifs et doivent être vérifiés avant déclaration ou facturation officielle.</p>`,
+  },
+  'calculateur-salaire-net-brut': {
+    title: 'Calculateur Salaire Net Brut Maroc | IceMorocco',
+    h1: 'Calculateur Salaire Net Brut Maroc',
+    lead: 'Estimez le passage du salaire brut au net ou du net vers un brut approximatif.',
+    description: 'Calculateur salaire net brut Maroc gratuit avec estimation des cotisations et de l’IR mensuel.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur Salaire Net Brut Maroc</h1>',
+    cta: 'Ouvrir le calculateur salaire',
+    body: `<h2>Estimation salaire Maroc</h2><p>Le calculateur donne une estimation rapide du salaire net, des cotisations et de l’IR. Les résultats ne remplacent pas une paie officielle ou un conseil comptable.</p>`,
+  },
+  'calculateur-ir-maroc': {
+    title: 'Calculateur IR Maroc - Impôt sur le revenu | IceMorocco',
+    h1: 'Calculateur IR Maroc',
+    lead: 'Estimez l’impôt sur le revenu mensuel à partir d’un revenu net imposable.',
+    description: 'Calculateur IR Maroc gratuit pour estimer l’impôt sur le revenu mensuel et annuel.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur IR Maroc</h1>',
+    cta: 'Ouvrir le calculateur IR',
+    body: `<h2>Estimation IR mensuel</h2><p>L’outil applique un barème estimatif pour donner un ordre de grandeur. Vérifiez toujours le calcul final avec un professionnel ou les textes fiscaux applicables.</p>`,
+  },
+  'calculateur-auto-entrepreneur': {
+    title: 'Calculateur Auto-Entrepreneur Maroc | IceMorocco',
+    h1: 'Calculateur Auto-Entrepreneur Maroc',
+    lead: 'Estimez la taxe auto-entrepreneur selon le chiffre d’affaires et le type d’activité.',
+    description: 'Calculateur auto-entrepreneur Maroc gratuit pour estimer la taxe sur chiffre d’affaires de service ou commerce.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur Auto-Entrepreneur Maroc</h1>',
+    cta: 'Ouvrir le calculateur auto-entrepreneur',
+    body: `<h2>Taxe auto-entrepreneur</h2><p>Le calculateur estime la taxe selon un taux de service ou de commerce. Les plafonds et règles doivent être vérifiés avant déclaration.</p>`,
+  },
+  'calculateur-vignette-maroc': {
+    title: 'Calculateur Vignette Maroc | IceMorocco',
+    h1: 'Calculateur Vignette Maroc',
+    lead: 'Estimez la vignette automobile selon carburant et puissance fiscale.',
+    description: 'Calculateur vignette Maroc gratuit pour estimer le montant selon la puissance fiscale et le carburant.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur Vignette Maroc</h1>',
+    cta: 'Ouvrir le calculateur vignette',
+    body: `<h2>Estimation vignette</h2><p>Le calculateur donne une estimation selon des tranches courantes de puissance fiscale. Vérifiez le montant officiel avant paiement.</p>`,
+  },
+  'calculateur-credit': {
+    title: 'Calculateur Crédit Maroc - Mensualité prêt | IceMorocco',
+    h1: 'Calculateur Crédit Maroc',
+    lead: 'Estimez une mensualité de prêt à partir du montant, du taux annuel et de la durée.',
+    description: 'Calculateur crédit Maroc gratuit pour estimer la mensualité, le coût total et la durée d’un prêt.',
+    appHash: 'tools',
+    appTitlePattern: '<h2>Outils Société</h2>',
+    appTitleReplacement: '<h1>Calculateur Crédit Maroc</h1>',
+    cta: 'Ouvrir le calculateur crédit',
+    body: `<h2>Simulation de mensualité</h2><p>Le calculateur de crédit donne une estimation simple de mensualité. Il ne tient pas compte de tous les frais bancaires ou assurances.</p>`,
+  },
 };
 
 const GUIDE_CATEGORIES = {
@@ -873,6 +939,102 @@ const GUIDE_TOPICS = [
 
 const GUIDE_TOPIC_MAP = new Map(GUIDE_TOPICS.map(topic => [topic.slug, topic]));
 const GUIDE_VARIANTS = ['guide', 'faq', 'prix', 'documents'];
+const GUIDE_LAST_UPDATED = '29 mai 2026';
+const RICH_GUIDE_SLUGS = new Set([
+  'passeport-maroc',
+  'cnie-maroc',
+  'casier-judiciaire-maroc',
+  'auto-entrepreneur-maroc',
+  'creer-sarl-maroc',
+  'declarer-tva-maroc',
+  'vignette-maroc',
+  'carte-grise-maroc',
+  'visa-france-maroc',
+  'visa-espagne-maroc',
+]);
+
+const GUIDE_RICH_CONTENT = {
+  'passeport-maroc': {
+    audience: 'Marocains majeurs, mineurs avec représentant légal, renouvellement de passeport ou première demande.',
+    delay: 'Le délai varie selon la ville, la période et la complétude du dossier. Prévoyez une marge avant tout voyage.',
+    fees: [['Droits et timbre', 'À vérifier sur le portail officiel avant paiement'], ['Photos et copies', 'Selon le photographe et les copies demandées']],
+    tips: ['Vérifiez la validité de la CNIE avant de préparer le dossier.', 'Pour un mineur, préparez les documents du représentant légal.', 'Gardez une copie du reçu ou justificatif de paiement.'],
+  },
+  'cnie-maroc': {
+    audience: 'Citoyens marocains qui demandent une première CNIE, un renouvellement, une correction ou un duplicata.',
+    delay: 'Le délai dépend du centre, du rendez-vous, de la demande et de la validation des données.',
+    fees: [['Première demande ou renouvellement', 'Montant officiel à confirmer avant dépôt'], ['Duplicata ou correction', 'Selon le type de demande']],
+    tips: ['Contrôlez l’orthographe du nom, prénom et date de naissance.', 'Préparez les photos au format demandé.', 'Conservez le récépissé jusqu’au retrait.'],
+  },
+  'casier-judiciaire-maroc': {
+    audience: 'Candidats à un emploi, dossiers administratifs, concours, visa ou formalités demandant un extrait.',
+    delay: 'Peut varier selon la juridiction, le canal de demande et la disponibilité des informations.',
+    fees: [['Demande d’extrait', 'Frais administratifs à vérifier selon le canal'], ['Copies ou légalisation', 'Selon la demande']],
+    tips: ['Vérifiez quel type d’extrait est demandé par l’organisme.', 'Préparez une pièce d’identité valide.', 'Contrôlez la durée de validité acceptée par le destinataire.'],
+  },
+  'auto-entrepreneur-maroc': {
+    audience: 'Freelances, petits prestataires, commerçants et personnes qui veulent tester une activité simple.',
+    delay: 'L’inscription dépend de la validation du dossier, de l’activité choisie et du parcours utilisé.',
+    fees: [['Inscription', 'À confirmer sur le portail officiel ou auprès du point de dépôt'], ['Déclarations fiscales', 'Selon chiffre d’affaires, activité et régime en vigueur']],
+    tips: ['Vérifiez les activités éligibles et les plafonds applicables.', 'Gardez une trace de vos encaissements.', 'Séparez compte personnel et suivi professionnel autant que possible.'],
+  },
+  'creer-sarl-maroc': {
+    audience: 'Associés, entrepreneurs et porteurs de projet qui veulent créer une société commerciale au Maroc.',
+    delay: 'La durée dépend de la préparation des statuts, du siège, des signatures, du dépôt et des validations.',
+    fees: [['Certificat négatif, copies, légalisation', 'Variables selon prestataire et administration'], ['Accompagnement comptable ou juridique', 'Sur devis'], ['Formalités de création', 'À confirmer avant dépôt']],
+    tips: ['Choisissez une activité cohérente avec le projet.', 'Vérifiez le siège social avant signature.', 'Préparez les informations des associés dès le départ.'],
+  },
+  'declarer-tva-maroc': {
+    audience: 'Entreprises assujetties à la TVA, comptables, gérants et freelances soumis à déclaration.',
+    delay: 'La déclaration suit les échéances fiscales applicables au régime de l’entreprise.',
+    fees: [['TVA à payer', 'TVA collectée moins TVA déductible selon justificatifs'], ['Pénalités', 'Possibles en cas de retard ou erreur']],
+    tips: ['Classez les factures par période.', 'Vérifiez le taux applicable avant calcul.', 'Conservez les justificatifs de dépôt et paiement.'],
+  },
+  'vignette-maroc': {
+    audience: 'Propriétaires de véhicules particuliers ou professionnels qui doivent payer la taxe annuelle.',
+    delay: 'La période et les pénalités éventuelles dépendent du calendrier fiscal en vigueur.',
+    fees: [['Montant de vignette', 'Selon puissance fiscale, carburant et type de véhicule'], ['Retard', 'Pénalités possibles selon réglementation']],
+    tips: ['Vérifiez la puissance fiscale sur la carte grise.', 'Conservez le reçu de paiement.', 'Contrôlez la catégorie du véhicule avant calcul.'],
+  },
+  'carte-grise-maroc': {
+    audience: 'Acheteurs, vendeurs ou propriétaires demandant une carte grise, duplicata ou changement.',
+    delay: 'Le délai varie selon le centre, le type de demande et la complétude du dossier.',
+    fees: [['Mutation ou nouvelle carte', 'Selon véhicule et droits applicables'], ['Duplicata', 'Selon motif et justificatifs']],
+    tips: ['Vérifiez que les informations du véhicule correspondent au contrat.', 'Gardez copies des pièces remises.', 'Ne retardez pas le changement après la vente.'],
+  },
+  'visa-france-maroc': {
+    audience: 'Demandeurs de visa court séjour, visite familiale, tourisme, affaires ou autre motif depuis le Maroc.',
+    delay: 'Les délais dépendent des rendez-vous, de la saison, du consulat et de la complétude du dossier.',
+    fees: [['Frais de visa', 'Montant officiel à vérifier avant rendez-vous'], ['Frais de service', 'Selon le centre de dépôt'], ['Assurance et justificatifs', 'Selon dossier']],
+    tips: ['Le motif du voyage doit être cohérent avec les justificatifs.', 'Préparez les preuves financières et professionnelles.', 'Ne réservez pas de dépenses non remboursables sans prudence.'],
+  },
+  'visa-espagne-maroc': {
+    audience: 'Demandeurs de visa Espagne depuis le Maroc pour tourisme, visite familiale, affaires ou court séjour.',
+    delay: 'Les délais peuvent augmenter pendant les périodes de forte demande ou selon le centre de dépôt.',
+    fees: [['Frais de visa', 'Montant officiel à vérifier avant dépôt'], ['Frais de service', 'Selon le centre'], ['Assurance et documents', 'Selon le dossier']],
+    tips: ['Vérifiez la cohérence entre dates, hébergement, assurance et ressources.', 'Préparez un dossier lisible et complet.', 'Conservez les reçus et numéro de suivi.'],
+  },
+};
+
+function renderRichGuideBlocks(topic) {
+  const rich = GUIDE_RICH_CONTENT[topic.slug];
+  if (!rich) return '';
+  return `<section class="seo-panel rich-guide">
+    <div class="last-updated">Dernière mise à jour : ${GUIDE_LAST_UPDATED}</div>
+    <h2>Informations pratiques</h2>
+    <p><strong>Pour qui ?</strong> ${escapeHtml(rich.audience)}</p>
+    <p><strong>Délais indicatifs :</strong> ${escapeHtml(rich.delay)}</p>
+    <p>Cette page sert de checklist de préparation. Les prix, formulaires et exigences peuvent évoluer : vérifiez toujours auprès de l’administration, du centre de dépôt ou du portail officiel concerné avant paiement ou dépôt.</p>
+  </section>
+  <section class="seo-panel">
+    <h2>Tableau des frais à vérifier</h2>
+    <table class="seo-table"><tbody>${rich.fees.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}</tbody></table>
+  </section>
+  <section class="seo-panel">
+    <h2>Conseils avant dépôt</h2>
+    <ul class="seo-checklist">${rich.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}</ul>
+  </section>`;
+}
 
 function guideTopicUrl(topic, variant = 'guide') {
   if (variant === 'guide') return `/guide/${topic.slug}`;
@@ -895,24 +1057,37 @@ function renderGuideCards(topics) {
 }
 
 function guideSchema(topic, canonical, variant = 'guide') {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      ['Quel est le prix ?', topic.price],
+      ['Quels documents préparer ?', `Préparez notamment : ${topic.docs.join(', ')}.`],
+      ['Quelles sont les étapes ?', `Les étapes habituelles sont : ${topic.steps.join(', ')}.`],
+      ['Quels délais prévoir ?', 'Les délais varient selon la ville, l’administration, la saison et la complétude du dossier.'],
+    ].map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } })),
+  };
   const base = {
     '@context': 'https://schema.org',
-    '@type': variant === 'faq' ? 'FAQPage' : 'Article',
+    '@type': 'Article',
     headline: topic.title,
     name: topic.title,
     url: canonical,
     description: topic.summary,
     inLanguage: 'fr-MA',
     publisher: { '@type': 'Organization', name: 'IceMorocco', url: SITE_URL },
+    dateModified: '2026-05-29',
   };
-  if (variant === 'faq') {
-    base.mainEntity = [
-      ['Quel est le prix ?', topic.price],
-      ['Quels documents préparer ?', `Préparez notamment : ${topic.docs.join(', ')}.`],
-      ['Quelles sont les étapes ?', `Les étapes habituelles sont : ${topic.steps.join(', ')}.`],
-    ].map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } }));
-  }
-  return base;
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Guide administratif Maroc', item: `${SITE_URL}/guide` },
+      { '@type': 'ListItem', position: 2, name: GUIDE_CATEGORIES[topic.category].title, item: `${SITE_URL}/guide/${topic.category}` },
+      { '@type': 'ListItem', position: 3, name: topic.title, item: canonical },
+    ],
+  };
+  return [base, faqSchema, breadcrumb];
 }
 
 function renderGuideLandingPage() {
@@ -953,6 +1128,7 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   const priceBlock = `<section class="seo-panel"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
   const docsBlock = `<section class="seo-panel"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
   const stepsBlock = `<section class="seo-panel"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
+  const richBlocks = renderRichGuideBlocks(topic);
   const faqBlock = `<section class="seo-panel"><h2>Questions fréquentes</h2>
     <details open><summary>Combien coûte cette démarche ?</summary><p>${escapeHtml(topic.price)}</p></details>
     <details><summary>Quels documents préparer ?</summary><p>${escapeHtml(topic.docs.join(', '))}.</p></details>
@@ -961,10 +1137,10 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   </section>`;
   const variantsBlock = `<section class="seo-panel"><h2>Pages liées</h2><div class="seo-links">${guideRelatedLinks(topic)}<a href="/guide/${topic.category}">${escapeHtml(GUIDE_CATEGORIES[topic.category].title)}</a></div></section>`;
   const bodyByVariant = {
-    guide: `<section class="seo-panel"><h2>${escapeHtml(topic.keyword)}</h2><p>${escapeHtml(topic.summary)}</p></section>${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
-    faq: faqBlock + docsBlock + priceBlock + variantsBlock,
-    prix: priceBlock + docsBlock + stepsBlock + variantsBlock,
-    documents: docsBlock + stepsBlock + priceBlock + variantsBlock,
+    guide: `<section class="seo-panel"><h2>${escapeHtml(topic.keyword)}</h2><p>${escapeHtml(topic.summary)}</p></section>${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
+    faq: richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
+    prix: richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
+    documents: richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
   };
   return renderSeoLayout({
     title: `${variantLabel} | IceMorocco`,
