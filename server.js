@@ -359,7 +359,7 @@ function relatedCompanies(company = {}, limit = 6) {
     .slice(0, limit);
 }
 
-function renderSeoLayout({ title, description, canonical, h1, lead, body = '', schema = [] }) {
+function renderSeoLayout({ title, description, canonical, h1, lead, body = '', schema = [], showSearch = true, breadcrumbRoot = 'Recherche ICE Maroc' }) {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeCanonical = escapeHtml(canonical);
@@ -389,16 +389,16 @@ function renderSeoLayout({ title, description, canonical, h1, lead, body = '', s
 </head>
 <body class="seo-static-body">
 <main class="seo-static">
-  <nav class="seo-breadcrumb"><a href="/">Recherche ICE Maroc</a> / ${escapeHtml(h1)}</nav>
+  <nav class="seo-breadcrumb"><a href="/">${escapeHtml(breadcrumbRoot)}</a> / ${escapeHtml(h1)}</nav>
   <header class="seo-static-head">
     <a class="seo-logo-link" href="/"><img src="/logo.png" alt="IceMorocco" width="254" height="47"/></a>
     <h1>${escapeHtml(h1)}</h1>
     <p>${escapeHtml(lead)}</p>
-    <form action="/" method="get" class="seo-search-form">
+    ${showSearch ? `<form action="/" method="get" class="seo-search-form">
       <input name="q" placeholder="Nom société ou numéro ICE" aria-label="Recherche ICE Maroc"/>
       <input type="hidden" name="mode" value="nom"/>
       <button type="submit">Rechercher</button>
-    </form>
+    </form>` : ''}
   </header>
   ${body}
 </main>
@@ -742,6 +742,30 @@ const GUIDE_CATEGORIES = {
     description: 'Guides de préparation pour les demandes de visa depuis le Maroc : Espagne, France, Italie et Canada étudiant.',
     lead: 'Préparer un dossier de voyage avec documents, frais indicatifs, délais et questions fréquentes.',
   },
+  famille: {
+    label: 'Famille',
+    title: 'Guide famille Maroc',
+    description: 'Guides pratiques pour les démarches familiales au Maroc : mariage, divorce, livret de famille, kafala et documents d’état civil.',
+    lead: 'Les documents familiaux les plus demandés, expliqués simplement étape par étape.',
+  },
+  logement: {
+    label: 'Logement',
+    title: 'Guide logement Maroc',
+    description: 'Guides pratiques pour acheter, louer ou gérer un logement au Maroc : contrat de bail, certificat de propriété, taxe et services.',
+    lead: 'Préparer un dossier logement clair, éviter les oublis et comprendre les frais à vérifier.',
+  },
+  education: {
+    label: 'Éducation',
+    title: 'Guide éducation Maroc',
+    description: 'Guides pour les démarches scolaires et universitaires au Maroc : bourse, bac, Massar, inscription et équivalence.',
+    lead: 'Les démarches fréquentes pour élèves, étudiants et parents, avec documents et étapes.',
+  },
+  emploi: {
+    label: 'Emploi',
+    title: 'Guide emploi Maroc',
+    description: 'Guides pour chercher un emploi, préparer un dossier professionnel et comprendre les démarches ANAPEC, CNSS et assurance maladie.',
+    lead: 'Des repères utiles pour les salariés, chercheurs d’emploi et jeunes diplômés au Maroc.',
+  },
 };
 
 const GUIDE_TOPICS = [
@@ -935,6 +959,216 @@ const GUIDE_TOPICS = [
     docs: ['Passeport valide', 'Lettre d’acceptation', 'Preuves financières', 'Documents scolaires', 'Photos ou biométrie', 'Formulaires demandés', 'Lettre explicative si utile'],
     steps: ['Obtenir une admission', 'Préparer les preuves financières', 'Créer ou compléter la demande', 'Payer les frais applicables', 'Suivre la décision et les instructions'],
   },
+  {
+    category: 'famille',
+    slug: 'mariage-maroc',
+    title: 'Mariage au Maroc',
+    keyword: 'mariage Maroc',
+    summary: 'Guide pour préparer un dossier de mariage au Maroc, comprendre les documents demandés et organiser les étapes avant l’acte.',
+    price: 'Les frais varient selon les copies, traductions, légalisations, certificats médicaux et services utilisés.',
+    docs: ['CNIE des futurs époux', 'Actes de naissance', 'Certificat médical', 'Photos si demandées', 'Autorisation ou documents complémentaires selon la situation', 'Justificatifs de résidence si requis'],
+    steps: ['Vérifier la situation des deux époux', 'Rassembler les pièces d’état civil', 'Préparer les certificats demandés', 'Déposer le dossier auprès de l’autorité compétente', 'Signer l’acte et conserver des copies'],
+  },
+  {
+    category: 'famille',
+    slug: 'livret-famille-maroc',
+    title: 'Livret de famille Maroc',
+    keyword: 'livret de famille Maroc',
+    summary: 'Guide pour demander, mettre à jour ou remplacer un livret de famille au Maroc après mariage, naissance ou perte.',
+    price: 'Les frais dépendent de la commune, des copies demandées et du type de demande.',
+    docs: ['CNIE', 'Acte de mariage', 'Actes de naissance des enfants si applicable', 'Ancien livret en cas de mise à jour', 'Déclaration de perte en cas de duplicata'],
+    steps: ['Identifier le bureau compétent', 'Préparer les actes nécessaires', 'Remplir ou déposer la demande', 'Vérifier les informations inscrites', 'Récupérer le livret ou duplicata'],
+  },
+  {
+    category: 'famille',
+    slug: 'certificat-celibat-maroc',
+    title: 'Certificat de célibat Maroc',
+    keyword: 'certificat de célibat Maroc',
+    summary: 'Guide pour préparer une demande de certificat de célibat ou document équivalent selon l’usage administratif.',
+    price: 'Les frais peuvent varier selon la commune, les timbres, copies et légalisations demandées.',
+    docs: ['CNIE', 'Acte de naissance récent si demandé', 'Déclaration sur l’honneur si requise', 'Justificatif de résidence', 'Copies légalisées selon la commune'],
+    steps: ['Vérifier le document exact demandé', 'Préparer l’identité et l’état civil', 'Déposer la demande', 'Signer les déclarations requises', 'Contrôler la validité du document'],
+  },
+  {
+    category: 'famille',
+    slug: 'divorce-maroc-documents',
+    title: 'Divorce au Maroc : documents et étapes',
+    keyword: 'divorce Maroc documents',
+    summary: 'Guide d’orientation pour comprendre les documents souvent demandés dans une procédure de divorce au Maroc.',
+    price: 'Les coûts dépendent de la procédure, des copies, des notifications et de l’accompagnement juridique choisi.',
+    docs: ['CNIE', 'Acte de mariage', 'Livret de famille', 'Actes de naissance des enfants si applicable', 'Adresse des parties', 'Documents judiciaires demandés'],
+    steps: ['Identifier le type de procédure', 'Préparer les documents familiaux', 'Consulter un professionnel si nécessaire', 'Déposer ou suivre le dossier', 'Conserver les décisions et copies exécutoires'],
+  },
+  {
+    category: 'logement',
+    slug: 'contrat-bail-maroc',
+    title: 'Contrat de bail Maroc',
+    keyword: 'contrat de bail Maroc',
+    summary: 'Guide pour préparer un contrat de location au Maroc, vérifier les clauses importantes et réunir les documents avant signature.',
+    price: 'Les frais peuvent inclure copies, légalisation, avance, caution, agence et taxes selon le contrat.',
+    docs: ['CNIE du bailleur et du locataire', 'Titre ou justificatif du logement si demandé', 'Contrat écrit', 'Reçu de paiement', 'État des lieux si possible'],
+    steps: ['Vérifier l’identité des parties', 'Lire les clauses de durée, loyer et charges', 'Préparer les copies', 'Signer et légaliser si nécessaire', 'Conserver contrat et reçus'],
+  },
+  {
+    category: 'logement',
+    slug: 'certificat-propriete-maroc',
+    title: 'Certificat de propriété Maroc',
+    keyword: 'certificat de propriété Maroc',
+    summary: 'Guide pour demander un certificat de propriété et comprendre les informations utiles avant achat, vente ou dossier bancaire.',
+    price: 'Les frais dépendent du canal de demande, du titre foncier et des services utilisés.',
+    docs: ['Numéro du titre foncier', 'Identité du demandeur', 'Justificatif d’intérêt si demandé', 'Moyen de paiement', 'Référence du bien'],
+    steps: ['Récupérer la référence foncière', 'Choisir le canal de demande', 'Payer les frais applicables', 'Télécharger ou retirer le certificat', 'Vérifier propriétaire, charges et informations du bien'],
+  },
+  {
+    category: 'logement',
+    slug: 'acheter-appartement-maroc',
+    title: 'Acheter un appartement au Maroc',
+    keyword: 'acheter appartement Maroc',
+    summary: 'Guide pour préparer l’achat d’un appartement au Maroc : vérifications, documents, frais et étapes avant signature.',
+    price: 'Les frais peuvent inclure acompte, notaire, droits, taxes, conservation foncière, crédit et assurance.',
+    docs: ['CNIE', 'Compromis ou promesse de vente', 'Certificat de propriété', 'Plan ou descriptif', 'Documents bancaires si crédit', 'Reçus et justificatifs de paiement'],
+    steps: ['Vérifier le bien et le vendeur', 'Comparer prix et charges', 'Consulter notaire ou professionnel', 'Préparer financement et documents', 'Signer et suivre l’enregistrement'],
+  },
+  {
+    category: 'logement',
+    slug: 'taxe-habitation-maroc',
+    title: 'Taxe d’habitation Maroc',
+    keyword: 'taxe habitation Maroc',
+    summary: 'Guide pour comprendre la taxe d’habitation au Maroc, les informations à vérifier et les documents utiles.',
+    price: 'Le montant dépend de la valeur locative, de la commune, de la situation du bien et des règles applicables.',
+    docs: ['Référence du bien', 'Identité du propriétaire ou occupant', 'Avis d’imposition si disponible', 'Justificatifs de paiement précédents', 'Documents de propriété ou bail'],
+    steps: ['Identifier la taxe concernée', 'Vérifier l’avis ou la référence', 'Contrôler les informations du bien', 'Payer dans les délais', 'Conserver le reçu'],
+  },
+  {
+    category: 'education',
+    slug: 'bourse-etudiant-maroc',
+    title: 'Bourse étudiant Maroc',
+    keyword: 'bourse étudiant Maroc',
+    summary: 'Guide pour préparer une demande de bourse au Maroc, suivre les documents demandés et éviter les oublis fréquents.',
+    price: 'La demande peut nécessiter des copies, certificats ou documents scolaires. Les montants de bourse dépendent des critères officiels.',
+    docs: ['CNIE ou identité de l’étudiant', 'Informations Massar si demandées', 'Baccalauréat ou inscription', 'Documents familiaux', 'RIB si requis', 'Justificatifs sociaux selon le dossier'],
+    steps: ['Vérifier l’éligibilité', 'Préparer les informations scolaires', 'Rassembler les pièces familiales', 'Déposer la demande dans les délais', 'Suivre la réponse et le paiement'],
+  },
+  {
+    category: 'education',
+    slug: 'massar-maroc',
+    title: 'Massar Maroc',
+    keyword: 'Massar Maroc',
+    summary: 'Guide pour utiliser Massar, récupérer les informations scolaires et suivre notes, orientation ou documents liés à l’élève.',
+    price: 'L’accès au service est généralement lié au parcours scolaire. Certains documents imprimés ou copies peuvent avoir des frais selon le besoin.',
+    docs: ['Code Massar', 'Mot de passe ou accès établissement', 'CNIE du tuteur si demandé', 'Informations de l’élève', 'Numéro de téléphone ou email'],
+    steps: ['Récupérer les identifiants', 'Se connecter au service', 'Vérifier les notes et informations', 'Télécharger ou imprimer les documents utiles', 'Contacter l’établissement en cas d’erreur'],
+  },
+  {
+    category: 'education',
+    slug: 'inscription-bac-libre-maroc',
+    title: 'Bac libre Maroc',
+    keyword: 'bac libre Maroc',
+    summary: 'Guide pour préparer une inscription au bac libre au Maroc, comprendre les conditions et organiser les documents.',
+    price: 'Les frais et documents varient selon l’année, l’académie, les copies, photos et certificats demandés.',
+    docs: ['CNIE', 'Photo d’identité', 'Justificatif de scolarité ou niveau si demandé', 'Adresse et coordonnées', 'Reçu ou formulaire d’inscription', 'Documents académiques selon la filière'],
+    steps: ['Vérifier les conditions de candidature', 'Choisir la filière', 'Préparer les pièces', 'Déposer l’inscription dans les délais', 'Suivre convocation et examens'],
+  },
+  {
+    category: 'education',
+    slug: 'equivalence-diplome-maroc',
+    title: 'Équivalence diplôme Maroc',
+    keyword: 'équivalence diplôme Maroc',
+    summary: 'Guide pour préparer une demande d’équivalence de diplôme au Maroc avec les pièces scolaires et administratives courantes.',
+    price: 'Les frais peuvent inclure copies certifiées, traduction, légalisation et frais administratifs selon le dossier.',
+    docs: ['Diplôme', 'Relevés de notes', 'CNIE ou passeport', 'Traduction si nécessaire', 'Attestation de scolarité ou programme', 'Formulaire de demande'],
+    steps: ['Identifier l’autorité compétente', 'Préparer diplôme et relevés', 'Faire traduire ou certifier si demandé', 'Déposer le dossier', 'Suivre la décision'],
+  },
+  {
+    category: 'emploi',
+    slug: 'anapec-maroc',
+    title: 'ANAPEC Maroc',
+    keyword: 'ANAPEC Maroc',
+    summary: 'Guide pour utiliser l’ANAPEC, préparer un profil candidat et organiser les documents utiles pour la recherche d’emploi.',
+    price: 'L’inscription peut être gratuite selon les services, mais prévoyez copies, CV, attestations et déplacements.',
+    docs: ['CNIE', 'CV', 'Diplômes ou attestations', 'Expériences professionnelles', 'Coordonnées', 'Photo si demandée'],
+    steps: ['Créer ou mettre à jour le profil', 'Préparer CV et diplômes', 'Chercher les offres adaptées', 'Postuler et suivre les réponses', 'Préparer les entretiens'],
+  },
+  {
+    category: 'emploi',
+    slug: 'amo-maroc',
+    title: 'AMO Maroc',
+    keyword: 'AMO Maroc',
+    summary: 'Guide pour comprendre l’assurance maladie obligatoire au Maroc, les documents souvent demandés et les étapes de suivi.',
+    price: 'Les cotisations et remboursements dépendent du régime, de la situation professionnelle et des règles en vigueur.',
+    docs: ['CNIE', 'Identifiant ou immatriculation', 'Documents professionnels ou sociaux', 'RIB si demandé', 'Formulaires ou justificatifs médicaux selon la demande'],
+    steps: ['Identifier le régime concerné', 'Préparer les pièces personnelles', 'Compléter la demande ou affiliation', 'Suivre l’activation', 'Conserver les reçus et justificatifs'],
+  },
+  {
+    category: 'emploi',
+    slug: 'salaire-net-brut-maroc',
+    title: 'Salaire net brut Maroc',
+    keyword: 'salaire net brut Maroc',
+    summary: 'Guide pour comprendre la différence entre salaire brut et salaire net au Maroc, avec les éléments à vérifier sur une fiche de paie.',
+    price: 'Le net dépend du salaire brut, des cotisations sociales, de l’impôt sur le revenu, des avantages et de la situation du salarié.',
+    docs: ['Contrat de travail', 'Bulletin de paie', 'Identifiant CNSS si disponible', 'Situation familiale si utile', 'Avantages ou primes'],
+    steps: ['Identifier le salaire brut', 'Repérer cotisations et retenues', 'Vérifier les primes et avantages', 'Calculer le net estimatif', 'Comparer avec le bulletin de paie'],
+  },
+  {
+    category: 'emploi',
+    slug: 'attestation-travail-maroc',
+    title: 'Attestation de travail Maroc',
+    keyword: 'attestation de travail Maroc',
+    summary: 'Guide pour demander une attestation de travail au Maroc et savoir quelles informations vérifier avant de l’utiliser.',
+    price: 'La délivrance dépend de l’employeur. Des frais peuvent seulement concerner copies, légalisation ou traduction si demandées.',
+    docs: ['CNIE', 'Informations salarié', 'Nom de l’employeur', 'Poste occupé', 'Dates de travail', 'Motif ou destinataire si demandé'],
+    steps: ['Demander l’attestation au service concerné', 'Vérifier identité et poste', 'Contrôler dates et signature', 'Faire légaliser ou traduire si nécessaire', 'Conserver une copie'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'permis-conduire-maroc',
+    title: 'Permis de conduire Maroc',
+    keyword: 'permis de conduire Maroc',
+    summary: 'Guide pour préparer une demande de permis de conduire au Maroc, suivre les documents et comprendre les étapes de l’examen.',
+    price: 'Les frais dépendent de l’auto-école, des examens, timbres, visites médicales et services utilisés.',
+    docs: ['CNIE', 'Photos', 'Certificat médical', 'Formulaire de demande', 'Justificatif de paiement', 'Documents auto-école'],
+    steps: ['Choisir une auto-école', 'Préparer le dossier', 'Suivre la formation', 'Passer les examens', 'Récupérer le permis ou le document provisoire'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'renouvellement-permis-maroc',
+    title: 'Renouvellement permis de conduire Maroc',
+    keyword: 'renouvellement permis Maroc',
+    summary: 'Guide pour renouveler un permis de conduire au Maroc, préparer les pièces et anticiper les délais.',
+    price: 'Les frais varient selon la démarche, le support, les timbres, photos et éventuelle visite médicale.',
+    docs: ['CNIE', 'Ancien permis', 'Photos', 'Certificat médical si demandé', 'Justificatif de paiement', 'Formulaire de renouvellement'],
+    steps: ['Vérifier la validité du permis', 'Préparer les pièces', 'Payer les frais applicables', 'Déposer la demande', 'Suivre la production du nouveau permis'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'rendez-vous-administration-maroc',
+    title: 'Rendez-vous administration Maroc',
+    keyword: 'rendez-vous administration Maroc',
+    summary: 'Guide pour préparer un rendez-vous administratif au Maroc, organiser les documents et éviter un déplacement inutile.',
+    price: 'Le rendez-vous peut être gratuit selon le service, mais les documents, timbres ou copies peuvent être payants.',
+    docs: ['CNIE', 'Convocation ou confirmation', 'Formulaire de demande', 'Documents originaux', 'Copies', 'Reçus de paiement si applicables'],
+    steps: ['Identifier le service compétent', 'Prendre rendez-vous si nécessaire', 'Préparer originaux et copies', 'Arriver avec la confirmation', 'Conserver les reçus et numéros de suivi'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-usa-maroc',
+    title: 'Visa USA depuis le Maroc',
+    keyword: 'visa USA Maroc',
+    summary: 'Guide pour préparer une demande de visa États-Unis depuis le Maroc avec formulaire, rendez-vous et justificatifs.',
+    price: 'Les frais dépendent du type de visa et des règles consulaires. Vérifiez le montant officiel avant paiement.',
+    docs: ['Passeport valide', 'Formulaire de demande', 'Photo conforme', 'Confirmation de rendez-vous', 'Justificatifs financiers', 'Documents professionnels ou scolaires'],
+    steps: ['Choisir le type de visa', 'Remplir le formulaire', 'Payer les frais', 'Planifier le rendez-vous', 'Préparer l’entretien et les documents'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-allemagne-maroc',
+    title: 'Visa Allemagne depuis le Maroc',
+    keyword: 'visa Allemagne Maroc',
+    summary: 'Guide pour préparer une demande de visa Allemagne depuis le Maroc selon le motif de voyage.',
+    price: 'Les frais varient selon le visa, le centre de dépôt, l’assurance, les traductions et les documents demandés.',
+    docs: ['Passeport valide', 'Formulaire', 'Photos', 'Assurance voyage', 'Justificatifs de séjour', 'Preuves financières', 'Documents professionnels ou scolaires'],
+    steps: ['Identifier le motif', 'Réunir les justificatifs', 'Réserver le rendez-vous', 'Déposer le dossier', 'Suivre la décision'],
+  },
 ];
 
 const GUIDE_TOPIC_MAP = new Map(GUIDE_TOPICS.map(topic => [topic.slug, topic]));
@@ -1036,6 +1270,32 @@ function renderRichGuideBlocks(topic) {
   </section>`;
 }
 
+function renderArticleIntro(topic) {
+  const category = GUIDE_CATEGORIES[topic.category];
+  return `<article class="guide-article">
+    <div class="article-meta">
+      <span>${escapeHtml(category.label)}</span>
+      <span>Mis à jour le ${GUIDE_LAST_UPDATED}</span>
+      <span>Lecture rapide</span>
+    </div>
+    <p class="article-lead">${escapeHtml(topic.summary)}</p>
+    <p>Cette page est conçue comme un article pratique : elle explique quoi préparer, quels documents vérifier, quels frais anticiper et quelles erreurs éviter avant de commencer la démarche. L’objectif est de vous aider à arriver avec un dossier clair, complet et facile à contrôler.</p>
+    <div class="article-highlights">
+      <div><strong>${topic.docs.length} documents</strong><span>Liste de pièces à préparer avant le dépôt.</span></div>
+      <div><strong>${topic.steps.length} étapes</strong><span>Parcours simple pour comprendre l’ordre de la démarche.</span></div>
+      <div><strong>Frais à vérifier</strong><span>Les montants peuvent changer selon la ville et le service.</span></div>
+    </div>
+  </article>`;
+}
+
+function renderBeforeStartBlock(topic) {
+  return `<section class="seo-panel article-section">
+    <h2>Avant de commencer</h2>
+    <p>Avant de déposer une demande pour ${escapeHtml(topic.keyword)}, prenez quelques minutes pour vérifier votre situation exacte. Une première demande, un renouvellement, une correction, une perte ou un dossier pour mineur ne demandent pas toujours les mêmes pièces.</p>
+    <p>Préparez les originaux et les copies, vérifiez les dates de validité, et gardez une version numérique ou une photo des documents importants. Cette simple organisation évite souvent un deuxième déplacement.</p>
+  </section>`;
+}
+
 function guideTopicUrl(topic, variant = 'guide') {
   if (variant === 'guide') return `/guide/${topic.slug}`;
   if (variant === 'faq') return `/faq/${topic.slug}`;
@@ -1103,6 +1363,8 @@ function renderGuideLandingPage() {
     lead: 'Un espace pratique pour préparer les démarches courantes au Maroc avec documents, prix indicatifs, délais et questions fréquentes.',
     body,
     schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Guide administratif Maroc', url: `${SITE_URL}/guide` },
+    showSearch: false,
+    breadcrumbRoot: 'Guide administratif Maroc',
   });
 }
 
@@ -1119,6 +1381,8 @@ function renderGuideCategoryPage(categorySlug) {
     lead: category.lead,
     body,
     schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: category.title, url: `${SITE_URL}/guide/${categorySlug}`, description: category.description },
+    showSearch: false,
+    breadcrumbRoot: 'Guide administratif Maroc',
   });
 }
 
@@ -1128,6 +1392,8 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   const priceBlock = `<section class="seo-panel"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
   const docsBlock = `<section class="seo-panel"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
   const stepsBlock = `<section class="seo-panel"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
+  const articleIntro = renderArticleIntro(topic);
+  const beforeStartBlock = renderBeforeStartBlock(topic);
   const richBlocks = renderRichGuideBlocks(topic);
   const faqBlock = `<section class="seo-panel"><h2>Questions fréquentes</h2>
     <details open><summary>Combien coûte cette démarche ?</summary><p>${escapeHtml(topic.price)}</p></details>
@@ -1137,10 +1403,10 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   </section>`;
   const variantsBlock = `<section class="seo-panel"><h2>Pages liées</h2><div class="seo-links">${guideRelatedLinks(topic)}<a href="/guide/${topic.category}">${escapeHtml(GUIDE_CATEGORIES[topic.category].title)}</a></div></section>`;
   const bodyByVariant = {
-    guide: `<section class="seo-panel"><h2>${escapeHtml(topic.keyword)}</h2><p>${escapeHtml(topic.summary)}</p></section>${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
-    faq: richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
-    prix: richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
-    documents: richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
+    guide: `${articleIntro}${beforeStartBlock}${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
+    faq: articleIntro + richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
+    prix: articleIntro + richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
+    documents: articleIntro + richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
   };
   return renderSeoLayout({
     title: `${variantLabel} | IceMorocco`,
@@ -1150,6 +1416,8 @@ function renderGuideTopicPage(topic, variant = 'guide') {
     lead: topic.summary,
     body: bodyByVariant[variant] || bodyByVariant.guide,
     schema: guideSchema(topic, canonical, variant),
+    showSearch: false,
+    breadcrumbRoot: 'Guide administratif Maroc',
   });
 }
 
