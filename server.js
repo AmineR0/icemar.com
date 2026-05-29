@@ -651,6 +651,332 @@ const STATIC_TOOL_PAGES = {
   },
 };
 
+const GUIDE_CATEGORIES = {
+  entreprise: {
+    label: 'Entreprise',
+    title: 'Guide entreprise Maroc',
+    description: 'Guides administratifs pour créer, gérer et déclarer une entreprise au Maroc : SARL, ICE, CNSS, TVA, patente et auto-entrepreneur.',
+    lead: 'Les démarches clés pour les entrepreneurs, freelances, comptables et petites sociétés au Maroc.',
+  },
+  citoyen: {
+    label: 'Citoyen',
+    title: 'Guide citoyen Maroc',
+    description: 'Guides pratiques pour les démarches citoyennes au Maroc : passeport, CNIE, casier judiciaire, acte de naissance et légalisation.',
+    lead: 'Documents, étapes, délais indicatifs et points à vérifier avant une démarche administrative.',
+  },
+  vehicules: {
+    label: 'Véhicules',
+    title: 'Guide véhicules Maroc',
+    description: 'Guides pratiques pour les démarches liées aux véhicules au Maroc : vignette, carte grise, vente et changement de propriétaire.',
+    lead: 'Les démarches courantes pour gérer un véhicule, préparer les documents et éviter les oublis.',
+  },
+  voyage: {
+    label: 'Voyage',
+    title: 'Guide visa et voyage',
+    description: 'Guides de préparation pour les demandes de visa depuis le Maroc : Espagne, France, Italie et Canada étudiant.',
+    lead: 'Préparer un dossier de voyage avec documents, frais indicatifs, délais et questions fréquentes.',
+  },
+};
+
+const GUIDE_TOPICS = [
+  {
+    category: 'entreprise',
+    slug: 'creer-sarl-maroc',
+    title: 'Comment créer une SARL au Maroc',
+    keyword: 'créer une SARL au Maroc',
+    summary: 'Les étapes pour préparer une SARL au Maroc : dénomination, statuts, registre de commerce, identifiants fiscaux et dossier administratif.',
+    price: 'Les frais dépendent du prestataire, des copies légalisées, de l’enregistrement et des formalités choisies. Demandez toujours un devis actualisé avant dépôt.',
+    docs: ['Pièce d’identité des associés', 'Certificat négatif ou dénomination retenue', 'Statuts signés', 'Justificatif de siège social', 'Formulaires de création', 'Copies légalisées selon le dossier'],
+    steps: ['Choisir la forme juridique et la dénomination', 'Préparer les statuts et le siège social', 'Signer et légaliser les documents requis', 'Déposer le dossier auprès des services compétents', 'Récupérer les identifiants de l’entreprise'],
+  },
+  {
+    category: 'entreprise',
+    slug: 'obtenir-ice-maroc',
+    title: 'Comment obtenir un ICE au Maroc',
+    keyword: 'obtenir un ICE',
+    summary: 'L’ICE identifie une entreprise marocaine dans les échanges commerciaux et les documents comme les factures, devis et contrats.',
+    price: 'L’obtention ou l’activation de l’ICE dépend du parcours de création et des services utilisés. Vérifiez le coût auprès du guichet ou du professionnel qui accompagne la démarche.',
+    docs: ['Informations de l’entreprise', 'Registre de commerce si applicable', 'Identifiant fiscal si disponible', 'Adresse du siège', 'Pièce d’identité du représentant'],
+    steps: ['Créer ou identifier l’entreprise', 'Rassembler les informations légales', 'Vérifier les identifiants existants', 'Demander ou confirmer l’ICE dans les services compétents', 'Utiliser l’ICE sur les documents commerciaux'],
+  },
+  {
+    category: 'entreprise',
+    slug: 'inscription-cnss-maroc',
+    title: 'Comment s’inscrire à la CNSS',
+    keyword: 'inscription CNSS Maroc',
+    summary: 'L’inscription CNSS concerne les employeurs qui déclarent leurs salariés et respectent leurs obligations sociales.',
+    price: 'Les frais et cotisations varient selon la situation de l’entreprise, les salariés déclarés et la réglementation en vigueur.',
+    docs: ['Identifiants de l’entreprise', 'Registre de commerce ou justificatif d’activité', 'ICE et identifiant fiscal', 'RIB', 'Informations des salariés', 'Pièce d’identité du représentant'],
+    steps: ['Préparer les informations de l’employeur', 'Créer ou compléter le dossier CNSS', 'Déclarer les salariés concernés', 'Vérifier les taux et échéances', 'Conserver les accusés et justificatifs'],
+  },
+  {
+    category: 'entreprise',
+    slug: 'auto-entrepreneur-maroc',
+    title: 'Comment devenir Auto-Entrepreneur',
+    keyword: 'auto-entrepreneur Maroc',
+    summary: 'Le statut auto-entrepreneur aide à démarrer une activité simple avec des démarches allégées, sous conditions d’éligibilité.',
+    price: 'Les frais peuvent dépendre des démarches, services et obligations déclaratives. Vérifiez les plafonds et conditions officiels avant inscription.',
+    docs: ['CNIE', 'Coordonnées personnelles', 'Adresse', 'Activité choisie', 'RIB si demandé', 'Déclarations ou formulaires requis'],
+    steps: ['Vérifier l’éligibilité de l’activité', 'Créer la demande d’inscription', 'Choisir l’activité principale', 'Finaliser l’identification', 'Respecter les déclarations périodiques'],
+  },
+  {
+    category: 'entreprise',
+    slug: 'declarer-tva-maroc',
+    title: 'Comment déclarer la TVA',
+    keyword: 'déclarer la TVA Maroc',
+    summary: 'La déclaration TVA concerne les entreprises assujetties qui doivent suivre leurs ventes, achats, taux et échéances fiscales.',
+    price: 'Le montant dépend de la TVA collectée, de la TVA déductible, du régime applicable et des déclarations déposées.',
+    docs: ['Factures de vente', 'Factures d’achat', 'Identifiant fiscal', 'ICE', 'Livre ou état de TVA', 'Accès au portail fiscal si applicable'],
+    steps: ['Classer les factures', 'Calculer TVA collectée et déductible', 'Vérifier les taux applicables', 'Préparer la déclaration', 'Déposer et conserver le justificatif'],
+  },
+  {
+    category: 'entreprise',
+    slug: 'obtenir-patente-maroc',
+    title: 'Comment obtenir une patente',
+    keyword: 'patente Maroc',
+    summary: 'La patente, souvent liée à l’identification fiscale professionnelle, fait partie des informations importantes d’une entreprise.',
+    price: 'Les montants et obligations dépendent de l’activité, de la commune, du régime fiscal et de la situation de l’entreprise.',
+    docs: ['Identifiants de l’entreprise', 'Adresse du siège ou local', 'Registre de commerce si applicable', 'Contrat de bail ou justificatif de local', 'Pièce d’identité du représentant'],
+    steps: ['Identifier l’activité exercée', 'Préparer le justificatif de local', 'Déposer ou mettre à jour le dossier fiscal', 'Récupérer les informations de patente', 'Vérifier les obligations annuelles'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'passeport-maroc',
+    title: 'Passeport Maroc',
+    keyword: 'passeport Maroc',
+    summary: 'Guide pour préparer une demande ou un renouvellement de passeport marocain avec les documents et étapes à vérifier.',
+    price: 'Les droits et timbres peuvent changer. Vérifiez toujours le montant officiel avant paiement.',
+    docs: ['CNIE', 'Photo d’identité conforme', 'Formulaire ou pré-demande', 'Justificatif de paiement si requis', 'Ancien passeport en cas de renouvellement', 'Documents complémentaires pour mineur'],
+    steps: ['Vérifier la situation du demandeur', 'Préparer les documents', 'Payer les droits si applicable', 'Déposer la demande', 'Suivre le traitement et récupérer le passeport'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'cnie-maroc',
+    title: 'CNIE Maroc',
+    keyword: 'CNIE Maroc',
+    summary: 'Guide pour préparer une demande, un renouvellement ou une mise à jour de la carte nationale d’identité électronique.',
+    price: 'Les frais dépendent du type de demande et peuvent changer. Consultez les informations officielles avant dépôt.',
+    docs: ['Acte de naissance ou document requis', 'Photos d’identité', 'Justificatif de résidence si demandé', 'Ancienne CNIE en cas de renouvellement', 'Documents complémentaires selon la situation'],
+    steps: ['Vérifier le type de demande', 'Préparer les pièces', 'Prendre rendez-vous si nécessaire', 'Déposer le dossier', 'Récupérer la CNIE'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'casier-judiciaire-maroc',
+    title: 'Casier judiciaire Maroc',
+    keyword: 'casier judiciaire Maroc',
+    summary: 'Guide pour demander un extrait de casier judiciaire ou document équivalent selon l’usage administratif.',
+    price: 'Les frais peuvent varier selon la demande, le canal utilisé et les exigences administratives.',
+    docs: ['CNIE ou passeport', 'Informations personnelles', 'Acte de naissance si demandé', 'Justificatif de demande selon le cas'],
+    steps: ['Identifier le type d’extrait nécessaire', 'Préparer l’identité du demandeur', 'Déposer ou effectuer la demande en ligne si disponible', 'Vérifier les délais', 'Récupérer le document'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'acte-naissance-maroc',
+    title: 'Acte de naissance Maroc',
+    keyword: 'acte de naissance Maroc',
+    summary: 'Guide pour obtenir une copie intégrale ou un extrait d’acte de naissance au Maroc.',
+    price: 'Les frais administratifs peuvent changer selon le canal et la commune concernée.',
+    docs: ['Nom complet', 'Date et lieu de naissance', 'Informations des parents si demandées', 'CNIE du demandeur', 'Livret de famille si utile'],
+    steps: ['Identifier le bureau d’état civil', 'Préparer les informations de naissance', 'Choisir le type d’acte', 'Déposer la demande', 'Vérifier les informations reçues'],
+  },
+  {
+    category: 'citoyen',
+    slug: 'legalisation-signature-maroc',
+    title: 'Légalisation de signature Maroc',
+    keyword: 'légalisation de signature Maroc',
+    summary: 'Guide pour légaliser une signature sur un document administratif ou commercial.',
+    price: 'Les frais varient selon la commune, le document et les règles locales applicables.',
+    docs: ['CNIE', 'Document à signer', 'Copies éventuelles', 'Présence du signataire', 'Justificatifs complémentaires selon le document'],
+    steps: ['Préparer le document sans le signer à l’avance si demandé', 'Présenter la CNIE', 'Signer devant l’agent habilité', 'Payer les frais si applicables', 'Vérifier le cachet de légalisation'],
+  },
+  {
+    category: 'vehicules',
+    slug: 'vignette-maroc',
+    title: 'Vignette Maroc',
+    keyword: 'vignette Maroc',
+    summary: 'Guide pour comprendre la vignette automobile au Maroc, les informations à vérifier et les délais de paiement.',
+    price: 'Le montant dépend notamment du véhicule, de la puissance fiscale, du carburant et de la réglementation en vigueur.',
+    docs: ['Carte grise', 'Informations du véhicule', 'Identité du propriétaire', 'Moyen de paiement', 'Reçu précédent si utile'],
+    steps: ['Identifier le véhicule', 'Vérifier la catégorie et puissance fiscale', 'Calculer ou consulter le montant', 'Payer dans les délais', 'Conserver le justificatif'],
+  },
+  {
+    category: 'vehicules',
+    slug: 'carte-grise-maroc',
+    title: 'Carte grise Maroc',
+    keyword: 'carte grise Maroc',
+    summary: 'Guide pour préparer une demande de carte grise, duplicata ou modification liée au véhicule.',
+    price: 'Les frais varient selon la démarche, le véhicule, les droits et les services utilisés.',
+    docs: ['CNIE', 'Contrat ou justificatif du véhicule', 'Ancienne carte grise si disponible', 'Contrôle technique si demandé', 'Assurance ou documents complémentaires'],
+    steps: ['Identifier la démarche exacte', 'Préparer les documents véhicule', 'Remplir les formulaires', 'Déposer le dossier', 'Suivre et récupérer la carte grise'],
+  },
+  {
+    category: 'vehicules',
+    slug: 'vente-vehicule-maroc',
+    title: 'Vente d’un véhicule au Maroc',
+    keyword: 'vente véhicule Maroc',
+    summary: 'Guide pour préparer la vente d’un véhicule, les documents de cession et les points à vérifier avant signature.',
+    price: 'Les frais dépendent des légalisations, mutations, taxes éventuelles et services utilisés.',
+    docs: ['CNIE vendeur et acheteur', 'Carte grise', 'Contrat de vente', 'Contrôle technique si nécessaire', 'Quitus ou documents fiscaux si demandés'],
+    steps: ['Vérifier l’identité des parties', 'Préparer le contrat de vente', 'Légaliser les signatures si requis', 'Remettre les documents du véhicule', 'Effectuer le changement de propriétaire'],
+  },
+  {
+    category: 'vehicules',
+    slug: 'changement-proprietaire-vehicule-maroc',
+    title: 'Changement de propriétaire véhicule Maroc',
+    keyword: 'changement propriétaire véhicule Maroc',
+    summary: 'Guide pour transférer la propriété d’un véhicule après vente, donation ou autre changement.',
+    price: 'Les frais changent selon le véhicule, la situation et les droits applicables.',
+    docs: ['Contrat de vente ou justificatif de transfert', 'Carte grise', 'CNIE des parties', 'Documents fiscaux ou techniques demandés', 'Formulaires officiels'],
+    steps: ['Rassembler les documents de cession', 'Vérifier les signatures', 'Préparer le dossier de mutation', 'Déposer la demande', 'Récupérer le nouveau document'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-espagne-maroc',
+    title: 'Visa Espagne depuis le Maroc',
+    keyword: 'visa Espagne Maroc',
+    summary: 'Guide pour préparer une demande de visa Espagne depuis le Maroc : documents, rendez-vous, assurance et justificatifs.',
+    price: 'Les frais de visa et de service changent selon le type de visa, l’âge du demandeur et le centre de dépôt.',
+    docs: ['Passeport valide', 'Photos', 'Formulaire de visa', 'Assurance voyage', 'Réservation ou invitation', 'Justificatifs financiers', 'Justificatif professionnel ou scolaire'],
+    steps: ['Identifier le type de visa', 'Préparer le dossier', 'Prendre rendez-vous', 'Déposer les documents et biométrie', 'Suivre la décision'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-france-maroc',
+    title: 'Visa France depuis le Maroc',
+    keyword: 'visa France Maroc',
+    summary: 'Guide pour préparer une demande de visa France depuis le Maroc avec documents, étapes et points de vigilance.',
+    price: 'Les frais varient selon la catégorie de visa, l’âge et les frais de service du centre de dépôt.',
+    docs: ['Passeport valide', 'Formulaire de demande', 'Photos', 'Assurance voyage', 'Justificatifs de séjour', 'Ressources financières', 'Situation professionnelle ou scolaire'],
+    steps: ['Choisir le type de visa', 'Remplir la demande', 'Réunir les justificatifs', 'Prendre rendez-vous', 'Déposer et suivre le dossier'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-italie-maroc',
+    title: 'Visa Italie depuis le Maroc',
+    keyword: 'visa Italie Maroc',
+    summary: 'Guide pour préparer un dossier de visa Italie depuis le Maroc selon le motif de voyage.',
+    price: 'Les frais dépendent du visa, du centre et des services éventuels. Vérifiez les montants officiels avant paiement.',
+    docs: ['Passeport valide', 'Formulaire', 'Photo', 'Assurance voyage', 'Réservation ou hébergement', 'Justificatifs financiers', 'Documents professionnels ou scolaires'],
+    steps: ['Définir le motif du voyage', 'Préparer les documents', 'Réserver le rendez-vous', 'Déposer le dossier', 'Attendre la réponse'],
+  },
+  {
+    category: 'voyage',
+    slug: 'visa-canada-etudiant-maroc',
+    title: 'Visa Canada étudiant depuis le Maroc',
+    keyword: 'visa Canada étudiant Maroc',
+    summary: 'Guide pour préparer un dossier d’études au Canada depuis le Maroc : admission, preuves financières, identité et étapes.',
+    price: 'Les frais dépendent du permis, de la biométrie, des services et des exigences en vigueur au moment de la demande.',
+    docs: ['Passeport valide', 'Lettre d’acceptation', 'Preuves financières', 'Documents scolaires', 'Photos ou biométrie', 'Formulaires demandés', 'Lettre explicative si utile'],
+    steps: ['Obtenir une admission', 'Préparer les preuves financières', 'Créer ou compléter la demande', 'Payer les frais applicables', 'Suivre la décision et les instructions'],
+  },
+];
+
+const GUIDE_TOPIC_MAP = new Map(GUIDE_TOPICS.map(topic => [topic.slug, topic]));
+const GUIDE_VARIANTS = ['guide', 'faq', 'prix', 'documents'];
+
+function guideTopicUrl(topic, variant = 'guide') {
+  if (variant === 'guide') return `/guide/${topic.slug}`;
+  if (variant === 'faq') return `/faq/${topic.slug}`;
+  return `/${variant}-${topic.slug}`;
+}
+
+function guideRelatedLinks(topic) {
+  return GUIDE_VARIANTS
+    .map(variant => `<a href="${guideTopicUrl(topic, variant)}">${variant === 'guide' ? topic.title : `${variant === 'faq' ? 'FAQ' : variant === 'prix' ? 'Prix' : 'Documents'} - ${topic.title}`}</a>`)
+    .join('');
+}
+
+function renderGuideCards(topics) {
+  return topics.map(topic => `<article class="seo-card">
+    <h2><a href="${guideTopicUrl(topic)}">${escapeHtml(topic.title)}</a></h2>
+    <p>${escapeHtml(topic.summary)}</p>
+    <div class="seo-links compact">${guideRelatedLinks(topic)}</div>
+  </article>`).join('');
+}
+
+function guideSchema(topic, canonical, variant = 'guide') {
+  const base = {
+    '@context': 'https://schema.org',
+    '@type': variant === 'faq' ? 'FAQPage' : 'Article',
+    headline: topic.title,
+    name: topic.title,
+    url: canonical,
+    description: topic.summary,
+    inLanguage: 'fr-MA',
+    publisher: { '@type': 'Organization', name: 'IceMorocco', url: SITE_URL },
+  };
+  if (variant === 'faq') {
+    base.mainEntity = [
+      ['Quel est le prix ?', topic.price],
+      ['Quels documents préparer ?', `Préparez notamment : ${topic.docs.join(', ')}.`],
+      ['Quelles sont les étapes ?', `Les étapes habituelles sont : ${topic.steps.join(', ')}.`],
+    ].map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } }));
+  }
+  return base;
+}
+
+function renderGuideLandingPage() {
+  const body = `<section class="seo-panel"><h2>Catégories du guide administratif</h2><div class="seo-card-grid">${Object.entries(GUIDE_CATEGORIES)
+    .map(([slug, category]) => `<article class="seo-card"><h2><a href="/guide/${slug}">${escapeHtml(category.title)}</a></h2><p>${escapeHtml(category.lead)}</p></article>`)
+    .join('')}</div></section>
+    <section class="seo-panel"><h2>Guides populaires</h2><div class="seo-card-grid">${renderGuideCards(GUIDE_TOPICS.slice(0, 8))}</div></section>`;
+  return renderSeoLayout({
+    title: 'Guide administratif Maroc - Entreprise, citoyen, véhicule et voyage | IceMorocco',
+    description: 'Guide administratif Maroc par IceMorocco : démarches entreprise, citoyen, véhicules et voyage avec prix indicatifs, documents, étapes et FAQ.',
+    canonical: `${SITE_URL}/guide`,
+    h1: 'Guide administratif Maroc',
+    lead: 'Un espace pratique pour préparer les démarches courantes au Maroc avec documents, prix indicatifs, délais et questions fréquentes.',
+    body,
+    schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Guide administratif Maroc', url: `${SITE_URL}/guide` },
+  });
+}
+
+function renderGuideCategoryPage(categorySlug) {
+  const category = GUIDE_CATEGORIES[categorySlug];
+  if (!category) return null;
+  const topics = GUIDE_TOPICS.filter(topic => topic.category === categorySlug);
+  const body = `<section class="seo-panel"><h2>Démarches ${escapeHtml(category.label.toLowerCase())}</h2><div class="seo-card-grid">${renderGuideCards(topics)}</div></section>`;
+  return renderSeoLayout({
+    title: `${category.title} - Démarches et documents | IceMorocco`,
+    description: category.description,
+    canonical: `${SITE_URL}/guide/${categorySlug}`,
+    h1: category.title,
+    lead: category.lead,
+    body,
+    schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: category.title, url: `${SITE_URL}/guide/${categorySlug}`, description: category.description },
+  });
+}
+
+function renderGuideTopicPage(topic, variant = 'guide') {
+  const canonical = `${SITE_URL}${guideTopicUrl(topic, variant)}`;
+  const variantLabel = variant === 'guide' ? topic.title : `${variant === 'faq' ? 'FAQ' : variant === 'prix' ? 'Prix' : 'Documents'} - ${topic.title}`;
+  const priceBlock = `<section class="seo-panel"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
+  const docsBlock = `<section class="seo-panel"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
+  const stepsBlock = `<section class="seo-panel"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
+  const faqBlock = `<section class="seo-panel"><h2>Questions fréquentes</h2>
+    <details open><summary>Combien coûte cette démarche ?</summary><p>${escapeHtml(topic.price)}</p></details>
+    <details><summary>Quels documents préparer ?</summary><p>${escapeHtml(topic.docs.join(', '))}.</p></details>
+    <details><summary>Quels délais prévoir ?</summary><p>Les délais varient selon la ville, l’administration, la période et la complétude du dossier. Préparez une marge et vérifiez le suivi auprès du service concerné.</p></details>
+    <details><summary>Où vérifier l’information officielle ?</summary><p>Consultez toujours le portail officiel, l’administration concernée ou le centre de dépôt avant de payer ou de déposer un dossier.</p></details>
+  </section>`;
+  const variantsBlock = `<section class="seo-panel"><h2>Pages liées</h2><div class="seo-links">${guideRelatedLinks(topic)}<a href="/guide/${topic.category}">${escapeHtml(GUIDE_CATEGORIES[topic.category].title)}</a></div></section>`;
+  const bodyByVariant = {
+    guide: `<section class="seo-panel"><h2>${escapeHtml(topic.keyword)}</h2><p>${escapeHtml(topic.summary)}</p></section>${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
+    faq: faqBlock + docsBlock + priceBlock + variantsBlock,
+    prix: priceBlock + docsBlock + stepsBlock + variantsBlock,
+    documents: docsBlock + stepsBlock + priceBlock + variantsBlock,
+  };
+  return renderSeoLayout({
+    title: `${variantLabel} | IceMorocco`,
+    description: `${variantLabel} : documents nécessaires, prix indicatifs, étapes et questions fréquentes pour préparer la démarche au Maroc.`,
+    canonical,
+    h1: variantLabel,
+    lead: topic.summary,
+    body: bodyByVariant[variant] || bodyByVariant.guide,
+    schema: guideSchema(topic, canonical, variant),
+  });
+}
+
 function renderInfoPage(slug, page) {
   const canonical = `${SITE_URL}/${slug}`;
   return renderSeoLayout({
@@ -752,11 +1078,17 @@ function sitemapEntry(loc, priority = '0.7') {
 }
 
 function renderSitemap() {
+  const guideUrls = [
+    sitemapEntry(`${SITE_URL}/guide`, '0.92'),
+    ...Object.keys(GUIDE_CATEGORIES).map(slug => sitemapEntry(`${SITE_URL}/guide/${slug}`, '0.88')),
+    ...GUIDE_TOPICS.flatMap(topic => GUIDE_VARIANTS.map(variant => sitemapEntry(`${SITE_URL}${guideTopicUrl(topic, variant)}`, variant === 'guide' ? '0.86' : '0.78'))),
+  ];
   const urls = [
     sitemapEntry(`${SITE_URL}/`, '1.0'),
     sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '0.95'),
     sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
     sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
+    ...guideUrls,
     ...Object.keys(STATIC_INFO_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.75')),
     ...Object.keys(STATIC_TOOL_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.86')),
     ...SEO_CITIES.map(city => sitemapEntry(`${SITE_URL}/ville/${slugify(city)}`, '0.8')),
@@ -1121,6 +1453,45 @@ const requestHandler = async (req, res) => {
   if (pathname === '/sitemap.xml') {
     res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
     return res.end(renderSitemap());
+  }
+
+  if (pathname === '/guide' || pathname === '/guide/') {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(renderGuideLandingPage());
+  }
+
+  if (pathname.startsWith('/guide/')) {
+    const slug = pathname.replace('/guide/', '').replace(/\/$/, '');
+    if (GUIDE_CATEGORIES[slug]) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(renderGuideCategoryPage(slug));
+    }
+    const topic = GUIDE_TOPIC_MAP.get(slug);
+    if (topic) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(renderGuideTopicPage(topic, 'guide'));
+    }
+  }
+
+  if (pathname.startsWith('/faq/')) {
+    const slug = pathname.replace('/faq/', '').replace(/\/$/, '');
+    const topic = GUIDE_TOPIC_MAP.get(slug);
+    if (topic) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(renderGuideTopicPage(topic, 'faq'));
+    }
+  }
+
+  for (const variant of ['prix', 'documents']) {
+    const prefix = `/${variant}-`;
+    if (pathname.startsWith(prefix)) {
+      const slug = pathname.slice(prefix.length).replace(/\/$/, '');
+      const topic = GUIDE_TOPIC_MAP.get(slug);
+      if (topic) {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(renderGuideTopicPage(topic, variant));
+      }
+    }
   }
 
   if (pathname === '/simulation-salaire') {

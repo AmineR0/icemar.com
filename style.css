@@ -129,6 +129,7 @@ button{appearance:none}
 .seo-tool-links a:hover{transform:translateY(-2px);border-color:var(--brand-2);box-shadow:0 16px 34px rgba(34,44,54,.09)}
 .seo-tool-links strong{font-family:var(--display);font-size:.98rem;line-height:1.1;letter-spacing:-.03em}
 .seo-tool-links span{color:var(--muted);font-size:.8rem;font-weight:750;line-height:1.45}
+.guide-links a{background:linear-gradient(180deg,#fff,#fffaf2)}
 .seo-directory{margin:12px 0}
 .seo-directory h2{margin:0 0 10px;font-family:var(--display);font-size:1.25rem;letter-spacing:-.04em;color:var(--ink)}
 .seo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
@@ -446,6 +447,10 @@ button{appearance:none}
 .seo-search-form{display:grid;grid-template-columns:1fr auto;gap:10px;max-width:720px}
 .seo-search-form input{min-height:54px;border:1px solid var(--line);border-radius:18px;background:#fff;padding:0 16px;font-weight:850;outline:none}
 .seo-search-form button{border:0;border-radius:18px;background:var(--ink);color:#fff;padding:0 22px;font-weight:950;cursor:pointer}
+.seo-checklist,.seo-steps{margin:12px 0 0;padding-left:22px;color:var(--muted);font-weight:750;line-height:1.75}
+.seo-checklist li,.seo-steps li{margin:6px 0}
+.seo-links.compact{margin-top:10px;gap:7px}
+.seo-links.compact a{font-size:.78rem;padding:7px 9px}
 .seo-panel{margin-top:16px;padding:22px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.82);box-shadow:0 14px 34px rgba(34,44,54,.06)}
 .seo-panel h2{font-family:var(--display);font-size:1.35rem;letter-spacing:-.04em;margin-bottom:12px}
 .seo-panel p{color:var(--muted);font-weight:750;line-height:1.75}
