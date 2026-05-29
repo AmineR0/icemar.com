@@ -475,6 +475,11 @@ button{appearance:none}
 .article-highlights strong{display:block;margin-bottom:5px;color:var(--ink);font-family:var(--display);font-size:1.02rem;letter-spacing:-.03em}
 .article-highlights span{color:var(--muted);font-size:.84rem;font-weight:800;line-height:1.5}
 .article-section p+p{margin-top:10px}
+.official-link-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.official-link-grid a{display:grid;gap:5px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);text-decoration:none}
+.official-link-grid a:hover{border-color:var(--brand-2);color:var(--brand)}
+.official-link-grid strong{font-family:var(--display);font-size:1rem;line-height:1.2;letter-spacing:-.03em}
+.official-link-grid span{color:var(--muted);font-size:.82rem;font-weight:850;line-height:1.45}
 .seo-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .seo-dl div{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
 .seo-dl dt{margin-bottom:4px;color:var(--soft);font-size:.68rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
@@ -598,6 +603,7 @@ button{appearance:none}
   .home-ice-row input,.home-ice-row button{min-height:56px;border-radius:18px}
   .guide-suggestions-grid{grid-template-columns:1fr}
   .article-highlights{grid-template-columns:1fr}
+  .official-link-grid{grid-template-columns:1fr}
   .guide-article{padding:18px;border-radius:20px}
   .seo-content{margin-top:18px}
   .seo-intro,.seo-guide,.seo-tools,.seo-faq{padding:16px;border-radius:18px}

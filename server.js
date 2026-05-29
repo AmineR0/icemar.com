@@ -1250,6 +1250,165 @@ const GUIDE_RICH_CONTENT = {
   },
 };
 
+const GUIDE_OFFICIAL_LINKS = {
+  'creer-sarl-maroc': [
+    ['Créer ou gérer une entreprise en ligne', 'DirectEntreprise', 'https://www.directentreprise.ma/'],
+    ['Réserver un nom commercial', 'DirectInfo / OMPIC', 'https://www.directinfo.ma/'],
+  ],
+  'obtenir-ice-maroc': [
+    ['Consulter ou vérifier un ICE', 'ICE Maroc', 'https://www.ice.gov.ma/'],
+    ['Démarches fiscales entreprise', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'inscription-cnss-maroc': [
+    ['Services CNSS', 'CNSS Maroc', 'https://www.cnss.ma/'],
+    ['Portail employeurs', 'Damancom', 'https://www.damancom.ma/'],
+  ],
+  'auto-entrepreneur-maroc': [
+    ['S’inscrire comme auto-entrepreneur', 'Registre National Auto-Entrepreneur', 'https://rn.ae.gov.ma/'],
+    ['Informations auto-entrepreneur', 'Portail Auto-Entrepreneur', 'https://www.ae.gov.ma/'],
+  ],
+  'declarer-tva-maroc': [
+    ['Déclarer et payer les impôts', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'obtenir-patente-maroc': [
+    ['Démarches fiscales professionnelles', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'passeport-maroc': [
+    ['Remplir une demande de passeport', 'Passeport.ma', 'https://www.passeport.ma/'],
+    ['Suivre une demande de passeport', 'Passeport.ma', 'https://www.passeport.ma/SuiviDemande/SuiviDemande'],
+  ],
+  'cnie-maroc': [
+    ['Pré-demande, rendez-vous et suivi CNIE', 'Portail CNIE', 'https://www.cnie.ma/'],
+  ],
+  'casier-judiciaire-maroc': [
+    ['Demander un extrait de casier judiciaire', 'Ministère de la Justice', 'https://casierjudiciaire.justice.gov.ma/'],
+  ],
+  'acte-naissance-maroc': [
+    ['Commander un acte de naissance', 'Watiqa', 'https://www.watiqa.gov.ma/'],
+  ],
+  'legalisation-signature-maroc': [
+    ['Services de légalisation et copies conformes', 'Wraqi', 'https://www.wraqi.ma/'],
+    ['Services consulaires pour MRE', 'Consulat.ma', 'https://www.consulat.ma/'],
+  ],
+  'vignette-maroc': [
+    ['Payer la vignette automobile', 'Ma Vignette', 'https://www.mavignette.ma/mv/'],
+    ['Informations fiscales', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'carte-grise-maroc': [
+    ['Démarches carte grise', 'NARSA Khadamat', 'https://khadamatnarsa.ma/fr/services/carte-grise'],
+    ['Informations carte grise', 'NARSA', 'https://narsa.ltc.ma/fr/cartes-grises'],
+  ],
+  'vente-vehicule-maroc': [
+    ['Mutation de véhicule', 'NARSA', 'https://www.narsa-securiteroutiere.ma/fr/mutation-de-vehicules/'],
+    ['Services carte grise', 'NARSA Khadamat', 'https://khadamatnarsa.ma/fr/services/carte-grise'],
+  ],
+  'changement-proprietaire-vehicule-maroc': [
+    ['Mutation de véhicule', 'NARSA', 'https://www.narsa-securiteroutiere.ma/fr/mutation-de-vehicules/'],
+    ['Services carte grise', 'NARSA Khadamat', 'https://khadamatnarsa.ma/fr/services/carte-grise'],
+  ],
+  'visa-espagne-maroc': [
+    ['Demander un visa Espagne', 'BLS Spain Visa Morocco', 'https://morocco.blsspainvisa.com/'],
+  ],
+  'visa-france-maroc': [
+    ['S’informer et commencer la demande', 'France-Visas Maroc', 'https://www.france-visas.gouv.fr/maroc'],
+    ['Prendre rendez-vous visa France', 'TLScontact Maroc', 'https://visas-fr.tlscontact.com/visa/ma'],
+  ],
+  'visa-italie-maroc': [
+    ['Centre visa Italie', 'TLScontact Italie', 'https://it.tlscontact.com/en/'],
+  ],
+  'visa-canada-etudiant-maroc': [
+    ['Demander un permis d’études', 'IRCC Canada', 'https://www.canada.ca/fr/immigration-refugies-citoyennete/services/etudier-canada/permis-etudes/presenter-demande.html'],
+    ['Trousse de demande étudiant', 'IRCC Canada', 'https://ircc.canada.ca/francais/information/demandes/etudiant.asp'],
+  ],
+  'mariage-maroc': [
+    ['Services et informations judiciaires', 'Ministère de la Justice', 'https://adala.justice.gov.ma/'],
+    ['Services consulaires pour MRE', 'Consulat.ma', 'https://www.consulat.ma/'],
+  ],
+  'livret-famille-maroc': [
+    ['Documents d’état civil', 'Watiqa', 'https://www.watiqa.gov.ma/'],
+  ],
+  'certificat-celibat-maroc': [
+    ['Attestation de célibat pour MRE', 'Consulat.ma', 'https://consulat.ma/index.php/fr/attestation-de-celibat'],
+    ['Services consulaires', 'Consulat.ma', 'https://www.consulat.ma/'],
+  ],
+  'divorce-maroc-documents': [
+    ['Services et informations judiciaires', 'Ministère de la Justice', 'https://adala.justice.gov.ma/'],
+  ],
+  'contrat-bail-maroc': [
+    ['Services de légalisation et copies conformes', 'Wraqi', 'https://www.wraqi.ma/'],
+    ['Informations fiscales', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'certificat-propriete-maroc': [
+    ['Conservation foncière et cadastre', 'ANCFCC', 'https://www.ancfcc.gov.ma/'],
+  ],
+  'acheter-appartement-maroc': [
+    ['Vérifier les informations foncières', 'ANCFCC', 'https://www.ancfcc.gov.ma/'],
+    ['Impôts et taxes', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'taxe-habitation-maroc': [
+    ['Payer ou vérifier les taxes', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'bourse-etudiant-maroc': [
+    ['Demande de bourse', 'Minhaty', 'https://www.minhaty.ma/'],
+    ['Suivi e-bourse', 'ONOUSC', 'https://e-bourse-maroc.onousc.ma/'],
+  ],
+  'massar-maroc': [
+    ['Accéder à Massar', 'Massar Service', 'https://massarservice.men.gov.ma/'],
+  ],
+  'inscription-bac-libre-maroc': [
+    ['Candidature bac libre', 'Ministère de l’Éducation Nationale', 'https://candidaturesbac.men.gov.ma/'],
+  ],
+  'equivalence-diplome-maroc': [
+    ['Demande d’équivalence', 'Ministère de l’Éducation Nationale', 'https://equivalence.men.gov.ma/'],
+  ],
+  'anapec-maroc': [
+    ['Chercher un emploi et gérer son profil', 'ANAPEC', 'https://www.anapec.org/'],
+  ],
+  'amo-maroc': [
+    ['Services AMO et CNSS', 'CNSS Maroc', 'https://www.cnss.ma/'],
+  ],
+  'salaire-net-brut-maroc': [
+    ['Cotisations sociales', 'CNSS Maroc', 'https://www.cnss.ma/'],
+    ['Impôt sur le revenu', 'Direction Générale des Impôts', 'https://www.tax.gov.ma/'],
+  ],
+  'attestation-travail-maroc': [
+    ['Droit du travail et emploi', 'Ministère de l’Inclusion économique', 'https://miepeec.gov.ma/'],
+  ],
+  'permis-conduire-maroc': [
+    ['Obtenir le permis de conduire', 'NARSA Khadamat', 'https://khadamatnarsa.ma/fr/services/obtention-de-mon-permis-de-conduire-1ere-fois'],
+  ],
+  'renouvellement-permis-maroc': [
+    ['Renouveler le permis de conduire', 'NARSA', 'https://www.narsa-securiteroutiere.ma/fr/echange-du-permis-de-conduire/'],
+    ['Services NARSA', 'NARSA Khadamat', 'https://khadamatnarsa.ma/'],
+  ],
+  'rendez-vous-administration-maroc': [
+    ['Services électroniques publics', 'Maroc.ma', 'https://www.maroc.ma/fr/services-electroniques'],
+  ],
+  'visa-usa-maroc': [
+    ['Demander un visa États-Unis', 'U.S. Travel Docs', 'https://www.ustraveldocs.com/ma/'],
+    ['Formulaire DS-160', 'U.S. Department of State', 'https://ceac.state.gov/genniv/'],
+  ],
+  'visa-allemagne-maroc': [
+    ['Informations visa Allemagne', 'Ambassade d’Allemagne à Rabat', 'https://rabat.diplo.de/ma-fr'],
+    ['Prendre rendez-vous visa Allemagne', 'TLScontact', 'https://de.tlscontact.com/ma/'],
+  ],
+};
+
+function renderOfficialLinksBlock(topic) {
+  const links = GUIDE_OFFICIAL_LINKS[topic.slug] || [];
+  if (!links.length) return '';
+  return `<section class="seo-panel official-links">
+    <h2>Site officiel pour faire la demande</h2>
+    <p>Utilisez uniquement les portails officiels ou les administrations compétentes pour remplir une demande, payer des frais ou prendre rendez-vous.</p>
+    <div class="official-link-grid">
+      ${links.map(([label, source, href]) => `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">
+        <strong>${escapeHtml(label)}</strong>
+        <span>${escapeHtml(source)}</span>
+      </a>`).join('')}
+    </div>
+  </section>`;
+}
+
 function renderRichGuideBlocks(topic) {
   const rich = GUIDE_RICH_CONTENT[topic.slug];
   if (!rich) return '';
@@ -1394,6 +1553,7 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   const stepsBlock = `<section class="seo-panel"><h2>Étapes de la démarche</h2><ol class="seo-steps">${topic.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol></section>`;
   const articleIntro = renderArticleIntro(topic);
   const beforeStartBlock = renderBeforeStartBlock(topic);
+  const officialLinksBlock = renderOfficialLinksBlock(topic);
   const richBlocks = renderRichGuideBlocks(topic);
   const faqBlock = `<section class="seo-panel"><h2>Questions fréquentes</h2>
     <details open><summary>Combien coûte cette démarche ?</summary><p>${escapeHtml(topic.price)}</p></details>
@@ -1403,10 +1563,10 @@ function renderGuideTopicPage(topic, variant = 'guide') {
   </section>`;
   const variantsBlock = `<section class="seo-panel"><h2>Pages liées</h2><div class="seo-links">${guideRelatedLinks(topic)}<a href="/guide/${topic.category}">${escapeHtml(GUIDE_CATEGORIES[topic.category].title)}</a></div></section>`;
   const bodyByVariant = {
-    guide: `${articleIntro}${beforeStartBlock}${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
-    faq: articleIntro + richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
-    prix: articleIntro + richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
-    documents: articleIntro + richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
+    guide: `${articleIntro}${officialLinksBlock}${beforeStartBlock}${richBlocks}${docsBlock}${priceBlock}${stepsBlock}${faqBlock}${variantsBlock}`,
+    faq: articleIntro + officialLinksBlock + richBlocks + faqBlock + docsBlock + priceBlock + variantsBlock,
+    prix: articleIntro + officialLinksBlock + richBlocks + priceBlock + docsBlock + stepsBlock + variantsBlock,
+    documents: articleIntro + officialLinksBlock + richBlocks + docsBlock + stepsBlock + priceBlock + variantsBlock,
   };
   return renderSeoLayout({
     title: `${variantLabel} | IceMorocco`,
