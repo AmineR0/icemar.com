@@ -113,6 +113,14 @@ button{appearance:none}
 .search-status{align-items:center;gap:9px;margin:12px 6px 0;color:var(--muted);font-size:.86rem;font-weight:850}
 .search-status-dot{width:22px;height:22px;border-radius:50%;border:3px solid rgba(20,184,166,.2);border-top-color:var(--brand-2);animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.guide-suggestions{margin-top:14px;text-align:left}
+.guide-suggestions-head{margin:0 0 8px;color:var(--muted);font-size:.78rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
+.guide-suggestions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.guide-suggestion-card{display:grid;gap:5px;padding:13px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-decoration:none;box-shadow:0 10px 24px rgba(34,44,54,.06);transition:transform .18s,border .18s}
+.guide-suggestion-card:hover{transform:translateY(-2px);border-color:var(--brand-2)}
+.guide-suggestion-card span{width:max-content;padding:4px 7px;border-radius:999px;background:#e0fff8;color:var(--brand);font-size:.66rem;font-weight:950}
+.guide-suggestion-card strong{font-family:var(--display);font-size:.98rem;line-height:1.1;letter-spacing:-.03em}
+.guide-suggestion-card small{color:var(--muted);font-size:.78rem;font-weight:750;line-height:1.45}
 .seo-content{margin:10px auto 54px;padding:0 clamp(14px,4vw,46px);width:min(1000px,100%);text-align:left}
 .seo-intro,.seo-guide,.seo-faq{padding:20px;border:1px solid rgba(228,221,209,.9);border-radius:22px;background:rgba(255,255,255,.72);box-shadow:0 14px 34px rgba(34,44,54,.06)}
 .seo-intro h2,.seo-guide h2,.seo-faq h2{margin:0 0 10px;font-size:1.35rem;line-height:1.15;letter-spacing:-.04em}
@@ -454,6 +462,9 @@ button{appearance:none}
 .seo-panel{margin-top:16px;padding:22px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.82);box-shadow:0 14px 34px rgba(34,44,54,.06)}
 .seo-panel h2{font-family:var(--display);font-size:1.35rem;letter-spacing:-.04em;margin-bottom:12px}
 .seo-panel p{color:var(--muted);font-weight:750;line-height:1.75}
+.seo-panel details{margin-top:9px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.seo-panel summary{cursor:pointer;color:var(--ink);font-weight:950}
+.rich-guide p{margin-top:8px}
 .seo-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .seo-dl div{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
 .seo-dl dt{margin-bottom:4px;color:var(--soft);font-size:.68rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em}
@@ -575,6 +586,7 @@ button{appearance:none}
   .empty-state p{margin-bottom:18px}
   .home-ice-row{grid-template-columns:1fr}
   .home-ice-row input,.home-ice-row button{min-height:56px;border-radius:18px}
+  .guide-suggestions-grid{grid-template-columns:1fr}
   .seo-content{margin-top:18px}
   .seo-intro,.seo-guide,.seo-tools,.seo-faq{padding:16px;border-radius:18px}
   .seo-grid,.seo-guide-grid,.seo-tool-links{grid-template-columns:1fr;gap:8px}

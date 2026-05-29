@@ -14,6 +14,24 @@ const LIVE_HEALTH_TIMEOUT=2500;
 const LIVE_SEARCH_TIMEOUT=7000;
 const GA_MEASUREMENT_ID='G-F94S5SZ22Z';
 let lastAnalyticsPath='';
+const GUIDE_ARTICLES=[
+  {title:'CNIE Maroc',url:'/guide/cnie-maroc',category:'Citoyen',desc:'Demande, renouvellement, documents nécessaires, prix indicatifs et délais.',keys:'cnie cin carte nationale identité carte nationale identite'},
+  {title:'Passeport Maroc',url:'/guide/passeport-maroc',category:'Citoyen',desc:'Documents, frais indicatifs, étapes et préparation du dossier passeport.',keys:'passeport passport maroc renouvellement voyage'},
+  {title:'Casier judiciaire Maroc',url:'/guide/casier-judiciaire-maroc',category:'Citoyen',desc:'Préparer une demande de casier judiciaire avec pièces et délais indicatifs.',keys:'casier judiciaire extrait casier'},
+  {title:'Acte de naissance Maroc',url:'/guide/acte-naissance-maroc',category:'Citoyen',desc:'Copie intégrale, extrait, documents et étapes auprès de l’état civil.',keys:'acte naissance etat civil extrait naissance'},
+  {title:'Légalisation de signature Maroc',url:'/guide/legalisation-signature-maroc',category:'Citoyen',desc:'Documents et étapes pour légaliser une signature administrative.',keys:'legalisation légalisation signature legaliser légaliser'},
+  {title:'Comment créer une SARL au Maroc',url:'/guide/creer-sarl-maroc',category:'Entreprise',desc:'Étapes, documents, frais à vérifier et identifiants après création.',keys:'creer créer sarl societe société entreprise creation création'},
+  {title:'Comment obtenir un ICE au Maroc',url:'/guide/obtenir-ice-maroc',category:'Entreprise',desc:'Comprendre l’ICE, les informations nécessaires et les étapes de vérification.',keys:'obtenir ice identifiant commun entreprise'},
+  {title:'Comment s’inscrire à la CNSS',url:'/guide/inscription-cnss-maroc',category:'Entreprise',desc:'Dossier employeur, salariés, obligations sociales et justificatifs.',keys:'cnss inscription salaries salariés employeur'},
+  {title:'Auto-Entrepreneur Maroc',url:'/guide/auto-entrepreneur-maroc',category:'Entreprise',desc:'Éligibilité, documents, étapes et déclarations pour auto-entrepreneur.',keys:'auto entrepreneur autoentrepreneur freelance independant indépendant'},
+  {title:'Déclarer la TVA Maroc',url:'/guide/declarer-tva-maroc',category:'Entreprise',desc:'Documents, étapes, calcul TVA et points à vérifier avant déclaration.',keys:'tva declarer déclarer declaration déclaration taxe'},
+  {title:'Vignette Maroc',url:'/guide/vignette-maroc',category:'Véhicules',desc:'Montant indicatif, puissance fiscale, carburant et paiement vignette.',keys:'vignette voiture vehicule véhicule taxe automobile'},
+  {title:'Carte grise Maroc',url:'/guide/carte-grise-maroc',category:'Véhicules',desc:'Mutation, duplicata, documents et étapes pour carte grise.',keys:'carte grise voiture vehicule véhicule mutation'},
+  {title:'Visa France depuis le Maroc',url:'/guide/visa-france-maroc',category:'Voyage',desc:'Dossier, rendez-vous, frais indicatifs, documents et FAQ.',keys:'visa france schengen tls rendez vous'},
+  {title:'Visa Espagne depuis le Maroc',url:'/guide/visa-espagne-maroc',category:'Voyage',desc:'Documents, assurance, justificatifs financiers et étapes de dépôt.',keys:'visa espagne spain bls schengen rendez vous'},
+  {title:'Visa Italie depuis le Maroc',url:'/guide/visa-italie-maroc',category:'Voyage',desc:'Préparer le dossier selon le motif de voyage et les justificatifs.',keys:'visa italie italy schengen'},
+  {title:'Visa Canada étudiant depuis le Maroc',url:'/guide/visa-canada-etudiant-maroc',category:'Voyage',desc:'Admission, preuves financières, formulaires et étapes de demande.',keys:'visa canada etudiant étudiant study permit permis etudes études'},
+];
 
 function trackPageView(){
   if(typeof window.gtag!=='function')return;
@@ -67,6 +85,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   initBusinessTools();
   initPopularCompanyLists();
   initResultDetailLinks();
+  initGuideArticleSearch();
   restoreRoute();
   checkLiveSearch().then(()=>{
     const q=document.getElementById('q')?.value.trim();
@@ -168,6 +187,7 @@ function restoreRoute(){
   const restoredQuery=q||'';
   if(restoredQuery){
     sv('q',restoredQuery);
+    renderGuideSuggestions(restoredQuery);
     resetSearchResultsState();
     renderSearchLoading(restoredQuery);
     go({updateUrl:false,scroll:false,background:false,deferEmpty:true,waitForFreshLive:true});
@@ -184,6 +204,7 @@ function refreshSearchFromRoute(){
   if(!q||url.hash)return;
   applySearchMode(mode,{clear:false});
   sv('q',q);
+  renderGuideSuggestions(q);
   resetSearchResultsState();
   renderSearchLoading(q);
   go({updateUrl:false,scroll:false,background:false,deferEmpty:true,waitForFreshLive:true});
@@ -233,6 +254,51 @@ function setSearchLoading(loading,labelText='Recherche...'){
     status.style.display=loading?'inline-flex':'none';
     if(statusText)statusText.textContent=labelText;
   }
+}
+
+function initGuideArticleSearch(){
+  const input=document.getElementById('q');
+  if(!input)return;
+  input.addEventListener('input',()=>renderGuideSuggestions(input.value));
+  renderGuideSuggestions(input.value);
+}
+
+function guideArticleMatches(raw=''){
+  const query=normalizeCompanyKey(raw);
+  const tokens=query.split(/\s+/).filter(t=>t.length>1);
+  if(!tokens.length)return [];
+  return GUIDE_ARTICLES
+    .map(article=>{
+      const hay=normalizeCompanyKey(`${article.title} ${article.category} ${article.desc} ${article.keys}`);
+      const exact=hay.includes(query)?20:0;
+      const score=tokens.reduce((sum,token)=>sum+(hay.includes(token)?4:0),exact);
+      return {...article,score};
+    })
+    .filter(article=>article.score>0)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,5);
+}
+
+function renderGuideSuggestions(raw=''){
+  const box=document.getElementById('guide-suggestions');
+  if(!box)return;
+  const matches=guideArticleMatches(raw);
+  if(!matches.length){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  box.style.display='block';
+  box.innerHTML=`
+    <div class="guide-suggestions-head">Articles administratifs</div>
+    <div class="guide-suggestions-grid">
+      ${matches.map(article=>`
+        <a class="guide-suggestion-card" href="${article.url}">
+          <span>${article.category}</span>
+          <strong>${article.title}</strong>
+          <small>${article.desc}</small>
+        </a>`).join('')}
+    </div>`;
 }
 
 // Search — local DB first, then live charika.ma
