@@ -487,6 +487,81 @@ function renderListingPage({ slug, title, h1, lead, description, companies }) {
   });
 }
 
+function renderIceSearchSeoPage() {
+  const companies = LOCAL_COMPANIES.filter(company => normalizeIce(company.ice)).slice(0, 24);
+  const canonical = `${SITE_URL}/recherche-ice-maroc`;
+  const body = `
+    <section class="seo-panel">
+      <h2>Recherche ICE Maroc par numéro ICE ou nom d’entreprise</h2>
+      <p>IceMorocco est conçu pour retrouver rapidement une entreprise marocaine à partir d’un numéro ICE, d’une raison sociale, d’une ville, d’un registre de commerce ou d’un mot-clé d’activité. L’objectif est simple : aider les entrepreneurs, comptables, freelances et services administratifs à vérifier une société avant une facture, un devis, un contrat ou un dossier fournisseur.</p>
+      <p>Le moteur de recherche est gratuit et orienté entreprise. Les informations affichées peuvent inclure l’ICE, le nom de société, la ville, la forme juridique, le RC, l’activité, l’adresse et la date de création lorsque ces données sont disponibles.</p>
+    </section>
+    <section class="seo-panel">
+      <h2>Comment faire une recherche ICE Maroc ?</h2>
+      <ol class="seo-steps">
+        <li>Saisissez le nom de la société, une marque, une ville ou un numéro ICE à 15 chiffres.</li>
+        <li>Choisissez le mode Nom ou ICE selon l’information que vous avez.</li>
+        <li>Consultez les résultats et ouvrez la fiche entreprise la plus proche.</li>
+        <li>Vérifiez l’ICE, le RC, la ville et la forme juridique avant d’utiliser les informations.</li>
+      </ol>
+    </section>
+    <section class="seo-panel">
+      <h2>Pourquoi vérifier l’ICE d’une entreprise ?</h2>
+      <p>La vérification ICE réduit les erreurs de facturation et permet d’identifier plus clairement un client, fournisseur ou partenaire. Avant d’émettre une facture, il est utile de contrôler la raison sociale, l’identifiant ICE, la ville, le registre de commerce et les informations disponibles sur la fiche entreprise.</p>
+    </section>
+    <section class="seo-panel">
+      <h2>Entreprises avec ICE disponible</h2>
+      <div class="seo-card-grid">${companies.map(companyCard).join('')}</div>
+    </section>
+    <section class="seo-panel">
+      <h2>Liens utiles pour la recherche entreprise</h2>
+      <div class="seo-links">
+        <a href="/">Moteur de recherche ICE</a>
+        <a href="/verificateur-ice">Vérificateur ICE Maroc</a>
+        <a href="/annuaire-entreprises-marocaines">Annuaire entreprises marocaines</a>
+        <a href="/top-recherches-ice">Top recherches ICE</a>
+        <a href="/ville/casablanca">Entreprises à Casablanca</a>
+        <a href="/categorie/informatique">Sociétés informatiques Maroc</a>
+      </div>
+    </section>
+    <section class="seo-panel">
+      <h2>Questions fréquentes Recherche ICE Maroc</h2>
+      <details open><summary>Peut-on rechercher une entreprise par numéro ICE ?</summary><p>Oui. Le mode ICE permet de saisir un identifiant à 15 chiffres pour retrouver une fiche lorsque l’information est disponible.</p></details>
+      <details><summary>Peut-on trouver un ICE avec le nom d’une société ?</summary><p>Oui. Saisissez la raison sociale ou une partie du nom. Les résultats peuvent afficher les sociétés correspondantes avec ICE, ville, RC et activité selon les données disponibles.</p></details>
+      <details><summary>IceMorocco est-il un site officiel ?</summary><p>Non. IceMorocco est un outil pratique indépendant. Les informations doivent être vérifiées auprès des organismes officiels avant un usage juridique, fiscal ou administratif.</p></details>
+      <details><summary>Pourquoi une société ne s’affiche pas ?</summary><p>Les données disponibles peuvent être incomplètes ou différentes selon la source. Essayez une orthographe plus courte, une ville, le RC ou une recherche par nom au lieu du numéro ICE.</p></details>
+    </section>`;
+  return renderSeoLayout({
+    title: 'Recherche ICE Maroc gratuite - Trouver une entreprise par ICE ou nom | IceMorocco',
+    description: 'Recherche ICE Maroc gratuite : trouvez une entreprise marocaine par numéro ICE, nom de société, ville, RC ou activité. Vérifiez une société avant facture ou devis.',
+    canonical,
+    h1: 'Recherche ICE Maroc',
+    lead: 'Trouvez et vérifiez une entreprise marocaine par numéro ICE, nom de société, ville, RC ou activité avec un moteur simple et gratuit.',
+    body,
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Recherche ICE Maroc',
+        url: canonical,
+        description: 'Outil gratuit pour rechercher une entreprise marocaine par ICE ou nom de société.',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        isAccessibleForFree: true,
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          ['Peut-on rechercher une entreprise par numéro ICE ?', 'Oui. Le mode ICE permet de saisir un identifiant à 15 chiffres pour retrouver une fiche lorsque l’information est disponible.'],
+          ['Peut-on trouver un ICE avec le nom d’une société ?', 'Oui. Saisissez la raison sociale ou une partie du nom pour afficher les sociétés correspondantes selon les données disponibles.'],
+          ['IceMorocco est-il un site officiel ?', 'Non. IceMorocco est un outil pratique indépendant. Les informations doivent être vérifiées auprès des organismes officiels avant un usage juridique, fiscal ou administratif.'],
+        ].map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } })),
+      },
+    ],
+  });
+}
+
 const STATIC_INFO_PAGES = {
   about: {
     title: 'À propos - IceMorocco',
@@ -1688,8 +1763,8 @@ function renderSitemap() {
     ...GUIDE_TOPICS.flatMap(topic => GUIDE_VARIANTS.map(variant => sitemapEntry(`${SITE_URL}${guideTopicUrl(topic, variant)}`, variant === 'guide' ? '0.86' : '0.78'))),
   ];
   const urls = [
-    sitemapEntry(`${SITE_URL}/`, '1.0'),
-    sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '0.95'),
+    sitemapEntry(`${SITE_URL}/`, '0.96'),
+    sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '1.0'),
     sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
     sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
     ...guideUrls,
@@ -2114,14 +2189,17 @@ const requestHandler = async (req, res) => {
     return res.end(renderToolAppPage(infoPageSlug, STATIC_TOOL_PAGES[infoPageSlug]));
   }
 
-  if (pathname === '/recherche-ice-maroc' || pathname === '/annuaire-entreprises-marocaines') {
+  if (pathname === '/recherche-ice-maroc') {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(renderIceSearchSeoPage());
+  }
+
+  if (pathname === '/annuaire-entreprises-marocaines') {
     const companies = LOCAL_COMPANIES.filter(company => normalizeIce(company.ice)).slice(0, 24);
     const html = renderListingPage({
       slug: pathname.slice(1),
-      title: pathname === '/recherche-ice-maroc'
-        ? 'Recherche ICE Maroc - Trouver une entreprise par ICE | IceMorocco'
-        : 'Annuaire entreprises marocaines - Recherche société Maroc | IceMorocco',
-      h1: pathname === '/recherche-ice-maroc' ? 'Recherche ICE Maroc' : 'Annuaire entreprises marocaines',
+      title: 'Annuaire entreprises marocaines - Recherche société Maroc | IceMorocco',
+      h1: 'Annuaire entreprises marocaines',
       lead: 'Consultez les entreprises marocaines par nom, numéro ICE, ville, forme juridique et activité.',
       description: 'Moteur de recherche ICE Maroc et annuaire des entreprises marocaines pour vérifier une société par ICE, nom ou ville.',
       companies,
