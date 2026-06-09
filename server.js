@@ -359,10 +359,12 @@ function relatedCompanies(company = {}, limit = 6) {
     .slice(0, limit);
 }
 
-function renderSeoLayout({ title, description, canonical, h1, lead, body = '', schema = [], showSearch = true, breadcrumbRoot = 'Recherche ICE Maroc' }) {
+function renderSeoLayout({ title, description, canonical, h1, lead, body = '', schema = [], showSearch = true, breadcrumbRoot = 'Recherche ICE Maroc', robots = 'index,follow,max-image-preview:large' }) {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeCanonical = escapeHtml(canonical);
+  const safeRobots = escapeHtml(robots);
+  const includeAds = !String(robots).startsWith('noindex');
   const jsonLd = JSON.stringify(Array.isArray(schema) ? schema : [schema]).replace(/</g, '\\u003c');
   return `<!doctype html>
 <html lang="fr-MA">
@@ -371,9 +373,9 @@ function renderSeoLayout({ title, description, canonical, h1, lead, body = '', s
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${safeTitle}</title>
 <meta name="description" content="${safeDescription}"/>
-<meta name="robots" content="index,follow,max-image-preview:large"/>
+<meta name="robots" content="${safeRobots}"/>
 <meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}"/>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>
+${includeAds ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : ''}
 <link rel="canonical" href="${safeCanonical}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:locale" content="fr_MA"/>
@@ -462,6 +464,7 @@ function renderCompanyPage(company = {}, canonical = companySeoUrl(company)) {
     h1: `${company.name}${ice ? ` - ICE ${ice}` : ''}`,
     lead: `Fiche indexable pour rechercher et vérifier cette entreprise marocaine par ICE, nom, ville et activité.`,
     body,
+    robots: 'noindex,follow',
     schema: [
       companySchema(company, canonical),
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
@@ -472,7 +475,7 @@ function renderCompanyPage(company = {}, canonical = companySeoUrl(company)) {
   });
 }
 
-function renderListingPage({ slug, title, h1, lead, description, companies }) {
+function renderListingPage({ slug, title, h1, lead, description, companies, robots = 'noindex,follow' }) {
   const canonical = `${SITE_URL}/${slug}`;
   const body = `<section class="seo-panel"><h2>Entreprises référencées</h2><div class="seo-card-grid">${companies.map(companyCard).join('')}</div></section>
     <section class="seo-panel"><h2>Recherches populaires</h2><div class="seo-links"><a href="/top-recherches-ice">Top recherches ICE</a><a href="/ville/casablanca">Entreprises à Casablanca</a><a href="/categorie/btp">Entreprises BTP Maroc</a><a href="/categorie/informatique">Sociétés informatiques Maroc</a></div></section>`;
@@ -483,6 +486,7 @@ function renderListingPage({ slug, title, h1, lead, description, companies }) {
     h1,
     lead,
     body,
+    robots,
     schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: h1, url: canonical, description },
   });
 }
@@ -1261,6 +1265,7 @@ const RICH_GUIDE_SLUGS = new Set([
   'visa-france-maroc',
   'visa-espagne-maroc',
 ]);
+const ADSENSE_INDEXABLE_GUIDE_SLUGS = new Set([...RICH_GUIDE_SLUGS]);
 
 const GUIDE_RICH_CONTENT = {
   'passeport-maroc': {
@@ -1617,11 +1622,13 @@ function renderGuideCategoryPage(categorySlug) {
     schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: category.title, url: `${SITE_URL}/guide/${categorySlug}`, description: category.description },
     showSearch: false,
     breadcrumbRoot: 'Guide administratif Maroc',
+    robots: 'noindex,follow',
   });
 }
 
 function renderGuideTopicPage(topic, variant = 'guide') {
   const canonical = `${SITE_URL}${guideTopicUrl(topic, variant)}`;
+  const shouldIndex = variant === 'guide' && ADSENSE_INDEXABLE_GUIDE_SLUGS.has(topic.slug);
   const variantLabel = variant === 'guide' ? topic.title : `${variant === 'faq' ? 'FAQ' : variant === 'prix' ? 'Prix' : 'Documents'} - ${topic.title}`;
   const priceBlock = `<section class="seo-panel"><h2>Prix et frais indicatifs</h2><p>${escapeHtml(topic.price)}</p><p>Les montants administratifs peuvent changer. Vérifiez toujours les informations auprès du service officiel ou du centre de dépôt avant paiement.</p></section>`;
   const docsBlock = `<section class="seo-panel"><h2>Documents nécessaires</h2><ul class="seo-checklist">${topic.docs.map(doc => `<li>${escapeHtml(doc)}</li>`).join('')}</ul></section>`;
@@ -1653,6 +1660,7 @@ function renderGuideTopicPage(topic, variant = 'guide') {
     schema: guideSchema(topic, canonical, variant),
     showSearch: false,
     breadcrumbRoot: 'Guide administratif Maroc',
+    robots: shouldIndex ? 'index,follow,max-image-preview:large' : 'noindex,follow',
   });
 }
 
@@ -1759,24 +1767,16 @@ function sitemapEntry(loc, priority = '0.7') {
 function renderSitemap() {
   const guideUrls = [
     sitemapEntry(`${SITE_URL}/guide`, '0.92'),
-    ...Object.keys(GUIDE_CATEGORIES).map(slug => sitemapEntry(`${SITE_URL}/guide/${slug}`, '0.88')),
-    ...GUIDE_TOPICS.flatMap(topic => GUIDE_VARIANTS.map(variant => sitemapEntry(`${SITE_URL}${guideTopicUrl(topic, variant)}`, variant === 'guide' ? '0.86' : '0.78'))),
+    ...GUIDE_TOPICS
+      .filter(topic => ADSENSE_INDEXABLE_GUIDE_SLUGS.has(topic.slug))
+      .map(topic => sitemapEntry(`${SITE_URL}${guideTopicUrl(topic, 'guide')}`, '0.84')),
   ];
   const urls = [
     sitemapEntry(`${SITE_URL}/`, '0.96'),
     sitemapEntry(`${SITE_URL}/recherche-ice-maroc`, '1.0'),
-    sitemapEntry(`${SITE_URL}/annuaire-entreprises-marocaines`, '0.9'),
-    sitemapEntry(`${SITE_URL}/top-recherches-ice`, '0.85'),
     ...guideUrls,
     ...Object.keys(STATIC_INFO_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.75')),
     ...Object.keys(STATIC_TOOL_PAGES).map(slug => sitemapEntry(`${SITE_URL}/${slug}`, '0.86')),
-    ...SEO_CITIES.map(city => sitemapEntry(`${SITE_URL}/ville/${slugify(city)}`, '0.8')),
-    ...Object.keys(SEO_CATEGORIES).map(cat => sitemapEntry(`${SITE_URL}/categorie/${cat}`, '0.8')),
-    ...LOCAL_COMPANIES.filter(company => company.name).slice(0, 500).flatMap(company => {
-      const entries = [sitemapEntry(companySeoUrl(company), '0.7')];
-      if (normalizeIce(company.ice)) entries.push(sitemapEntry(iceSeoUrl(company), '0.7'));
-      return entries;
-    }),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
