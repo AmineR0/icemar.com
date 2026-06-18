@@ -19,6 +19,7 @@ const STATIC_DIR = __dirname;
 const SITE_URL = (process.env.SITE_URL || 'https://icemorocco.com').replace(/\/$/, '');
 const GOOGLE_SITE_VERIFICATION = '-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ';
 const ADSENSE_CLIENT = 'ca-pub-1097439023725884';
+const SEO_LASTMOD = '2026-06-18';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
 const FAST_SOURCE_TIMEOUT = 1200;
@@ -1761,7 +1762,7 @@ Sitemap: ${SITE_URL}/sitemap.xml
 }
 
 function sitemapEntry(loc, priority = '0.7') {
-  return `<url><loc>${escapeXml(loc)}</loc><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+  return `<url><loc>${escapeXml(loc)}</loc><lastmod>${SEO_LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
 }
 
 function renderSitemap() {
