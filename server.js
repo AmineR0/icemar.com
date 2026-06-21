@@ -797,6 +797,90 @@ const STATIC_TOOL_PAGES = {
   },
 };
 
+const TOOL_VALUE_CONTENT = {
+  'verificateur-ice': {
+    audience: 'comptables, entrepreneurs, freelances, services achat et personnes qui doivent contrôler les informations d’un client ou fournisseur avant une facture.',
+    uses: ['Vérifier que le numéro contient bien 15 chiffres.', 'Éviter une erreur de saisie sur une facture ou un devis.', 'Lancer ensuite une recherche par ICE ou par nom de société.'],
+    checks: ['Comparez toujours l’ICE avec la raison sociale.', 'Vérifiez aussi la ville, le RC et l’activité lorsque ces informations sont disponibles.', 'Pour un usage juridique ou fiscal, confirmez les données auprès des sources officielles.'],
+  },
+  'cachet-entreprise': {
+    audience: 'créateurs d’entreprise, SARL, auto-entrepreneurs, cabinets comptables et petites sociétés qui veulent préparer une maquette claire avant impression.',
+    uses: ['Préparer un cachet rond ou rectangulaire lisible.', 'Tester la disposition du nom, de l’adresse, du RC, de l’ICE et du téléphone.', 'Imprimer un aperçu pour validation avant fabrication.'],
+    checks: ['Relisez l’orthographe de la raison sociale.', 'Vérifiez ICE, RC, IF et adresse avant impression.', 'Gardez une version PDF ou imprimée de la maquette validée.'],
+  },
+  'generateur-facture': {
+    audience: 'freelances, commerçants, prestataires et petites entreprises qui veulent préparer rapidement une facture claire pour un client.',
+    uses: ['Saisir les informations vendeur et client.', 'Ajouter les lignes de produits ou services.', 'Calculer les totaux, la TVA et le montant en lettres.'],
+    checks: ['Vérifiez les informations légales du vendeur et du client.', 'Contrôlez le taux de TVA appliqué.', 'Conservez une copie numérotée et cohérente avec votre suivi comptable.'],
+  },
+  'chiffres-en-lettres': {
+    audience: 'personnes qui préparent factures, reçus, attestations, bons de commande ou documents où le montant doit être écrit en toutes lettres.',
+    uses: ['Convertir rapidement un montant numérique.', 'Éviter les fautes fréquentes dans les montants en lettres.', 'Copier le résultat dans une facture ou un reçu.'],
+    checks: ['Comparez toujours le montant en chiffres et en lettres.', 'Vérifiez la devise utilisée.', 'Relisez les décimales avant de signer un document.'],
+  },
+  'outils-societe': {
+    audience: 'entrepreneurs marocains, gérants, freelances et assistants administratifs qui veulent centraliser les petites tâches répétitives.',
+    uses: ['Accéder aux calculateurs les plus courants.', 'Préparer facture, cachet, montant en lettres et vérification ICE.', 'Gagner du temps avant de passer à une validation comptable ou administrative.'],
+    checks: ['Les résultats restent indicatifs.', 'Vérifiez les règles fiscales et sociales en vigueur.', 'Gardez une trace des calculs importants dans vos dossiers.'],
+  },
+  'calculateur-tva': {
+    audience: 'entreprises, commerçants, prestataires et freelances qui veulent estimer rapidement HT, TVA et TTC.',
+    uses: ['Convertir un montant HT en TTC.', 'Retrouver le HT à partir du TTC.', 'Comparer plusieurs taux de TVA courants.'],
+    checks: ['Confirmez le taux applicable à votre activité.', 'Ne mélangez pas les montants avec et sans taxe.', 'Vérifiez le calcul final avant déclaration fiscale.'],
+  },
+  'calculateur-salaire-net-brut': {
+    audience: 'salariés, recruteurs, gérants et responsables administratifs qui veulent comprendre l’écart entre salaire brut et salaire net.',
+    uses: ['Estimer le salaire net à partir du brut.', 'Comprendre l’impact des cotisations et de l’IR.', 'Préparer une discussion salariale avec un ordre de grandeur.'],
+    checks: ['Le calcul exact dépend de la situation du salarié.', 'Les primes, avantages et retenues peuvent modifier le résultat.', 'Le bulletin de paie officiel reste la référence.'],
+  },
+  'calculateur-ir-maroc': {
+    audience: 'salariés, indépendants et responsables paie qui veulent estimer l’impôt sur le revenu à partir d’un revenu imposable.',
+    uses: ['Obtenir un ordre de grandeur mensuel.', 'Comparer plusieurs revenus imposables.', 'Préparer une vérification avant paie ou déclaration.'],
+    checks: ['Les barèmes et déductions peuvent évoluer.', 'Les situations familiales et avantages changent le résultat.', 'Vérifiez les textes fiscaux ou un professionnel avant décision.'],
+  },
+  'calculateur-auto-entrepreneur': {
+    audience: 'auto-entrepreneurs, freelances et petits commerçants qui veulent estimer la taxe selon le chiffre d’affaires.',
+    uses: ['Saisir le chiffre d’affaires encaissé.', 'Choisir service ou commerce selon l’activité.', 'Estimer la taxe avant déclaration.'],
+    checks: ['Vérifiez les plafonds du régime auto-entrepreneur.', 'Classez vos encaissements par période.', 'Confirmez le taux applicable sur le portail officiel.'],
+  },
+  'calculateur-vignette-maroc': {
+    audience: 'propriétaires de véhicules qui veulent anticiper le montant de la vignette avant paiement.',
+    uses: ['Saisir carburant et puissance fiscale.', 'Obtenir une estimation rapide.', 'Préparer le paiement dans les délais.'],
+    checks: ['La carte grise reste la référence pour la puissance fiscale.', 'Les montants peuvent évoluer.', 'Conservez le reçu de paiement.'],
+  },
+  'calculateur-credit': {
+    audience: 'particuliers, entrepreneurs et acheteurs qui veulent estimer une mensualité avant de discuter avec une banque.',
+    uses: ['Saisir montant, durée et taux annuel.', 'Comparer plusieurs scénarios.', 'Estimer coût total et mensualité approximative.'],
+    checks: ['La simulation ne remplace pas une offre bancaire.', 'L’assurance et les frais de dossier peuvent changer le coût réel.', 'Comparez toujours plusieurs propositions.'],
+  },
+};
+
+function renderToolValueBlocks(slug) {
+  const content = TOOL_VALUE_CONTENT[slug];
+  if (!content) return '';
+  return `
+    <h2>Pour qui est utile cet outil ?</h2>
+    <p>Cette page s’adresse surtout aux ${escapeHtml(content.audience)} Elle sert à préparer un calcul ou un document avant une vérification plus formelle.</p>
+    <h2>Comment l’utiliser correctement</h2>
+    <ul class="seo-checklist">${content.uses.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+    <h2>Points à vérifier avant utilisation officielle</h2>
+    <ul class="seo-checklist">${content.checks.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+    <h2>Limites importantes</h2>
+    <p>Les outils IceMorocco donnent une aide pratique et des estimations. Ils ne remplacent pas un document officiel, un conseil comptable, fiscal, juridique ou administratif. Avant de signer, déclarer, payer ou transmettre un document, vérifiez les informations auprès de la source compétente.</p>
+  `;
+}
+
+function renderToolSeoContent(slug, page) {
+  return `<div class="seo-content tool-seo-content">
+    <section class="seo-panel info-card legal-copy">
+      <h2>${escapeHtml(page.h1)} : guide d’utilisation</h2>
+      <p>${escapeHtml(page.lead)}</p>
+      ${page.body}
+      ${renderToolValueBlocks(slug)}
+    </section>
+  </div>`;
+}
+
 const GUIDE_CATEGORIES = {
   entreprise: {
     label: 'Entreprise',
@@ -1686,7 +1770,7 @@ function renderInfoPage(slug, page) {
 
 function renderToolPage(slug, page) {
   const canonical = `${SITE_URL}/${slug}`;
-  const body = `<section class="seo-panel info-card legal-copy">${page.body}<p><a class="seo-cta" href="/#${escapeHtml(page.appHash)}">${escapeHtml(page.cta)}</a></p></section>
+  const body = `<section class="seo-panel info-card legal-copy">${page.body}${renderToolValueBlocks(slug)}<p><a class="seo-cta" href="/#${escapeHtml(page.appHash)}">${escapeHtml(page.cta)}</a></p></section>
     <section class="seo-panel"><h2>Autres outils utiles</h2><div class="seo-links">${Object.entries(STATIC_TOOL_PAGES)
       .filter(([key]) => key !== slug)
       .map(([key, item]) => `<a href="/${key}">${escapeHtml(item.h1)}</a>`)
@@ -1742,6 +1826,7 @@ function renderToolAppPage(slug, page) {
   html = replaceOgContent(html, 'og:url', canonical);
   html = replaceMetaContent(html, 'twitter:title', page.title.replace(' | IceMorocco', ''));
   html = replaceMetaContent(html, 'twitter:description', page.description);
+  html = html.replace('</main>', `${renderToolSeoContent(slug, page)}</main>`);
   return html.replace('</head>', `<script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
