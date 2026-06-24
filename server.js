@@ -19,7 +19,7 @@ const STATIC_DIR = __dirname;
 const SITE_URL = (process.env.SITE_URL || 'https://icemorocco.com').replace(/\/$/, '');
 const GOOGLE_SITE_VERIFICATION = '-DzBmmXyacpHImfKdEVQaXZphg_b5cbYlbIbLcOGrZQ';
 const ADSENSE_CLIENT = 'ca-pub-1097439023725884';
-const SEO_LASTMOD = '2026-06-18';
+const SEO_LASTMOD = '2026-06-24';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 const discoveredCompanies = new Map();
 const FAST_SOURCE_TIMEOUT = 1200;
@@ -493,7 +493,6 @@ function renderListingPage({ slug, title, h1, lead, description, companies, robo
 }
 
 function renderIceSearchSeoPage() {
-  const companies = LOCAL_COMPANIES.filter(company => normalizeIce(company.ice)).slice(0, 24);
   const canonical = `${SITE_URL}/recherche-ice-maroc`;
   const body = `
     <section class="seo-panel">
@@ -515,18 +514,24 @@ function renderIceSearchSeoPage() {
       <p>La vérification ICE réduit les erreurs de facturation et permet d’identifier plus clairement un client, fournisseur ou partenaire. Avant d’émettre une facture, il est utile de contrôler la raison sociale, l’identifiant ICE, la ville, le registre de commerce et les informations disponibles sur la fiche entreprise.</p>
     </section>
     <section class="seo-panel">
-      <h2>Entreprises avec ICE disponible</h2>
-      <div class="seo-card-grid">${companies.map(companyCard).join('')}</div>
+      <h2>Ce que peut afficher une fiche entreprise</h2>
+      <p>Selon les informations disponibles, une recherche peut aider à repérer la raison sociale, l’identifiant ICE, la ville, le registre de commerce, la forme juridique, l’activité, l’adresse ou la date de création. Ces éléments sont utiles pour comparer les données d’un client ou fournisseur avant de préparer un document commercial.</p>
+      <ul class="seo-checklist">
+        <li>Contrôler la cohérence entre le nom de société et le numéro ICE.</li>
+        <li>Comparer la ville, le RC et l’activité avec les documents reçus.</li>
+        <li>Éviter les erreurs de saisie avant facture, devis ou contrat.</li>
+        <li>Conserver une trace de la vérification effectuée.</li>
+      </ul>
     </section>
     <section class="seo-panel">
       <h2>Liens utiles pour la recherche entreprise</h2>
       <div class="seo-links">
         <a href="/">Moteur de recherche ICE</a>
         <a href="/verificateur-ice">Vérificateur ICE Maroc</a>
-        <a href="/annuaire-entreprises-marocaines">Annuaire entreprises marocaines</a>
-        <a href="/top-recherches-ice">Top recherches ICE</a>
-        <a href="/ville/casablanca">Entreprises à Casablanca</a>
-        <a href="/categorie/informatique">Sociétés informatiques Maroc</a>
+        <a href="/generateur-facture">Générateur facture</a>
+        <a href="/cachet-entreprise">Cachet entreprise</a>
+        <a href="/chiffres-en-lettres">Chiffres en lettres</a>
+        <a href="/outils-societe">Outils société</a>
       </div>
     </section>
     <section class="seo-panel">
@@ -651,6 +656,71 @@ const STATIC_INFO_PAGES = {
     `,
   },
 };
+
+const INFO_PAGE_VALUE_CONTENT = {
+  about: `
+      <h2>Pourquoi cette plateforme existe</h2>
+      <p>Beaucoup d’entrepreneurs au Maroc doivent vérifier rapidement une société avant de préparer une facture, un devis ou un dossier fournisseur. Les informations sont souvent dispersées entre plusieurs documents, recherches et portails. IceMorocco cherche à simplifier cette première étape en proposant une interface claire, centrée sur la recherche ICE et les outils pratiques qui l’accompagnent.</p>
+      <h2>Public concerné</h2>
+      <p>Le site peut être utile aux freelances, très petites entreprises, commerçants, cabinets comptables, assistants administratifs et responsables achat qui veulent gagner du temps sur les vérifications simples. Il ne remplace pas un professionnel, mais il aide à mieux préparer les informations avant une validation officielle.</p>
+      <h2>Notre approche</h2>
+      <p>Nous privilégions des pages sobres, des explications pratiques et des outils directement utilisables. Les données et calculs sont présentés avec prudence, car les règles administratives, fiscales et les sources disponibles peuvent évoluer.</p>
+      <h2>Amélioration continue</h2>
+      <p>Le site est amélioré progressivement à partir des besoins réels des visiteurs : recherche plus claire, pages plus utiles, liens officiels mieux placés et outils plus simples à utiliser. Cette évolution permet de garder une plateforme pratique sans transformer les démarches en contenu compliqué ou difficile à lire.</p>
+    `,
+  contact: `
+      <h2>Avant de nous écrire</h2>
+      <p>Pour faciliter le traitement de votre message, indiquez le lien de la page concernée, le type de problème rencontré et les informations utiles pour comprendre la demande. Si vous signalez une donnée incorrecte, précisez la correction souhaitée et, si possible, la source qui permet de la vérifier.</p>
+      <h2>Délais de réponse</h2>
+      <p>Les messages sont traités selon leur priorité et leur clarté. Les signalements techniques, les erreurs visibles sur le site et les demandes liées à la confidentialité sont prioritaires. Les demandes commerciales ou générales peuvent demander plus de temps.</p>
+      <h2>Ce que nous ne pouvons pas faire</h2>
+      <p>IceMorocco ne peut pas modifier une donnée officielle à la place d’une administration, créer un document légal pour votre compte ou garantir l’acceptation d’un dossier. Pour ces actions, contactez directement l’organisme compétent ou un professionnel qualifié.</p>
+      <h2>Informations utiles à inclure</h2>
+      <p>Pour un problème de recherche, indiquez le mot-clé saisi, le mode utilisé, le résultat attendu et le résultat obtenu. Pour une page guide ou outil, indiquez le titre de la page et la partie qui doit être améliorée. Un message précis aide à corriger plus vite.</p>
+      <h2>Respect et sécurité</h2>
+      <p>N’envoyez pas de mot de passe, document confidentiel complet, information bancaire ou donnée sensible inutile. Une description claire du problème suffit dans la majorité des cas.</p>
+      <h2>Suggestions d’amélioration</h2>
+      <p>Les suggestions utiles sont les bienvenues : nouvelle page guide, amélioration d’un outil, correction d’une explication, ajout d’un lien officiel ou signalement d’un problème d’affichage sur mobile. Les retours concrets aident à améliorer le site pour les prochains visiteurs.</p>
+    `,
+  privacy: `
+      <h2>Services externes</h2>
+      <p>Certaines fonctionnalités peuvent s’appuyer sur des services tiers, par exemple pour la recherche live, l’analyse d’audience, l’hébergement, la sécurité ou la publicité. Ces services peuvent traiter des informations techniques comme l’adresse IP, le navigateur, la page visitée ou la requête effectuée.</p>
+      <h2>Durée de conservation</h2>
+      <p>Les informations stockées localement dans votre navigateur restent sous votre contrôle et peuvent être supprimées depuis les paramètres du navigateur. Les journaux techniques éventuels sont conservés uniquement le temps nécessaire à la sécurité, au diagnostic et à l’amélioration du service.</p>
+      <h2>Sécurité et prudence</h2>
+      <p>Évitez de saisir des informations sensibles inutiles dans les champs libres. Le site est destiné à des vérifications pratiques et à la préparation de documents, pas au stockage de dossiers confidentiels complets.</p>
+    `,
+  terms: `
+      <h2>Données indicatives</h2>
+      <p>Les informations affichées peuvent provenir de données chargées localement, de recherches publiques ou de sources accessibles au moment de la consultation. Elles peuvent être incomplètes, anciennes ou différentes d’un document officiel. L’utilisateur doit donc effectuer ses propres vérifications avant tout usage important.</p>
+      <h2>Usage raisonnable</h2>
+      <p>Il est interdit d’utiliser le site pour tenter de perturber le service, automatiser des requêtes abusives, copier massivement les contenus ou détourner les outils de leur objectif normal. L’accès peut être limité en cas d’usage anormal ou de contrainte technique.</p>
+      <h2>Évolution du service</h2>
+      <p>IceMorocco peut ajouter, modifier ou retirer des fonctionnalités afin d’améliorer l’expérience, corriger un problème, respecter une règle applicable ou réduire un risque. Les contenus peuvent être mis à jour sans préavis.</p>
+      <h2>Liens externes</h2>
+      <p>Certains contenus peuvent renvoyer vers des portails officiels, administrations ou services tiers. Ces liens sont fournis pour aider l’utilisateur à vérifier une information ou effectuer une démarche. IceMorocco ne contrôle pas ces sites et ne peut pas garantir leur disponibilité, leurs délais ou leurs conditions d’utilisation.</p>
+      <h2>Documents générés</h2>
+      <p>Les factures, simulations, cachets ou conversions générés avec les outils doivent être relus avant utilisation. L’utilisateur reste responsable des informations saisies, de la numérotation, des montants, des taux, des identifiants et de la conformité finale du document.</p>
+      <h2>Contact en cas de problème</h2>
+      <p>Si vous constatez une erreur, une page inaccessible, une information ambiguë ou un comportement anormal, utilisez la page contact pour le signaler. Les corrections raisonnables peuvent être prises en compte afin d’améliorer la fiabilité et la clarté du service.</p>
+    `,
+  faq: `
+      <h2>Comment utiliser les résultats avec prudence ?</h2>
+      <p>Comparez toujours les informations affichées avec les documents reçus de votre client, fournisseur ou partenaire. Vérifiez surtout la raison sociale, l’ICE, la ville, le RC et l’activité. En cas de différence, demandez une confirmation ou consultez une source officielle.</p>
+      <h2>Pourquoi certains résultats changent-ils ?</h2>
+      <p>Les données disponibles peuvent évoluer, être complétées ou devenir indisponibles selon les sources. Une recherche par nom peut aussi donner des résultats différents selon l’orthographe, les abréviations ou la ville saisie.</p>
+      <h2>Quels outils utiliser après une recherche ?</h2>
+      <p>Après avoir vérifié une entreprise, vous pouvez utiliser le vérificateur ICE, le générateur de facture, l’outil chiffres en lettres, le cachet entreprise ou les calculateurs société pour préparer un document plus propre.</p>
+      <h2>Comment éviter les erreurs de recherche ?</h2>
+      <p>Essayez plusieurs formes du nom : raison sociale complète, nom commercial, mot principal, ville ou numéro ICE. Évitez les mots trop génériques et contrôlez les accents, espaces et abréviations. Si le numéro ICE ne donne rien, lancez aussi une recherche par nom.</p>
+      <h2>Que faire avant d’utiliser une information dans une facture ?</h2>
+      <p>Relisez les informations avec le client ou fournisseur, vérifiez les documents reçus et conservez une trace de la vérification. Une petite erreur dans le nom, l’ICE ou le RC peut compliquer la correction d’une facture plus tard.</p>
+    `,
+};
+
+function renderInfoValueBlocks(slug) {
+  return INFO_PAGE_VALUE_CONTENT[slug] || '';
+}
 
 const STATIC_TOOL_PAGES = {
   'verificateur-ice': {
@@ -1632,11 +1702,11 @@ function guideRelatedLinks(topic) {
     .join('');
 }
 
-function renderGuideCards(topics) {
+function renderGuideCards(topics, { showRelated = true } = {}) {
   return topics.map(topic => `<article class="seo-card">
     <h2><a href="${guideTopicUrl(topic)}">${escapeHtml(topic.title)}</a></h2>
     <p>${escapeHtml(topic.summary)}</p>
-    <div class="seo-links compact">${guideRelatedLinks(topic)}</div>
+    ${showRelated ? `<div class="seo-links compact">${guideRelatedLinks(topic)}</div>` : ''}
   </article>`).join('');
 }
 
@@ -1675,10 +1745,9 @@ function guideSchema(topic, canonical, variant = 'guide') {
 }
 
 function renderGuideLandingPage() {
-  const body = `<section class="seo-panel"><h2>Catégories du guide administratif</h2><div class="seo-card-grid">${Object.entries(GUIDE_CATEGORIES)
-    .map(([slug, category]) => `<article class="seo-card"><h2><a href="/guide/${slug}">${escapeHtml(category.title)}</a></h2><p>${escapeHtml(category.lead)}</p></article>`)
-    .join('')}</div></section>
-    <section class="seo-panel"><h2>Guides populaires</h2><div class="seo-card-grid">${renderGuideCards(GUIDE_TOPICS.slice(0, 8))}</div></section>`;
+  const indexableTopics = GUIDE_TOPICS.filter(topic => ADSENSE_INDEXABLE_GUIDE_SLUGS.has(topic.slug));
+  const body = `<section class="seo-panel"><h2>Guides administratifs sélectionnés</h2><p>Cette sélection regroupe les démarches les plus utiles pour les visiteurs au Maroc. Chaque guide contient les documents à préparer, les étapes principales, les frais à vérifier et les liens officiels disponibles.</p><div class="seo-card-grid">${renderGuideCards(indexableTopics, { showRelated: false })}</div></section>
+    <section class="seo-panel"><h2>Comment utiliser ces guides</h2><p>Commencez par identifier votre démarche, lisez la liste des documents et ouvrez le portail officiel indiqué dans la page. Les informations sont fournies pour préparer le dossier plus facilement, mais les montants, formulaires et délais doivent toujours être confirmés auprès de l’administration ou du centre de dépôt concerné.</p><p>Pour éviter les allers-retours, préparez les originaux, les copies, les reçus et les justificatifs avant le rendez-vous ou le dépôt. Lorsque la démarche dépend de votre ville, de votre statut ou d’un cas particulier, vérifiez toujours les conditions locales avant de payer ou de transmettre un dossier.</p></section>`;
   return renderSeoLayout({
     title: 'Guide administratif Maroc - Entreprise, citoyen, véhicule et voyage | IceMorocco',
     description: 'Guide administratif Maroc par IceMorocco : démarches entreprise, citoyen, véhicules et voyage avec prix indicatifs, documents, étapes et FAQ.',
@@ -1757,7 +1826,7 @@ function renderInfoPage(slug, page) {
     canonical,
     h1: page.h1,
     lead: page.lead,
-    body: `<section class="seo-panel info-card legal-copy">${page.body}</section>`,
+    body: `<section class="seo-panel info-card legal-copy">${page.body}${renderInfoValueBlocks(slug)}</section>`,
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
