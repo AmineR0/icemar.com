@@ -31,52 +31,61 @@ function newsCategoryUrl(category) { return `/actualites/${category}`; }
 
 function newsArticleUrl(article) { return `/actualites/${article.slug}`; }
 
-function renderNewsShell({ title, description, canonical, h1, lead, body, schema = [], breadcrumb = 'Actualités Maroc' }) {
+function renderNewsShell({ title, description, canonical, h1, lead, body, schema = [], breadcrumb = 'Actualités Maroc', lang = 'fr' }) {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeCanonical = escapeHtml(canonical);
   const schemaItems = Array.isArray(schema) ? schema : [schema];
   const jsonLd = JSON.stringify(schemaItems).replace(/</g, '\\u003c');
   return `<!doctype html>
-<html lang="fr-MA"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<html lang="${lang === 'ar' ? 'ar-MA' : 'fr-MA'}" dir="${lang === 'ar' ? 'rtl' : 'ltr'}"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${safeTitle}</title><meta name="description" content="${safeDescription}"/><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"/>
 <meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}"/><link rel="canonical" href="${safeCanonical}"/>
 <meta property="og:type" content="${schemaItems.some(item => item['@type'] === 'NewsArticle') ? 'article' : 'website'}"/><meta property="og:locale" content="fr_MA"/><meta property="og:site_name" content="IceMorocco Actualités"/><meta property="og:title" content="${safeTitle}"/><meta property="og:description" content="${safeDescription}"/><meta property="og:url" content="${safeCanonical}"/><meta property="og:image" content="${SITE_URL}/logo.png"/>
 <link rel="icon" href="/favicon.ico" sizes="any"/><link rel="stylesheet" href="/style.css"/><script type="application/ld+json">${jsonLd}</script></head>
-<body class="news-body"><header class="news-header"><div class="news-header-inner"><a class="news-brand" href="/"><img src="/logo.png" alt="IceMorocco" width="254" height="47"/><span>Actualités Maroc</span></a><nav class="news-nav"><a href="/">À la une</a>${Object.entries(NEWS_CATEGORIES).map(([slug, category]) => `<a href="${newsCategoryUrl(slug)}">${escapeHtml(category.label)}</a>`).join('')}<a class="news-company-link" href="/recherche-ice-maroc">Recherche entreprise</a></nav></div></header>
-<main class="news-main"><div class="news-breadcrumb"><a href="/">Actualités Maroc</a> / ${escapeHtml(breadcrumb)}</div><header class="news-page-head"><p class="news-kicker">ICE MOROCCO · ACTUALITÉS</p><h1>${escapeHtml(h1)}</h1><p>${escapeHtml(lead)}</p></header>${body}</main>
-<footer class="news-footer"><div><strong>IceMorocco Actualités</strong><span>Information pratique et actualités du Maroc.</span></div><a href="/about">À propos</a><a href="/contact">Contact</a><a href="/recherche-ice-maroc">Outil entreprises</a></footer></body></html>`;
+<body class="news-body"><header class="news-header"><div class="news-header-inner"><a class="news-brand" href="/?lang=${lang}"><img src="/logo.png" alt="IceMorocco" width="254" height="47"/><span>${lang === 'ar' ? 'أخبار المغرب' : 'Actualités Maroc'}</span></a><nav class="news-nav">${lang === 'ar' ? `<a href="/?lang=ar">الرئيسية</a><a href="/actualites?lang=ar">كل الأخبار</a><a href="/actualites/maroc?lang=ar">المغرب</a><a href="/actualites/economie?lang=ar">اقتصاد</a><a href="/actualites/societe?lang=ar">مجتمع</a><a href="/actualites/sport?lang=ar">رياضة</a><a href="/actualites/monde?lang=ar">العالم</a><a class="news-company-link" href="/recherche-ice-maroc">بحث الشركات</a>` : `<a href="/">À la une</a>${Object.entries(NEWS_CATEGORIES).map(([slug, category]) => `<a href="${newsCategoryUrl(slug)}">${escapeHtml(category.label)}</a>`).join('')}<a class="news-company-link" href="/recherche-ice-maroc">Recherche entreprise</a>`}<a class="news-lang-switch" href="${lang === 'ar' ? canonical.split('?')[0] : `${canonical}${canonical.includes('?') ? '&' : '?'}lang=ar`}">${lang === 'ar' ? 'FR' : 'العربية'}</a></nav></div></header>
+<main class="news-main"><div class="news-breadcrumb"><a href="/?lang=${lang}">${lang === 'ar' ? 'أخبار المغرب' : 'Actualités Maroc'}</a> / ${escapeHtml(breadcrumb)}</div><header class="news-page-head"><p class="news-kicker">ICE MOROCCO · ${lang === 'ar' ? 'أخبار' : 'ACTUALITÉS'}</p><h1>${escapeHtml(h1)}</h1><p>${escapeHtml(lead)}</p></header>${body}</main>
+<footer class="news-footer"><div><strong>IceMorocco Actualités</strong><span>${lang === 'ar' ? 'معلومات وأخبار عملية من المغرب.' : 'Information pratique et actualités du Maroc.'}</span></div><a href="/about">${lang === 'ar' ? 'من نحن' : 'À propos'}</a><a href="/contact">${lang === 'ar' ? 'اتصل بنا' : 'Contact'}</a><a href="/recherche-ice-maroc">${lang === 'ar' ? 'أداة الشركات' : 'Outil entreprises'}</a></footer></body></html>`;
 }
 
-function newsCard(article) {
+function newsCard(article, lang = 'fr') {
   const category = NEWS_CATEGORIES[article.category];
-  return `<article class="news-card"><p class="news-card-meta">${escapeHtml(category.label)} · ${escapeHtml(article.date)} · ${escapeHtml(article.readTime)}</p><h2><a href="${newsArticleUrl(article)}">${escapeHtml(article.title)}</a></h2><p>${escapeHtml(article.excerpt)}</p><a class="news-read-more" href="${newsArticleUrl(article)}">Lire l’article <span>→</span></a></article>`;
+  const title = lang === 'ar' ? article.arTitle : article.title;
+  const excerpt = lang === 'ar' ? article.arExcerpt : article.excerpt;
+  return `<article class="news-card"><img class="news-card-image" src="${article.image}" alt="${escapeHtml(title)}" loading="lazy"/><p class="news-card-meta">${escapeHtml(lang === 'ar' ? 'المغرب' : category.label)} · ${escapeHtml(article.date)} · ${escapeHtml(article.readTime)}</p><h2><a href="${newsArticleUrl(article)}?lang=${lang}">${escapeHtml(title)}</a></h2><p>${escapeHtml(excerpt)}</p><a class="news-read-more" href="${newsArticleUrl(article)}?lang=${lang}">${lang === 'ar' ? 'اقرأ المقال' : 'Lire l’article'} <span>→</span></a></article>`;
 }
 
 function newsSchemaArticle(article, canonical) {
   return { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: article.title, description: article.excerpt, datePublished: article.date, dateModified: article.date, inLanguage: 'fr-MA', mainEntityOfPage: canonical, author: { '@type': 'Organization', name: 'IceMorocco Actualités', url: SITE_URL }, publisher: { '@type': 'Organization', name: 'IceMorocco Actualités', logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` } }, image: [`${SITE_URL}/logo.png`] };
 }
 
-function renderNewsHome() {
+function renderNewsHome(lang = 'fr') {
   const featured = NEWS_ARTICLES[0];
-  const body = `<section class="news-hero"><div class="news-hero-copy"><p class="news-card-meta">${escapeHtml(NEWS_CATEGORIES[featured.category].label)} · À la une</p><h2><a href="${newsArticleUrl(featured)}">${escapeHtml(featured.title)}</a></h2><p>${escapeHtml(featured.excerpt)}</p><a class="news-primary-btn" href="${newsArticleUrl(featured)}">Lire l’article</a></div><div class="news-hero-note"><span>Le journal utile</span><strong>Les informations marocaines expliquées simplement.</strong><p>Guides, économie, société et actualité sélectionnée pour vous aider à comprendre et agir.</p></div></section><section class="news-section"><div class="news-section-heading"><h2>Dernières actualités</h2><a href="/actualites">Toutes les actualités</a></div><div class="news-grid">${NEWS_ARTICLES.slice(1).map(newsCard).join('')}</div></section><section class="news-section news-topics"><div class="news-section-heading"><h2>Explorer par rubrique</h2></div><div class="news-category-grid">${Object.entries(NEWS_CATEGORIES).map(([slug, category]) => `<a href="${newsCategoryUrl(slug)}"><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(category.description)}</span></a>`).join('')}</div></section>`;
-  return renderNewsShell({ title: 'Actualités Maroc - Information pratique et nouvelles du pays | IceMorocco', description: 'IceMorocco Actualités : les nouvelles du Maroc, économie, société, sport et guides pratiques expliqués clairement.', canonical: `${SITE_URL}/`, h1: 'Actualités Maroc', lead: 'Les nouvelles et informations pratiques qui comptent, expliquées clairement.', body, schema: [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'IceMorocco Actualités', url: `${SITE_URL}/`, inLanguage: 'fr-MA' }, { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Actualités Maroc', url: `${SITE_URL}/` }] });
+  const title = lang === 'ar' ? featured.arTitle : featured.title;
+  const excerpt = lang === 'ar' ? featured.arExcerpt : featured.excerpt;
+  const body = `<section class="news-hero"><div class="news-hero-copy"><img class="news-hero-image" src="${featured.image}" alt="${escapeHtml(title)}"/><p class="news-card-meta">${escapeHtml(lang === 'ar' ? 'المغرب' : NEWS_CATEGORIES[featured.category].label)} · ${lang === 'ar' ? 'الرئيسية' : 'À la une'}</p><h2><a href="${newsArticleUrl(featured)}?lang=${lang}">${escapeHtml(title)}</a></h2><p>${escapeHtml(excerpt)}</p><a class="news-primary-btn" href="${newsArticleUrl(featured)}?lang=${lang}">${lang === 'ar' ? 'اقرأ المقال' : 'Lire l’article'}</a></div><div class="news-hero-note"><span>${lang === 'ar' ? 'صحافة مفيدة' : 'Le journal utile'}</span><strong>${lang === 'ar' ? 'أخبار المغرب بلغة واضحة وقريبة من القارئ.' : 'Les informations marocaines expliquées simplement.'}</strong><p>${lang === 'ar' ? 'أخبار المجتمع والاقتصاد والرياضة ومعلومات عملية تساعدك على الفهم والتصرف.' : 'Guides, économie, société et actualité sélectionnée pour vous aider à comprendre et agir.'}</p></div></section><section class="news-section"><div class="news-section-heading"><h2>${lang === 'ar' ? 'آخر الأخبار' : 'Dernières actualités'}</h2><a href="/actualites?lang=${lang}">${lang === 'ar' ? 'كل الأخبار' : 'Toutes les actualités'}</a></div><div class="news-grid">${NEWS_ARTICLES.slice(1).map(item => newsCard(item, lang)).join('')}</div></section><section class="news-section news-topics"><div class="news-section-heading"><h2>${lang === 'ar' ? 'تصفح حسب القسم' : 'Explorer par rubrique'}</h2></div><div class="news-category-grid">${Object.entries(NEWS_CATEGORIES).map(([slug, category]) => `<a href="${newsCategoryUrl(slug)}?lang=${lang}"><strong>${escapeHtml(lang === 'ar' ? ({maroc:'المغرب',economie:'اقتصاد',societe:'مجتمع',sport:'رياضة',monde:'العالم'})[slug] : category.label)}</strong><span>${escapeHtml(lang === 'ar' ? 'أخبار ومعلومات عملية تهم القارئ المغربي.' : category.description)}</span></a>`).join('')}</div></section>`;
+  return renderNewsShell({ title: lang === 'ar' ? 'أخبار المغرب - معلومات وأخبار عملية | IceMorocco' : 'Actualités Maroc - Information pratique et nouvelles du pays | IceMorocco', description: lang === 'ar' ? 'أخبار المغرب والاقتصاد والمجتمع والرياضة بلغة واضحة.' : 'IceMorocco Actualités : les nouvelles du Maroc, économie, société, sport et guides pratiques expliqués clairement.', canonical: `${SITE_URL}/?lang=${lang}`, h1: lang === 'ar' ? 'أخبار المغرب' : 'Actualités Maroc', lead: lang === 'ar' ? 'الأخبار والمعلومات العملية التي تهمك، بلغة واضحة.' : 'Les nouvelles et informations pratiques qui comptent, expliquées clairement.', body, lang, schema: [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'IceMorocco Actualités', url: `${SITE_URL}/`, inLanguage: lang === 'ar' ? 'ar-MA' : 'fr-MA' }, { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Actualités Maroc', url: `${SITE_URL}/` }] });
 }
 
-function renderNewsListing(categorySlug = '') {
+function renderNewsListing(categorySlug = '', lang = 'fr') {
   const category = categorySlug ? NEWS_CATEGORIES[categorySlug] : null;
   const articles = category ? NEWS_ARTICLES.filter(article => article.category === categorySlug) : NEWS_ARTICLES;
-  const title = category ? `${category.label} Maroc - Actualités et informations | IceMorocco` : 'Actualités Maroc - Toutes les nouvelles | IceMorocco';
-  const h1 = category ? `Actualités ${category.label}` : 'Toutes les actualités';
-  const body = `<section class="news-grid news-listing-grid">${articles.map(newsCard).join('')}</section>`;
-  return renderNewsShell({ title, description: category ? category.description : 'Toutes les actualités marocaines sélectionnées par IceMorocco : Maroc, économie, société, sport et monde.', canonical: `${SITE_URL}${category ? newsCategoryUrl(categorySlug) : '/actualites'}`, h1, lead: category ? category.description : 'Retrouvez nos articles récents par rubrique.', body, breadcrumb: category ? category.label : 'Toutes les actualités', schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: h1, url: `${SITE_URL}${category ? newsCategoryUrl(categorySlug) : '/actualites'}` } });
+  const arLabels = { maroc: 'المغرب', economie: 'اقتصاد', societe: 'مجتمع', sport: 'رياضة', monde: 'العالم' };
+  const title = category ? (lang === 'ar' ? `${arLabels[categorySlug]} المغرب - أخبار ومعلومات | IceMorocco` : `${category.label} Maroc - Actualités et informations | IceMorocco`) : (lang === 'ar' ? 'أخبار المغرب - كل الأخبار | IceMorocco' : 'Actualités Maroc - Toutes les nouvelles | IceMorocco');
+  const h1 = category ? (lang === 'ar' ? `أخبار ${arLabels[categorySlug]}` : `Actualités ${category.label}`) : (lang === 'ar' ? 'كل الأخبار' : 'Toutes les actualités');
+  const body = `<section class="news-grid news-listing-grid">${articles.map(article => newsCard(article, lang)).join('')}</section>`;
+  return renderNewsShell({ title, description: category ? category.description : 'Toutes les actualités marocaines sélectionnées par IceMorocco.', canonical: `${SITE_URL}${category ? newsCategoryUrl(categorySlug) : '/actualites'}${lang === 'ar' ? '?lang=ar' : ''}`, h1, lead: category ? (lang === 'ar' ? 'أخبار ومعلومات عملية تهم القارئ المغربي.' : category.description) : (lang === 'ar' ? 'تابع آخر الأخبار حسب القسم.' : 'Retrouvez nos articles récents par rubrique.'), body, lang, breadcrumb: category ? (lang === 'ar' ? arLabels[categorySlug] : category.label) : (lang === 'ar' ? 'كل الأخبار' : 'Toutes les actualités'), schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: h1, url: `${SITE_URL}${category ? newsCategoryUrl(categorySlug) : '/actualites'}` } });
 }
 
-function renderNewsArticle(article) {
+function renderNewsArticle(article, lang = 'fr') {
   const canonical = `${SITE_URL}${newsArticleUrl(article)}`;
   const related = NEWS_ARTICLES.filter(item => item.slug !== article.slug && item.category === article.category).slice(0, 2);
-  const body = `<article class="news-article"><p class="news-article-meta">${escapeHtml(NEWS_CATEGORIES[article.category].label)} · Publié le ${escapeHtml(article.date)} · ${escapeHtml(article.readTime)} de lecture</p><p class="news-article-intro">${escapeHtml(article.intro)}</p>${article.sections.map(([heading, text]) => `<section><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(text)}</p></section>`).join('')}<aside class="news-source"><strong>Source utile</strong><p>Pour vérifier les conditions et les dernières mises à jour, consultez le site officiel.</p><a href="${escapeHtml(article.official)}" rel="noopener noreferrer" target="_blank">Ouvrir le site officiel ↗</a></aside></article>${related.length ? `<section class="news-section related-news"><div class="news-section-heading"><h2>À lire aussi</h2></div><div class="news-grid">${related.map(newsCard).join('')}</div></section>` : ''}`;
-  return renderNewsShell({ title: `${article.title} | IceMorocco Actualités`, description: article.excerpt, canonical, h1: article.title, lead: article.excerpt, body, breadcrumb: NEWS_CATEGORIES[article.category].label, schema: [newsSchemaArticle(article, canonical), { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Actualités Maroc', item: `${SITE_URL}/` }, { '@type': 'ListItem', position: 2, name: NEWS_CATEGORIES[article.category].label, item: `${SITE_URL}${newsCategoryUrl(article.category)}` }, { '@type': 'ListItem', position: 3, name: article.title, item: canonical }] }] });
+  const title = lang === 'ar' ? article.arTitle : article.title;
+  const excerpt = lang === 'ar' ? article.arExcerpt : article.excerpt;
+  const intro = lang === 'ar' ? article.arIntro : article.intro;
+  const arabicSectionTexts = ['ابدأ بتحديد الجهة المختصة، ثم حضّر الوثائق المطلوبة في ملف واضح. احتفظ بالأصول منفصلة عن النسخ وتحقق من صلاحية كل وثيقة.', 'استعمل الموقع الرسمي للتأكد من الموعد والشروط وآخر التحديثات. احتفظ برسالة التأكيد أو رقم الطلب للرجوع إليه عند الحاجة.', 'قبل التوجه، راجع العنوان وساعات العمل ووسائل الأداء والوثائق المطلوبة. هذه الخطوات البسيطة تساعد على تفادي التنقلات غير الضرورية.'];
+  const body = `<article class="news-article"><img class="news-article-image" src="${article.image}" alt="${escapeHtml(title)}"/><p class="news-article-meta">${escapeHtml(lang === 'ar' ? 'المغرب' : NEWS_CATEGORIES[article.category].label)} · ${lang === 'ar' ? 'نشر في' : 'Publié le'} ${escapeHtml(article.date)} · ${escapeHtml(article.readTime)} ${lang === 'ar' ? 'للقراءة' : 'de lecture'}</p><p class="news-article-intro">${escapeHtml(intro)}</p>${article.sections.map(([heading, text], index) => `<section><h2>${escapeHtml(lang === 'ar' ? heading.replace('Préparer son dossier','إعداد الملف').replace('Vérifier le rendez-vous','التحقق من الموعد').replace('Avant de partir','قبل التوجه') : heading)}</h2><p>${escapeHtml(lang === 'ar' ? arabicSectionTexts[index % arabicSectionTexts.length] : text)}</p></section>`).join('')}<aside class="news-source"><strong>${lang === 'ar' ? 'مصدر رسمي مفيد' : 'Source utile'}</strong><p>${lang === 'ar' ? 'للتحقق من الشروط وآخر المستجدات، يرجى زيارة الموقع الرسمي.' : 'Pour vérifier les conditions et les dernières mises à jour, consultez le site officiel.'}</p><a href="${escapeHtml(article.official)}" rel="noopener noreferrer" target="_blank">${lang === 'ar' ? 'فتح الموقع الرسمي ↗' : 'Ouvrir le site officiel ↗'}</a></aside></article>${related.length ? `<section class="news-section related-news"><div class="news-section-heading"><h2>${lang === 'ar' ? 'اقرأ أيضاً' : 'À lire aussi'}</h2></div><div class="news-grid">${related.map(item => newsCard(item, lang)).join('')}</div></section>` : ''}`;
+  return renderNewsShell({ title: `${title} | IceMorocco Actualités`, description: excerpt, canonical: `${canonical}?lang=${lang}`, h1: title, lead: excerpt, body, lang, breadcrumb: lang === 'ar' ? 'المغرب' : NEWS_CATEGORIES[article.category].label, schema: [newsSchemaArticle(article, canonical), { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Actualités Maroc', item: `${SITE_URL}/` }, { '@type': 'ListItem', position: 2, name: NEWS_CATEGORIES[article.category].label, item: `${SITE_URL}${newsCategoryUrl(article.category)}` }, { '@type': 'ListItem', position: 3, name: article.title, item: canonical }] }] });
 }
 
 // ─── MIME types ───────────────────────────────────────────────
@@ -2349,21 +2358,22 @@ const requestHandler = async (req, res) => {
   }
 
   // ── Editorial news portal ──
+  const newsLang = url.searchParams.get('lang') === 'ar' ? 'ar' : 'fr';
   if (pathname === '/' || pathname === '/actualites' || pathname === '/actualites/') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(pathname === '/' ? renderNewsHome() : renderNewsListing());
+    return res.end(pathname === '/' ? renderNewsHome(newsLang) : renderNewsListing('', newsLang));
   }
 
   if (pathname.startsWith('/actualites/')) {
     const slug = pathname.replace('/actualites/', '').replace(/\/$/, '');
     if (NEWS_CATEGORIES[slug]) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      return res.end(renderNewsListing(slug));
+      return res.end(renderNewsListing(slug, newsLang));
     }
     const article = NEWS_ARTICLE_MAP.get(slug);
     if (article) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      return res.end(renderNewsArticle(article));
+      return res.end(renderNewsArticle(article, newsLang));
     }
   }
 
